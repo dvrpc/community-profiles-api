@@ -1,0 +1,50 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Environment variables
+.env
+
+# Database files (if applicable, e.g., SQLite)
+*.db
+test_db.db
+
+# Logs
+*.log
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# IDE specific files (e.g., VS Code)
+.vscode/
+
+# Other common ignored files
+tmp/
