@@ -1,2 +1,7 @@
 cd src
-uvicorn main:app
+uvicorn main:app --reload
+
+TEST DATA
+tract = 42091204702
+muni = 3426820
+county = 42101

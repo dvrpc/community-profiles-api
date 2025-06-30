@@ -1,27 +1,24 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from services.profile import build_tract_profile, build_muni_profile, build_county_profile
 
-# from services.foo import FooService
-# from schemas.foo import FooItem, FooItemCreate
-
-# from utils.service_result import handle_result
-
-# from config.database import get_db
 
 router = APIRouter(
     prefix="/profile",
 )
 
-
 @router.get("/tract/{geoid}")
-async def get_tract(geoid: int):
-    return f"tract {geoid}"
+def get_tract(geoid: int):
+    profile = build_tract_profile(geoid)
+    return profile
 
 
 @router.get("/muni/{geoid}")
-async def get_muni(geoid: int):
-    return f"muni {geoid}"
+def get_muni(geoid: int):
+    profile = build_muni_profile(geoid)
+    return profile
 
 
 @router.get("/county/{geoid}")
-async def get_county(geoid: int):
-    return f"muni {geoid}"
+def get_county(geoid: int):
+    profile = build_county_profile(geoid)
+    return profile
