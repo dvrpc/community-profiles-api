@@ -1,24 +1,23 @@
 from fastapi import APIRouter
-from services.profile import build_tract_profile, build_muni_profile, build_county_profile
-
+from repository.profile_repository import fetch_county, fetch_municipality
 
 router = APIRouter(
     prefix="/profile",
 )
 
-@router.get("/tract/{geoid}")
-def get_tract(geoid: int):
-    profile = build_tract_profile(geoid)
-    return profile
+# @router.get("/tract/{geoid}")
+# def get_tract(geoid: int):
+#     profile = build_tract_profile(geoid)
+#     return profile
 
 
-@router.get("/muni/{geoid}")
-def get_muni(geoid: int):
-    profile = build_muni_profile(geoid)
+@router.get("/municipality/{geoid}")
+def get_municipality(geoid: int):
+    profile = fetch_municipality(geoid)
     return profile
 
 
 @router.get("/county/{geoid}")
 def get_county(geoid: int):
-    profile = build_county_profile(geoid)
+    profile = fetch_county(geoid)
     return profile
