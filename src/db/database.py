@@ -27,7 +27,7 @@ class Database:
                 password = os.getenv("DB_PASS"),
                 port = os.getenv("DB_PORT")
             )
-        except psycopg.OperationalError as e:
+        except Exception as e:
             log.error(f"Could not connect to Database: {e}")
 
         return conn
