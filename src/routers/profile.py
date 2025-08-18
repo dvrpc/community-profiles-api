@@ -12,12 +12,12 @@ router = APIRouter(
 
 
 @router.get("/municipality/{geoid}")
-def get_municipality(geoid: int):
+def get_municipality(geoid: str):
     profile = fetch_municipality(geoid)
     return profile
 
 
 @router.get("/county/{geoid}")
-def get_county(geoid: int):
+def get_county(geoid: str):
     profile = fetch_county(geoid)
     return profile
