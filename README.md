@@ -7,7 +7,8 @@ source .venv/bin/activate
 # Windows .venv\Scripts\activate
 ```
 2. Install requirements `pip install -r requirements.txt`
-3. Run app
+3. Create .env file and fill contents from env_sample
+4. Run app
 ```
 cd src
 uvicorn main:app --reload
