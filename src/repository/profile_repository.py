@@ -24,7 +24,7 @@ def fetch_profile(query):
 
 def fetch_county(geoid):
     log.info(f'Fetching county profile: {geoid}')
-    query = f"SELECT * FROM county WHERE fips = '{geoid}'"
+    query = f"SELECT * FROM county WHERE geoid = '{geoid}'"
     profile = fetch_profile(query)
     log.info(f'Succesfully retrieved county profile: {geoid}')
     return profile
