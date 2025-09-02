@@ -2,6 +2,17 @@ import markdown
 from repository.content_repository import get_download_urls, get_file
 from services.template import env
 
+sort_order = {
+    'demographics-housing': 1,
+    'economy': 2,
+    'active-transportation': 3,
+    'safety-health': 4,
+    'freight': 5,
+    'environment': 6,
+    'transit': 7,
+    'roadways': 8
+}
+
 
 def populate_template(md, profile):
     html_conversion = markdown.markdown(md)
@@ -21,4 +32,7 @@ def build_content(geo_level, profile):
             'category': url['name'],
             'content': content
         })
-    return all_content
+
+    sorted_content = sorted(
+        all_content, key=lambda c: sort_order[c['category']])
+    return sorted_content
