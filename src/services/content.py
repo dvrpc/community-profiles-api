@@ -1,4 +1,5 @@
 import markdown
+import json
 from repository.content_repository import get_download_urls, get_file
 from services.template import env
 
@@ -22,17 +23,22 @@ def populate_template(md, profile):
 
 
 def build_content(geo_level, profile):
-    download_urls = get_download_urls(geo_level)
+    md_download_urls = get_download_urls(geo_level, "md")
+    viz_download_urls = get_download_urls(geo_level, "viz")
 
     all_content = []
-    for url in download_urls:
-        md = get_file(url['url'])
+    for i in range(len(md_download_urls)):
+        name = md_download_urls[i]['name']
+        md = get_file(md_download_urls[i]['url'])
+        viz = json.loads(get_file(viz_download_urls[i]['url']))
         content = populate_template(md, profile)
         all_content.append({
-            'category': url['name'],
-            'content': content
+            'category': name,
+            'content': content,
+            'visualizations': viz
         })
 
+    print(all_content)
     sorted_content = sorted(
         all_content, key=lambda c: sort_order[c['category']])
     return sorted_content
