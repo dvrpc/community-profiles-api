@@ -1,7 +1,8 @@
 import markdown
 import json
 import logging
-from repository.content_repository import get_download_urls, get_file
+
+from repository.content_repository import get_download_urls, get_files
 from services.template import env
 
 log = logging.getLogger(__name__)
@@ -38,18 +39,22 @@ def populate_viz(viz, profile):
     return viz
         
         
-
-
-def build_content(geo_level, profile):
+async def build_content(geo_level, profile):
     md_download_urls = get_download_urls(geo_level, "md")
     viz_download_urls = get_download_urls(geo_level, "viz")
 
     all_content = []
-    for i in range(len(md_download_urls)):
-        name = md_download_urls[i]['name']
-        md = get_file(md_download_urls[i]['url'])
-        visualizations = json.loads(get_file(viz_download_urls[i]['url']))
-        content = populate_template(md, profile)
+    
+    files = await get_files(md_download_urls + viz_download_urls)
+        
+    num_categories = len(sort_order)
+    for i in range(num_categories):
+        md = files[i]
+        viz = files[i + num_categories]
+        
+        name = md['name']
+        visualizations = json.loads(viz['file'])
+        content = populate_template(md['file'], profile)
         
 
         if(len(visualizations) > 0):   
@@ -62,6 +67,8 @@ def build_content(geo_level, profile):
             'content': content,
             'visualizations': visualizations
         })
+
+
 
     sorted_content = sorted(
         all_content, key=lambda c: sort_order[c['category']])
