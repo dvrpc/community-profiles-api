@@ -1,4 +1,5 @@
 from jinja2 import Environment, FileSystemLoader
+from pathlib import Path
 env = Environment()
 
 
@@ -10,5 +11,6 @@ def format_number(num):
     return ""
 
 
-env = Environment(loader=FileSystemLoader('.'))
+BASE_DIR = Path(__file__).resolve().parent
+env = Environment(loader=FileSystemLoader(Path(BASE_DIR, 'templates')))
 env.filters['format_number'] = format_number

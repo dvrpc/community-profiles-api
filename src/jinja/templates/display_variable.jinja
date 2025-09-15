@@ -1,0 +1,8 @@
+{% macro display_variable(num, label, geo, moe=None) %}
+    <div>
+        <span style="font-size: 1.5rem">{{ num | format_number}}</span>
+        <br/>
+        <span style="font-weight: 700">{{label}}</span><br/>
+        <span>{{geo}}</span>
+    </div>
+{% endmacro %}

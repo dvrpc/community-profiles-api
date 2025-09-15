@@ -3,7 +3,7 @@ import json
 import logging
 
 from repository.content_repository import get_download_urls, get_files
-from services.template import env
+from jinja.template import env
 
 log = logging.getLogger(__name__)
 
