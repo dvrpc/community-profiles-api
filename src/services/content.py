@@ -1,4 +1,4 @@
-import markdown
+import mistune
 import json
 import logging
 
@@ -20,55 +20,55 @@ sort_order = {
 
 
 def populate_template(md, profile):
-    html_conversion = markdown.markdown(md)
+
+    html_conversion = mistune.html(md)
+    print(html_conversion)
     template = env.from_string(html_conversion)
     rendered_html = template.render(profile)
     return rendered_html
 
+
 def populate_viz(viz, profile):
     values = viz['schema']['data']['values']
     target_field = viz['target_field']
-        
-    try: 
+
+    try:
         for index, val in enumerate(values):
             values[index][target_field] = profile[val[target_field]]
     except Exception as e:
         log.error(f"Exception occured populating viz: {e}")
-        
+
     viz['schema']['data']['values'] = values
     return viz
-        
-        
+
+
 async def build_content(geo_level, profile):
     md_download_urls = get_download_urls(geo_level, "md")
     viz_download_urls = get_download_urls(geo_level, "viz")
 
     all_content = []
-    
+
     files = await get_files(md_download_urls + viz_download_urls)
-        
+
     num_categories = len(sort_order)
     for i in range(num_categories):
         md = files[i]
         viz = files[i + num_categories]
-        
+
         name = md['name']
         visualizations = json.loads(viz['file'])
         content = populate_template(md['file'], profile)
-        
 
-        if(len(visualizations) > 0):   
+        if (len(visualizations) > 0):
             for index, viz in enumerate(visualizations):
-                if(viz['type'] and viz['type'] == 'chart'):
+                if (viz['type'] and viz['type'] == 'chart'):
                     visualizations[index] = populate_viz(viz, profile)
-            
+
         all_content.append({
             'category': name,
             'content': content,
             'visualizations': visualizations
         })
-
-
 
     sorted_content = sorted(
         all_content, key=lambda c: sort_order[c['category']])

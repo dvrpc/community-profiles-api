@@ -1,8 +1,13 @@
-{% macro display_variable(num, label, geo, moe=None) %}
-    <div>
-        <span style="font-size: 1.5rem">{{ num | format_number}}</span>
-        <br/>
-        <span style="font-weight: 700">{{label}}</span><br/>
-        <span>{{geo}}</span>
-    </div>
+{% macro display_variable(num, label, geo=None, moe=None) %}
+        <div style="font-size: 0.8rem;">
+            <span style="font-size: 1.5rem">{{ num | format_number}}</span>
+            {% if moe %}
+                <span style="color: #767676">&nbsp;&plusmn;&nbsp;{{ moe | format_number}}</span>
+            {% endif %}
+            <br/>
+            <span style="font-weight: 700">{{label}}</span><br/>
+            {% if geo %}
+                <span>{{geo}}</span>
+            {% endif %}
+        </div>
 {% endmacro %}
