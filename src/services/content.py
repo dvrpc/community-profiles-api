@@ -1,8 +1,7 @@
 import mistune
-import json
 import logging
 
-from repository.content_repository import get_download_urls, get_files
+from repository.github_repository import get_download_urls, get_md_files
 from jinja.template import env
 
 log = logging.getLogger(__name__)
@@ -20,54 +19,23 @@ sort_order = {
 
 
 def populate_template(md, profile):
-
     html_conversion = mistune.html(md)
-    print(html_conversion)
     template = env.from_string(html_conversion)
     rendered_html = template.render(profile)
     return rendered_html
 
 
-def populate_viz(viz, profile):
-    values = viz['schema']['data']['values']
-    target_field = viz['target_field']
-
-    try:
-        for index, val in enumerate(values):
-            values[index][target_field] = profile[val[target_field]]
-    except Exception as e:
-        log.error(f"Exception occured populating viz: {e}")
-
-    viz['schema']['data']['values'] = values
-    return viz
-
-
 async def build_content(geo_level, profile):
-    md_download_urls = get_download_urls(geo_level, "md")
-    viz_download_urls = get_download_urls(geo_level, "viz")
+    md_download_urls = await get_download_urls(geo_level, 'md')
 
     all_content = []
+    files = await get_md_files(md_download_urls)
 
-    files = await get_files(md_download_urls + viz_download_urls)
-
-    num_categories = len(sort_order)
-    for i in range(num_categories):
-        md = files[i]
-        viz = files[i + num_categories]
-
-        name = md['name']
-        visualizations = json.loads(viz['file'])
+    for md in files:
         content = populate_template(md['file'], profile)
-
-        if (len(visualizations) > 0):
-            for index, viz in enumerate(visualizations):
-                if (viz['type'] and viz['type'] == 'chart'):
-                    visualizations[index] = populate_viz(viz, profile)
-
         all_content.append({
-            'category': name,
+            'category': md['name'],
             'content': content,
-            'visualizations': visualizations
         })
 
     sorted_content = sorted(

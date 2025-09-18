@@ -1,7 +1,8 @@
+from fastapi_cache.decorator import cache
 from db.database import db
 import logging
 import psycopg
-
+import asyncio
 log = logging.getLogger(__name__)
 
 
@@ -24,7 +25,8 @@ def fetch_profile(query):
     return response
 
 
-def fetch_county(geoid):
+@cache(expire=60)
+async def fetch_county(geoid):
     log.info(f'Fetching county profile: {geoid}')
     query = f"SELECT * FROM county WHERE geoid = '{geoid}'"
     profile = fetch_profile(query)
@@ -32,7 +34,8 @@ def fetch_county(geoid):
     return profile
 
 
-def fetch_municipality(geoid):
+@cache(expire=60)
+async def fetch_municipality(geoid):
     log.info(f'Fetching municipality profile: {geoid}')
     query = f"SELECT * FROM municipality WHERE geoid = '{geoid}'"
     profile = fetch_profile(query)

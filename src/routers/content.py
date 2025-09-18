@@ -19,13 +19,13 @@ templates = Jinja2Templates(directory="content")
 
 @router.get("/municipality/{geoid}")
 async def get_municipality(geoid: str):
-    profile = fetch_municipality(geoid)
+    profile = await fetch_municipality(geoid)
     content = await build_content('municipality', profile)
     return content
 
 
 @router.get("/county/{geoid}")
 async def get_county(geoid: str):
-    profile = fetch_county(geoid)
+    profile = await fetch_county(geoid)
     content = await build_content('county', profile)
     return content
