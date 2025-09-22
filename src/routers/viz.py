@@ -9,9 +9,9 @@ router = APIRouter(
 
 
 @router.get("/county")
-async def get_county_visualizations(geoid: str, category: str):
+async def get_county_visualizations(geoid: str, category: str, subcategory: str, topic: str):
     profile = await fetch_county(geoid)
-    viz = await build_visualizations('county', profile, category)
+    viz = await build_visualizations('county', profile, category, subcategory, topic)
     return viz
 
 

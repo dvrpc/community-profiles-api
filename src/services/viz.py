@@ -1,5 +1,5 @@
 import logging
-from repository.github_repository import get_download_urls, get_file
+from repository.github_repository import get_viz_download_url, get_file
 
 log = logging.getLogger(__name__)
 
@@ -18,11 +18,10 @@ def populate_viz(viz, profile):
     return viz
 
 
-async def build_visualizations(geo_level, profile, category):
-    viz_download_urls = await get_download_urls(geo_level, 'viz')
+async def build_visualizations(geo_level, profile, category, subcategory, topic):
+    viz_download_url = await get_viz_download_url(geo_level, category, subcategory, topic)
 
-    url = next(f['url'] for f in viz_download_urls if category == f['name'])
-    visualizations = get_file(url)
+    visualizations = get_file(viz_download_url)
 
     if (len(visualizations) > 0):
         for index, viz in enumerate(visualizations):
