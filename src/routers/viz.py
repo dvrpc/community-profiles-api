@@ -16,7 +16,7 @@ async def get_county_visualizations(geoid: str, category: str, subcategory: str,
 
 
 @router.get("/municipality")
-async def get_municipality_visualizations(geoid: str, category: str):
+async def get_municipality_visualizations(geoid: str, category: str, subcategory: str, topic: str):
     profile = await fetch_municipality(geoid)
-    viz = await build_visualizations('municipality', profile, category)
+    viz = await build_visualizations('municipality', profile, category, subcategory, topic)
     return viz
