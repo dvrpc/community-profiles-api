@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from repository.profile_repository import fetch_county, fetch_municipality
+from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
 from services.content import build_content
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -28,4 +28,11 @@ async def get_municipality(geoid: str):
 async def get_county(geoid: str):
     profile = await fetch_county(geoid)
     content = await build_content('county', profile)
+    return content
+
+
+@router.get("/region")
+async def get_region():
+    profile = await fetch_region()
+    content = await build_content('region', profile)
     return content

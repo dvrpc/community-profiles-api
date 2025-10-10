@@ -41,3 +41,11 @@ async def fetch_municipality(geoid):
     profile = fetch_profile(query)
     log.info(f'Succesfully retrieved municipality profile: {geoid}')
     return profile
+
+@cache(expire=60)
+async def fetch_region():
+    log.info(f'Fetching regional profile')
+    query = "SELECT * FROM region"
+    profile = fetch_profile(query)
+    log.info(f'Succesfully retrieved regional profile')
+    return profile
