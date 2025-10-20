@@ -1,5 +1,5 @@
 import logging
-from repository.github_repository import get_viz_download_url, get_file
+from repository.profile_repository import fetch_visualizations
 
 log = logging.getLogger(__name__)
 
@@ -19,12 +19,11 @@ def populate_viz(viz, profile):
 
 
 async def build_visualizations(geo_level, profile, category, subcategory, topic):
-    viz_download_url = await get_viz_download_url(geo_level, category, subcategory, topic)
-
-    visualizations = get_file(viz_download_url)
+    visualizations = await fetch_visualizations(geo_level, category, subcategory, topic)
 
     if (len(visualizations) > 0):
         for index, viz in enumerate(visualizations):
+            print(viz)
             if (viz['type'] and viz['type'] == 'chart'):
                 visualizations[index] = populate_viz(viz, profile)
 

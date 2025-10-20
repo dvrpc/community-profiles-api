@@ -2,7 +2,7 @@ import mistune
 import copy
 import logging
 
-from repository.github_repository import get_md_download_urls, get_md_files
+from repository.profile_repository import fetch_content
 from jinja.template import env
 from utils.consts import subcategory_map
 
@@ -39,15 +39,24 @@ def populate_template(md, profile):
 
 
 async def build_content(geo_level, profile):
-    md_download_urls = await get_md_download_urls(geo_level)
-    files = await get_md_files(md_download_urls)
-
+    all_content = await fetch_content(geo_level)
+    # md_download_urls = await get_md_download_urls(geo_level)
+    # files = await get_md_files(md_download_urls)
+    print(all_content)
     content_map = copy.deepcopy(subcategory_map)
-    for md in files:
-        content = populate_template(md['file'], profile)
-        content_map[md['category']][md['subcategory']].append({
-            'name': md['name'],
-            'content': content
+    
+    for content in all_content:
+        print(content)
+        populated_content = populate_template(content['file'], profile)
+        content_map[content['category']][content['subcategory']].append({
+            'name': content['name'],
+            'content': populated_content
         })
+    # for md in files:
+    #     content = populate_template(md['file'], profile)
+    #     content_map[md['category']][md['subcategory']].append({
+    #         'name': md['name'],
+    #         'content': content
+    #     })
 
     return content_map
