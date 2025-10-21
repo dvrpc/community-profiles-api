@@ -1,8 +1,9 @@
 import mistune
 import copy
 import logging
+import json
 
-from repository.profile_repository import fetch_content
+from repository.profile_repository import fetch_content, fetch_template_tree
 from jinja.template import env
 from utils.consts import subcategory_map
 
@@ -60,3 +61,16 @@ async def build_content(geo_level, profile):
     #     })
 
     return content_map
+
+async def build_template_tree(geo_level):
+    response = await fetch_template_tree(geo_level)
+    nested_dict = {}
+
+    for item in response:
+        cat = item["category"]
+        subcat = item["subcategory"]
+        name = item["name"]
+        
+        nested_dict.setdefault(cat, {}).setdefault(subcat, []).append(name)
+
+    return nested_dict
