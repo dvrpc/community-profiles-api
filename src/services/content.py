@@ -3,7 +3,7 @@ import copy
 import logging
 import json
 
-from repository.profile_repository import fetch_content, fetch_template_tree
+from repository.profile_repository import fetch_content, fetch_template_tree, fetch_single_content
 from jinja.template import env
 from utils.consts import subcategory_map
 
@@ -74,3 +74,8 @@ async def build_template_tree(geo_level):
         nested_dict.setdefault(cat, {}).setdefault(subcat, []).append(name)
 
     return nested_dict
+
+async def build_single_content(template: str, profile, category: str, subcategory: str, topic: str):
+    # file = await fetch_single_content(category, subcategory, topic)
+    populated_content = populate_template(template, profile)
+    return populated_content

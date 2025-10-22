@@ -122,3 +122,10 @@ async def fetch_template_tree(geo_level: str):
     query = f"select category, subcategory, name from content where geo_level = '{geo_level}'"
     response = fetch_many(query)
     return response
+
+async def fetch_single_content(category: str, subcategory: str, topic: str):
+    log.info(f'Fetching  {category}/{subcategory}/{topic} content ...')
+    query = f"select file from content where category = '{category}' and subcategory = '{subcategory}' and name = '{topic}'"
+    response = fetch_one(query)
+    log.info(f'Succesfully fetched /{category}/{subcategory}/{topic} content')
+    return response['file']
