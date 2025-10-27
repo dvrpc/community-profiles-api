@@ -1,9 +1,8 @@
-from fastapi import APIRouter
-from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
-from services.content import build_content
+from fastapi import APIRouter, Body
+from repository.profile_repository import fetch_content_template, fetch_county, fetch_municipality, fetch_region
+from services.content import build_content, build_single_content, build_template_tree
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 router = APIRouter(
     prefix="/content",
@@ -14,7 +13,6 @@ router = APIRouter(
 #     profile = build_tract_profile(geoid)
 #     return profile
 
-templates = Jinja2Templates(directory="content")
 
 
 @router.get("/municipality/{geoid}")
@@ -36,3 +34,20 @@ async def get_region():
     profile = await fetch_region()
     content = await build_content('region', profile)
     return content
+
+@router.post('/preview')
+async def get_content_template(category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain")):
+    profile = await fetch_region()
+
+    template = await build_single_content(body, profile,category, subcategory, topic)
+    return template
+
+@router.get('/template/{geo_level}')
+async def get_content_template(geo_level: str, category: str, subcategory: str, topic: str):
+    template = await fetch_content_template(geo_level, category, subcategory, topic)
+    return template
+
+@router.get('/template/tree/{geo_level}')
+async def get_template_tree(geo_level: str):
+    tree = await build_template_tree(geo_level)
+    return tree
