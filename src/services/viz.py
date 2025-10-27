@@ -23,7 +23,6 @@ async def build_visualizations(geo_level, profile, category, subcategory, topic)
 
     if (len(visualizations) > 0):
         for index, viz in enumerate(visualizations):
-            print(viz)
             if (viz['type'] and viz['type'] == 'chart'):
                 visualizations[index] = populate_viz(viz, profile)
 

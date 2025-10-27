@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region, fetch_viz_template
 from services.viz import build_visualizations
-from fastapi_cache.decorator import cache
 
 router = APIRouter(
     prefix="/viz",

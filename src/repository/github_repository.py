@@ -16,9 +16,6 @@ headers = {
 }
 base_contents_url = "https://api.github.com/repos/dvrpc/community-profiles-content/contents"
 
-# https://raw.githubusercontent.com/{owner}/{repo}/{branch}/README.md
-
-
 async def get_viz_download_url(geo_level, category, subcategory, topic):
     url = f"{base_contents_url}/{geo_level}/viz/{category}/{subcategory}/{topic}.json"
     try:

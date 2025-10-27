@@ -1,3 +1,7 @@
+"""
+This is a one time script that builds the content and viz db tables from the github content rep
+It requires a Github PAT with read access to the content repository
+"""
 
 import psycopg
 import requests
@@ -11,7 +15,6 @@ import pandas as pd
 from sqlalchemy import create_engine
 from datetime import datetime
 
-# from utils.consts import subcategory_map
 
 log = logging.getLogger(__name__)
 
@@ -40,8 +43,6 @@ password = os.getenv("DB_PASS")
 port = os.getenv("DB_PORT")
 
 uri = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-print(uri)
-# establish connection with the database
 engine = create_engine(uri)
 
 async def get_viz_download_url(geo_level, category, subcategory, topic):
@@ -130,17 +131,6 @@ async def get_file(session, url):
         log.error(f'Connection error: {e}')
 
 
-# def get_file(url):
-#     try:
-#         r = requests.get(url)
-#         r.raise_for_status()
-
-#     except requests.exceptions.HTTPError as e:
-#         log.error(
-#             f"Error fetching {url}: \n{e}")
-
-#     return r.json()
-
 async def save_content(geo_level):
     all_urls = []
     for geo_level in ['region', 'county', 'municipality']:
@@ -152,7 +142,7 @@ async def save_content(geo_level):
     
     current_local_time = datetime.now()
     df['create_date'] = current_local_time
-    df.to_sql('content', con=engine, if_exists='replace',index=False)
+    df.to_sql('content', con=engine, if_exists='replace', index=False)
     
 async def save_visualizations(geo_level):
     all_urls = []
@@ -167,19 +157,7 @@ async def save_visualizations(geo_level):
     
     current_local_time = datetime.now()
     df['create_date'] = current_local_time
-    df.to_sql('visualizations', con=engine, if_exists='replace',index=False)
+    df.to_sql('visualizations', con=engine, if_exists='replace', index=False)
     
 asyncio.run(save_content('county'))
 asyncio.run(save_visualizations('county'))
-
-
-
-
-# content_map = copy.deepcopy(subcategory_map)
-# for md in files:
-#     content_map[md['category']][md['subcategory']].append({
-#         'name': md['name'],
-#         'content': content
-#     })
-
-# return content_map

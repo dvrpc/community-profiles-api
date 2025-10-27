@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
-from fastapi_cache.decorator import cache
 
 router = APIRouter(
     prefix="/profile",
