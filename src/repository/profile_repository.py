@@ -163,3 +163,16 @@ async def create_content_history(dict):
 
     log.info(f"Inserting row into content_history...")
     return execute_update(query, values)
+
+async def fetch_content_history(category, subcategory, topic, geo_level):
+    log.info(f"Fetching {category}/{subcategory}/{topic}/{geo_level} content history...")
+    query = """
+        SELECT *
+        FROM content_history
+        WHERE category = %s
+          AND subcategory = %s
+          AND name = %s
+          AND geo_level = %s
+        ORDER BY create_date DESC
+    """
+    return fetch_many(query, (category, subcategory, topic, geo_level))

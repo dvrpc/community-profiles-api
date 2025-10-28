@@ -66,7 +66,7 @@ async def build_template_tree(geo_level):
 
     return nested_dict
 
-async def build_single_content(template: str, profile, category: str, subcategory: str, topic: str):
+async def build_single_content(template: str, profile):
     populated_content = populate_template(template, profile)
     return populated_content
 
@@ -76,6 +76,7 @@ async def update_content(category: str, subcategory: str, topic: str, geo_level,
     if(current_content):
       await update_single_content(category, subcategory, topic, geo_level, body)
       await create_content_history(current_content)
+      return {"message": "Content updated succesfully"}
     else:
         # create
         pass
