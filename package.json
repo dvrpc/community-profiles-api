@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jsoneditor": "^9.10.5",
+    "jsoneditor-react": "^3.1.2"
+  }
+}
