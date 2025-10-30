@@ -15,7 +15,6 @@ async def fetch_content(geo_level):
         FROM content
         WHERE geo_level = %s
     """
-    print(geo_level)
     return fetch_many(query, (geo_level,))
 
 

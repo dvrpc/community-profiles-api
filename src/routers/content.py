@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException, status
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
 from repository.content_repository import fetch_content_history, fetch_single_content, fetch_content_template
 from services.content import build_content, build_single_content, update_content, build_template_tree
@@ -36,13 +36,18 @@ async def get_content_template(geo_level: str, category: str, subcategory: str, 
 
 
 @router.post('/preview/{geo_level}')
-async def get_content_preview(geo_level: str, body: str = Body(..., media_type="text/plain")):
+async def get_content_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain")):
     if (geo_level == 'region'):
         profile = await fetch_region()
-    elif (geo_level == 'county'):
-        profile = await fetch_county("42101")
     else:
-        profile = await fetch_municipality("4201704976")
+        if not geoid:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="No geoid provided")
+
+        if (geo_level == 'county'):
+            profile = await fetch_county(geoid)
+        else:
+            profile = await fetch_municipality(geoid)
 
     template = await build_single_content(body, profile)
     return template

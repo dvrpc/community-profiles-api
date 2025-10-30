@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException, status
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
 from repository.viz_repository import fetch_viz_template, fetch_visualizations, fetch_visualization_history
 from services.viz import build_visualizations, update_visualization
@@ -39,20 +39,19 @@ async def get_viz_template(geo_level: str, category: str, subcategory: str, topi
     return template
 
 
-@router.get('/template/{geo_level}')
-async def get_content_template(geo_level: str, category: str, subcategory: str, topic: str):
-    template = await fetch_viz_template(geo_level, category, subcategory, topic)
-    return template
-
-
 @router.post('/preview/{geo_level}')
-async def get_visualization_preview(geo_level: str, body: str = Body(..., media_type="text/plain")):
+async def get_visualization_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain")):
     if (geo_level == 'region'):
         profile = await fetch_region()
-    elif (geo_level == 'county'):
-        profile = await fetch_county("42101")
     else:
-        profile = await fetch_municipality("4201704976")
+        if not geoid:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="No geoid provided")
+
+        if (geo_level == 'county'):
+            profile = await fetch_county(geoid)
+        else:
+            profile = await fetch_municipality(geoid)
 
     parsed_body = json.loads(body)
     template = await build_visualizations(parsed_body, profile)
@@ -62,6 +61,7 @@ async def get_visualization_preview(geo_level: str, body: str = Body(..., media_
 @router.put('/{geo_level}')
 async def create_visualizations(geo_level: str, category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain")):
     res = await update_visualization(category, subcategory, topic, geo_level, body)
+    print(res)
     return res
 
 

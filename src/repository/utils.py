@@ -7,8 +7,6 @@ log = logging.getLogger(__name__)
 
 def execute_update(query, params=None):
     """Execute an INSERT, UPDATE, or DELETE statement."""
-    print(query)
-    print(params)
     try:
         with db.conn.cursor() as cur:
             cur.execute(query, params)
@@ -40,8 +38,6 @@ def fetch_many(query, params=None):
     """Fetch multiple rows as a list of dicts."""
     try:
         with db.conn.cursor() as cur:
-            print(query)
-            print(params)
             cur.execute(query, params)
             rows = cur.fetchall()
             columns = [desc[0] for desc in cur.description]
