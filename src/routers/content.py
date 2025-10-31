@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, HTTPException, status
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
-from repository.content_repository import fetch_content_history, fetch_single_content, fetch_content_template
+from repository.content_repository import fetch_single_content, fetch_content_template
+from repository.content_history_repository import fetch_content_history
 from services.content import build_content, build_single_content, update_content, build_template_tree
 
 router = APIRouter(

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, HTTPException, status
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
-from repository.viz_repository import fetch_viz_template, fetch_visualizations, fetch_visualization_history
+from repository.viz_repository import fetch_viz_template, fetch_visualizations
+from repository.viz_history_repository import fetch_visualization_history
 from services.viz import build_visualizations, update_visualization
 import json
 
@@ -61,7 +62,6 @@ async def get_visualization_preview(geo_level: str, geoid: str = None, body: str
 @router.put('/{geo_level}')
 async def create_visualizations(geo_level: str, category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain")):
     res = await update_visualization(category, subcategory, topic, geo_level, body)
-    print(res)
     return res
 
 
