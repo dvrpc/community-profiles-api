@@ -1,5 +1,3 @@
-from typing import cast
-from fastapi import Request
 from dotenv import load_dotenv
 
 import os
