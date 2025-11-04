@@ -6,22 +6,22 @@ from repository.utils import fetch_one, fetch_many, execute_update
 
 log = logging.getLogger(__name__)
 
-async def create_visualization_history(dict):
+async def create_viz_history(dict):
     columns = ', '.join(dict.keys())
     placeholders = ', '.join(['%s'] * len(dict))
     dict['file'] = json.dumps(dict['file'])
     values = tuple(dict.values())
-    query = f"INSERT INTO visualizations_history ({columns}) VALUES ({placeholders})"
-    log.info(f"Inserting row into visualization_history...")
+    query = f"INSERT INTO viz_history ({columns}) VALUES ({placeholders})"
+    log.info(f"Inserting row into viz_history...")
     return execute_update(query, values)
 
 
-async def fetch_visualization_history(category, subcategory, topic, geo_level):
+async def fetch_viz_history(category, subcategory, topic, geo_level):
     log.info(
         f"Fetching {category}/{subcategory}/{topic}/{geo_level} viz history...")
     query = """
         SELECT *
-        FROM visualizations_history
+        FROM viz_history
         WHERE category = %s
           AND subcategory = %s
           AND name = %s
@@ -34,7 +34,7 @@ async def fetch_visualization_history(category, subcategory, topic, geo_level):
     return result
 
 async def delete_viz_history(id):
-    log.info(f"Deleting visualizations_history id {id}")
-    query = "DELETE FROM visualizations_history WHERE id = %s"
+    log.info(f"Deleting viz_history id {id}")
+    query = "DELETE FROM viz_history WHERE id = %s"
     return execute_update(query, (id,))
     

@@ -1,6 +1,6 @@
 import logging
-from repository.viz_repository import fetch_visualizations, update_single_visualization
-from repository.viz_history_repository import create_visualization_history, delete_viz_history, fetch_visualization_history
+from repository.viz_repository import fetch_viz, update_single_viz
+from repository.viz_history_repository import create_viz_history, delete_viz_history, fetch_viz_history
 
 log = logging.getLogger(__name__)
 
@@ -19,28 +19,28 @@ def populate_viz(viz, profile):
     return viz
 
 
-async def build_visualizations(visualizations, profile):
-    if (len(visualizations) > 0):
-        for index, viz in enumerate(visualizations):
+async def build_viz(viz, profile):
+    if (len(viz) > 0):
+        for index, viz in enumerate(viz):
             if (viz['type'] and viz['type'] == 'chart'):
-                visualizations[index] = populate_viz(viz, profile)
+                viz[index] = populate_viz(viz, profile)
 
-    return visualizations
+    return viz
 
 
-async def update_visualization(category: str, subcategory: str, topic: str, geo_level, body: str):
-    current_visualizations = await fetch_visualizations(geo_level, category, subcategory, topic, all_info=True)
+async def update_viz(category: str, subcategory: str, topic: str, geo_level, body: str):
+    current_viz = await fetch_viz(geo_level, category, subcategory, topic, all_info=True)
 
-    if (current_visualizations):
-        await update_single_visualization(category, subcategory, topic, geo_level, body)
+    if (current_viz):
+        await update_single_viz(category, subcategory, topic, geo_level, body)
         
-        history = await fetch_visualization_history(category, subcategory, topic, geo_level)
+        history = await fetch_viz_history(category, subcategory, topic, geo_level)
 
         if(len(history) > 20):
             await delete_viz_history(history[-1]['id'])
             
-        await create_visualization_history(current_visualizations)
-        return {"message": "Visualizations updated succesfully"}
+        await create_viz_history(current_viz)
+        return {"message": "viz updated succesfully"}
     else:
         # create
         pass

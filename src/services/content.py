@@ -4,6 +4,7 @@ import logging
 
 from repository.content_repository import fetch_content, fetch_single_content, update_single_content, fetch_template_tree
 from repository.content_history_repository import create_content_history, delete_content_history, fetch_content_history
+from services.revalidate import revalidate_frontend
 from jinja.template import env
 from utils.consts import subcategory_map
 
@@ -71,6 +72,7 @@ async def update_content(category: str, subcategory: str, topic: str, geo_level,
             await delete_content_history(history[-1]['id'])
             
         await create_content_history(current_content)
+        revalidate_frontend(geo_level)
         return {"message": "Content updated succesfully"}
     else:
         # create
