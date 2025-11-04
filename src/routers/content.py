@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Body, HTTPException, status
+from fastapi import APIRouter, Body, HTTPException, status, Depends
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
 from repository.content_repository import fetch_single_content, fetch_content_template
 from repository.content_history_repository import fetch_content_history
 from services.content import build_content, build_single_content, update_content, build_template_tree
+from services.auth import require_admin
 
 router = APIRouter(
     prefix="/content",
 )
-
 
 @router.get("/municipality/{geoid}")
 async def get_municipality(geoid: str):
@@ -55,7 +55,7 @@ async def get_content_preview(geo_level: str, geoid: str = None, body: str = Bod
 
 
 @router.put('/{geo_level}')
-async def create_content(geo_level: str, category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain")):
+async def create_content(geo_level: str, category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     res = await update_content(category, subcategory, topic, geo_level, body)
     return res
 
