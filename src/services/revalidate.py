@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 REVALIDATE_SECRET = os.getenv("REVALIDATE_SECRET")
-FRONTEND_REVALIDATE_URL = os.getenv("FRONTEND_REVALIDATE_URL")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ def revalidate_frontend(geo_level: str):
     headers = {"Authorization": f"Bearer {REVALIDATE_SECRET}"}
 
     try:
-        r = requests.post(FRONTEND_REVALIDATE_URL,
+        r = requests.post(f"{FRONTEND_URL}/api/revalidate",
                           headers=headers, json=payload, timeout=10)
         r.raise_for_status()
         log.info("Revalidated:", r.json())
