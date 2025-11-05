@@ -10,11 +10,17 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 
 from redis import asyncio as aioredis
+import logging
 
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "https://cloud.dvrpc.org/community-profiles",
+
 ]
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 @asynccontextmanager

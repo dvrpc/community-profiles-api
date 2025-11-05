@@ -22,9 +22,3 @@ async def get_county(geoid: str):
 async def get_region():
     profile = await fetch_region()
     return profile
-
-
-@router.get('/template/tree/{geo_level}')
-async def get_template_tree(geo_level: str):
-    tree = await build_template_tree(geo_level)
-    return tree

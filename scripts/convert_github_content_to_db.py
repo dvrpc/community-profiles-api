@@ -144,7 +144,7 @@ async def save_content(geo_level):
     df['create_date'] = current_local_time
     df.to_sql('content', con=engine, if_exists='replace', index=False)
     
-async def save_visualizations(geo_level):
+async def save_viz(geo_level):
     all_urls = []
 
     for geo_level in ['region', 'county', 'municipality']:
@@ -157,7 +157,7 @@ async def save_visualizations(geo_level):
     
     current_local_time = datetime.now()
     df['create_date'] = current_local_time
-    df.to_sql('visualizations', con=engine, if_exists='replace', index=False)
+    df.to_sql('viz', con=engine, if_exists='replace', index=False)
     
 asyncio.run(save_content('county'))
-asyncio.run(save_visualizations('county'))
+asyncio.run(save_viz('county'))

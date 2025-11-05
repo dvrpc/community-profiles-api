@@ -7,12 +7,12 @@ from repository.utils import fetch_one, fetch_many, execute_update
 log = logging.getLogger(__name__)
 
 
-async def fetch_visualizations(geo_level, category, subcategory, topic, all_info=False):
+async def fetch_viz(geo_level, category, subcategory, topic, all_info=False):
     log.info(
-        f"Fetching {geo_level}/{category}/{subcategory}/{topic} visualizations...")
+        f"Fetching {geo_level}/{category}/{subcategory}/{topic} viz...")
     query = """
         SELECT *
-        FROM visualizations
+        FROM viz
         WHERE geo_level = %s
           AND category = %s
           AND subcategory = %s
@@ -33,7 +33,7 @@ async def fetch_viz_template(geo_level, category, subcategory, topic):
         f"Fetching {geo_level}/{category}/{subcategory}/{topic} viz template...")
     query = """
         SELECT file
-        FROM visualizations
+        FROM viz
         WHERE geo_level = %s
           AND category = %s
           AND subcategory = %s
@@ -43,15 +43,13 @@ async def fetch_viz_template(geo_level, category, subcategory, topic):
     return json.loads(result["file"]) if result else None
 
 
-async def update_single_visualization(category, subcategory, topic, geo_level, body):
+async def update_single_viz(category, subcategory, topic, geo_level, body):
     now = datetime.now()
     log.info(
         f"Updating viz for {category}/{subcategory}/{topic}/{geo_level}")
     query = """
-        UPDATE visualizations
+        UPDATE viz
         SET file = %s, create_date = %s
         WHERE category = %s AND subcategory = %s AND name = %s AND geo_level = %s
     """
     return execute_update(query, (body, now, category, subcategory, topic, geo_level))
-
-
