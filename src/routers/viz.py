@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Body, HTTPException, status
+from fastapi import APIRouter, Body, HTTPException, status, Depends
 from repository.profile_repository import fetch_county, fetch_municipality, fetch_region
 from repository.viz_repository import fetch_viz_template, fetch_viz
 from repository.viz_history_repository import fetch_viz_history
 from services.viz import build_viz, update_viz
+from services.auth import require_admin
 import json
+
 
 router = APIRouter(
     prefix="/viz",
@@ -56,13 +58,14 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 
     parsed_body = json.loads(body)
     template = await build_viz(parsed_body, profile)
+
     return template
 
 
 @router.put('/{geo_level}')
-async def create_viz(geo_level: str, category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain")):
+async def create_viz(geo_level: str, category: str, subcategory: str, topic: str, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     res = await update_viz(category, subcategory, topic, geo_level, body)
-    
+
     return res
 
 

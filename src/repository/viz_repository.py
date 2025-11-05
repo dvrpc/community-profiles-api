@@ -53,5 +53,3 @@ async def update_single_viz(category, subcategory, topic, geo_level, body):
         WHERE category = %s AND subcategory = %s AND name = %s AND geo_level = %s
     """
     return execute_update(query, (body, now, category, subcategory, topic, geo_level))
-
-

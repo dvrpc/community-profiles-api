@@ -9,6 +9,7 @@ router = APIRouter(
     prefix="/content",
 )
 
+
 @router.get("/municipality/{geoid}")
 async def get_municipality(geoid: str):
     profile = await fetch_municipality(geoid)

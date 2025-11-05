@@ -20,12 +20,18 @@ def populate_viz(viz, profile):
 
 
 async def build_viz(viz, profile):
+    """
+    Populates visualizations with db variables. There can be more than one viz in a viz object
+    """
+    populated_viz = []
     if (len(viz) > 0):
-        for index, viz in enumerate(viz):
-            if (viz['type'] and viz['type'] == 'chart'):
-                viz[index] = populate_viz(viz, profile)
+        for v in viz:
+            if (v['type'] and v['type'] == 'chart'):
+                populated_viz.append(populate_viz(v, profile))
+            else:
+                populated_viz.append(v)
 
-    return viz
+    return populated_viz
 
 
 async def update_viz(category: str, subcategory: str, topic: str, geo_level, body: str):
@@ -33,12 +39,12 @@ async def update_viz(category: str, subcategory: str, topic: str, geo_level, bod
 
     if (current_viz):
         await update_single_viz(category, subcategory, topic, geo_level, body)
-        
+
         history = await fetch_viz_history(category, subcategory, topic, geo_level)
 
-        if(len(history) > 20):
+        if (len(history) > 20):
             await delete_viz_history(history[-1]['id'])
-            
+
         await create_viz_history(current_viz)
         return {"message": "viz updated succesfully"}
     else:
