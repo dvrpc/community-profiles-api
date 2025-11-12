@@ -2,8 +2,9 @@ import mistune
 import copy
 import logging
 
-from repository.content_repository import fetch_content, fetch_single_content, update_single_content, fetch_template_tree
-from repository.content_history_repository import create_content_history, delete_content_history, fetch_content_history
+
+import repository.content_repository as content_repo
+import repository.content_history_repository as content_history_repo
 from services.revalidate import revalidate_frontend
 from jinja.template import env
 from utils.consts import subcategory_map
@@ -42,7 +43,7 @@ def populate_template(md, profile):
 
 
 async def build_content(geo_level, profile):
-    all_content = await fetch_content(geo_level)
+    all_content = await content_repo.find_by_geo(geo_level)
     content_map = copy.deepcopy(subcategory_map)
 
     for content in all_content:
@@ -61,17 +62,17 @@ async def build_single_content(template: str, profile):
 
 
 async def update_content(category: str, subcategory: str, topic: str, geo_level, body: str):
-    current_content = await fetch_single_content(category, subcategory, topic, geo_level)
+    current_content = await content_repo.find_one(category, subcategory, topic, geo_level)
 
     if (current_content):
-        await update_single_content(category, subcategory, topic, geo_level, body)
+        await content_repo.update(category, subcategory, topic, geo_level, body)
         
-        history = await fetch_content_history(category, subcategory, topic, geo_level)
+        history = await content_history_repo.find_by_filters(category, subcategory, topic, geo_level)
 
         if(len(history) > 20):
-            await delete_content_history(history[-1]['id'])
+            await content_history_repo.delete(history[-1]['id'])
             
-        await create_content_history(current_content)
+        await content_history_repo.create(current_content)
         revalidate_frontend(geo_level)
         return {"message": "Content updated succesfully"}
     else:
@@ -80,7 +81,7 @@ async def update_content(category: str, subcategory: str, topic: str, geo_level,
 
 
 async def build_template_tree(geo_level):
-    response = await fetch_template_tree(geo_level)
+    response = await content_repo.find_tree(geo_level)
     nested_dict = {}
 
     for item in response:

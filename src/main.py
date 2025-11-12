@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import profile, content, viz
+from routers import profile, content, viz, source
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,6 +33,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(profile.router)
 app.include_router(content.router)
 app.include_router(viz.router)
+app.include_router(source.router)
 
 app.add_middleware(
     CORSMiddleware,

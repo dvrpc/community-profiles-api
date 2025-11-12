@@ -7,7 +7,7 @@ from repository.utils import fetch_one, fetch_many, execute_update
 log = logging.getLogger(__name__)
 
 
-async def fetch_content(geo_level):
+async def find_by_geo(geo_level):
     log.info(f"Fetching {geo_level} content...")
     query = """
         SELECT category, subcategory, name, file
@@ -17,7 +17,7 @@ async def fetch_content(geo_level):
     return fetch_many(query, (geo_level,))
 
 
-async def fetch_content_template(geo_level, category, subcategory, topic):
+async def find_template(geo_level, category, subcategory, topic):
     log.info(
         f"Fetching {geo_level}/{category}/{subcategory}/{topic} content template...")
     query = """
@@ -32,7 +32,7 @@ async def fetch_content_template(geo_level, category, subcategory, topic):
     return result["file"] if result else None
 
 
-async def fetch_single_content(category, subcategory, topic, geo_level):
+async def find_one(category, subcategory, topic, geo_level):
     log.info(f"Fetching {category}/{subcategory}/{topic} content...")
     query = """
         SELECT *
@@ -45,7 +45,7 @@ async def fetch_single_content(category, subcategory, topic, geo_level):
     return fetch_one(query, (category, subcategory, topic, geo_level))
 
 
-async def update_single_content(category, subcategory, topic, geo_level, body):
+async def update(category, subcategory, topic, geo_level, body):
     now = datetime.now()
     log.info(
         f"Updating content for {category}/{subcategory}/{topic}/{geo_level}")
@@ -56,7 +56,7 @@ async def update_single_content(category, subcategory, topic, geo_level, body):
     """
     return execute_update(query, (body, now, category, subcategory, topic, geo_level))
 
-async def fetch_template_tree(geo_level):
+async def find_tree(geo_level):
     query = "SELECT category, subcategory, name FROM content WHERE geo_level = %s"
     return fetch_many(query, (geo_level,))
 

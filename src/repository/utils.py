@@ -40,8 +40,13 @@ def fetch_many(query, params=None):
         with db.conn.cursor() as cur:
             cur.execute(query, params)
             rows = cur.fetchall()
+            
+            # if not rows:
+            #     return []
+            
             columns = [desc[0] for desc in cur.description]
             return [dict(zip(columns, row)) for row in rows]
     except psycopg.Error as e:
         log.error(f"Database error executing fetch_many:\n{query}\n{e}")
         return []
+

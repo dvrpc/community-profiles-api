@@ -6,7 +6,7 @@ from repository.utils import fetch_one, fetch_many, execute_update
 
 log = logging.getLogger(__name__)
 
-async def create_content_history(dict):
+async def create(dict):
     columns = ', '.join(dict.keys())
     placeholders = ', '.join(['%s'] * len(dict))
     values = tuple(dict.values())
@@ -17,7 +17,7 @@ async def create_content_history(dict):
     return execute_update(query, values)
 
 
-async def fetch_content_history(category, subcategory, topic, geo_level):
+async def find_by_filters(category, subcategory, topic, geo_level):
     log.info(
         f"Fetching {category}/{subcategory}/{topic}/{geo_level} content history...")
     query = """
@@ -31,7 +31,7 @@ async def fetch_content_history(category, subcategory, topic, geo_level):
     """
     return fetch_many(query, (category, subcategory, topic, geo_level))
 
-async def delete_content_history(id):
+async def delete(id):
     log.info(f"Deleting content_history id {id}")
     query = "DELETE FROM content_history WHERE id = %s"
     return execute_update(query, (id,))
