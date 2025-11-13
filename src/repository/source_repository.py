@@ -4,10 +4,12 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 async def find_all_sources():
     log.info(f"Fetching all sources")
-    query = "SELECT * FROM source"
+    query = "SELECT * FROM source;"
     return fetch_many(query)
+
 
 async def create(source: SourceRequest):
     query = """
@@ -17,6 +19,7 @@ async def create(source: SourceRequest):
     """
     return execute_update(query, (source.name, source.year_from, source.year_to, source.citation))
 
+
 async def update(id, source: SourceRequest):
     query = """
         UPDATE source
@@ -25,6 +28,7 @@ async def update(id, source: SourceRequest):
         RETURNING id, name, year_from, year_to, citation;
     """
     return execute_update(query, (source.name, source.year_from, source.year_to, source.citation, id))
+
 
 async def delete(id):
     query = """

@@ -37,17 +37,18 @@ async def build_viz(viz, profile):
     return populated_viz
 
 
-async def update_viz(category: str, subcategory: str, topic: str, geo_level, body: str):
-    current_viz = await viz_repo.find_by_filters(geo_level, category, subcategory, topic, all_info=True)
+async def update_viz(id: int, body: str):
+    current_viz = await viz_repo.fetch_one(id)
 
     if (current_viz):
-        await viz_repo.update(category, subcategory, topic, geo_level, body)
+        await viz_repo.update(id, body)
 
-        history = await viz_history_repo.find_by_filters(category, subcategory, topic, geo_level)
+        history = await viz_history_repo.find_by_parent_id(id)
 
         if (len(history) > 20):
             await viz_history_repo.delete(history[-1]['id'])
 
+        current_viz['parent_id'] = current_viz.pop('id')
         await viz_history_repo.create(current_viz)
         return {"message": "viz updated succesfully"}
     else:

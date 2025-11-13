@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from repository.profile_repository import find_county, find_municipality, find_municipality
+from repository.profile_repository import find_county, find_municipality, find_region
 
 router = APIRouter(
     prefix="/profile",
@@ -20,5 +20,5 @@ async def get_county(geoid: str):
 
 @router.get("/region")
 async def get_region():
-    profile = await find_municipality()
+    profile = await find_region()
     return profile

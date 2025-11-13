@@ -21,7 +21,7 @@ async def find_municipality(geoid):
 
 
 @cache(expire=60)
-async def find_municipality():
+async def find_region():
     log.info("Fetching regional profile")
     query = "SELECT * FROM region"
     return fetch_one(query)

@@ -61,19 +61,20 @@ async def build_single_content(template: str, profile):
     return populated_content
 
 
-async def update_content(category: str, subcategory: str, topic: str, geo_level, body: str):
-    current_content = await content_repo.find_one(category, subcategory, topic, geo_level)
+async def update_content(id: int, body: str):
+    current_content = await content_repo.find_one(id)
 
     if (current_content):
-        await content_repo.update(category, subcategory, topic, geo_level, body)
-        
-        history = await content_history_repo.find_by_filters(category, subcategory, topic, geo_level)
+        await content_repo.update(id, body)
 
-        if(len(history) > 20):
+        history = await content_history_repo.find_by_parent_id(id)
+
+        if (len(history) > 20):
             await content_history_repo.delete(history[-1]['id'])
-            
+
+        current_content['parent_id'] = current_content.pop('id')
         await content_history_repo.create(current_content)
-        revalidate_frontend(geo_level)
+        revalidate_frontend(current_content['geo_level'])
         return {"message": "Content updated succesfully"}
     else:
         # create
@@ -88,7 +89,11 @@ async def build_template_tree(geo_level):
         cat = item["category"]
         subcat = item["subcategory"]
         name = item["name"]
+        id = item["id"]
 
-        nested_dict.setdefault(cat, {}).setdefault(subcat, []).append(name)
+        nested_dict.setdefault(cat, {}).setdefault(subcat, []).append({
+            'id': id,
+            'topic': name,
+        })
 
     return nested_dict

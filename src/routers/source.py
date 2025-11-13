@@ -7,23 +7,26 @@ router = APIRouter(
     prefix="/source",
 )
 
-@router.get("/", response_model=List[Source])
+
+@router.get("", response_model=List[Source])
 async def get_sources():
     sources = await source_repo.find_all_sources()
     return sources
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_source(source: SourceRequest):
     res = await source_repo.create(source)
     return res
-    
-    
+
+
 @router.put("/{id}")
-async def update_source(id : int, source: SourceRequest):
+async def update_source(id: int, source: SourceRequest):
     res = await source_repo.update(id, source)
     return res
 
+
 @router.delete("/{id}")
-async def update_source(id : int):
+async def update_source(id: int):
     res = await source_repo.delete(id)
     return res
