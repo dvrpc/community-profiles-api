@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 async def find_by_geo(geo_level):
     log.info(f"Fetching {geo_level} content...")
     query = """
-        SELECT category, subcategory, name, file
+        SELECT id, category, subcategory, name, file
         FROM content
         WHERE geo_level = %s
     """

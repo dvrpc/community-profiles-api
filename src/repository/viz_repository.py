@@ -20,7 +20,7 @@ async def find_by_geo(geo_level):
 async def find_one(id: int):
     log.info(f"Fetching viz {id}...")
     query = """
-        SELECT *, 
+        SELECT *
         FROM viz
         WHERE id = %s
     """
@@ -32,7 +32,7 @@ async def update(id, body):
     log.info(
         f"Updating viz: {id}")
     query = """
-        UPDATE contvizent
+        UPDATE viz
         SET file = %s, create_date = %s
         WHERE id = %s
     """

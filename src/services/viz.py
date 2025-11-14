@@ -38,8 +38,7 @@ async def build_viz(viz, profile):
 
 
 async def update_viz(id: int, body: str):
-    current_viz = await viz_repo.fetch_one(id)
-
+    current_viz = await viz_repo.find_one(id)
     if (current_viz):
         await viz_repo.update(id, body)
 

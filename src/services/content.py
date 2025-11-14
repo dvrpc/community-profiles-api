@@ -49,6 +49,7 @@ async def build_content(geo_level, profile):
     for content in all_content:
         populated_content = populate_template(content['file'], profile)
         content_map[content['category']][content['subcategory']].append({
+            'id': content['id'],
             'name': content['name'],
             'content': populated_content
         })
@@ -93,7 +94,7 @@ async def build_template_tree(geo_level):
 
         nested_dict.setdefault(cat, {}).setdefault(subcat, []).append({
             'id': id,
-            'topic': name,
+            'name': name,
         })
 
     return nested_dict

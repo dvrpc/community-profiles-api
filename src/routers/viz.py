@@ -19,6 +19,7 @@ router = APIRouter(
 async def get_populated_county_viz(id: int, geoid: str):
     profile = await profile_repo.find_county(geoid)
     viz = await viz_repo.find_one(id)
+    viz = json.loads(viz['file'])
     populated_viz = await viz_service.build_viz(viz, profile)
     return populated_viz
 
@@ -27,6 +28,7 @@ async def get_populated_county_viz(id: int, geoid: str):
 async def get_populated_municipality_viz(id: int, geoid: str):
     profile = await profile_repo.find_municipality(geoid)
     viz = await viz_repo.find_one(id)
+    viz = json.loads(viz['file'])
     populated_viz = await viz_service.build_viz(viz, profile)
     return populated_viz
 
@@ -35,13 +37,14 @@ async def get_populated_municipality_viz(id: int, geoid: str):
 async def get_populated_region_viz(id: int):
     profile = await profile_repo.find_region()
     viz = await viz_repo.find_one(id)
+    viz = json.loads(viz['file'])
     populated_viz = await viz_service.build_viz(viz, profile)
     return populated_viz
 
 
 @router.get('/{id}')
 async def get_viz(id: int):
-    template = await viz_repo.find_one(int)
+    template = await viz_repo.find_one(id)
     return template
 
 
@@ -68,7 +71,6 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 @router.put('/{id}')
 async def update_viz(id: int, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     res = await viz_service.update_viz(id, body)
-
     return res
 
 
