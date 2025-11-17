@@ -12,18 +12,18 @@ async def create(dict):
     placeholders = ', '.join(['%s'] * len(dict))
     values = tuple(dict.values())
 
-    query = f"INSERT INTO content_history ({columns}) VALUES ({placeholders})"
+    query = f"INSERT INTO viz_history ({columns}) VALUES ({placeholders})"
 
-    log.info(f"Inserting row into content_history...")
+    log.info(f"Inserting row into viz_history...")
     return execute_update(query, values)
 
 
 async def find_by_parent_id(parent_id):
     log.info(
-        f"Fetching content history for parent_id {parent_id}...")
+        f"Fetching viz history for parent_id {parent_id}...")
     query = """
         SELECT *
-        FROM content_history
+        FROM viz_history
         WHERE parent_id = %s
         ORDER BY create_date DESC
     """
@@ -31,6 +31,6 @@ async def find_by_parent_id(parent_id):
 
 
 async def delete(id):
-    log.info(f"Deleting content_history id {id}")
-    query = "DELETE FROM content_history WHERE id = %s"
+    log.info(f"Deleting viz_history id {id}")
+    query = "DELETE FROM viz_history WHERE id = %s"
     return execute_update(query, (id,))
