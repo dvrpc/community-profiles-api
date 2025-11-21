@@ -50,7 +50,7 @@ async def build_content(geo_level, profile):
         populated_content = populate_template(content['file'], profile)
         content_map[content['category']][content['subcategory']].append({
             'id': content['id'],
-            'name': content['name'],
+            'name': content['topic'],
             'content': populated_content
         })
 
@@ -84,17 +84,48 @@ async def update_content(id: int, body: str):
 
 async def build_template_tree(geo_level):
     response = await content_repo.find_tree(geo_level)
-    nested_dict = {}
 
-    for item in response:
-        cat = item["category"]
-        subcat = item["subcategory"]
-        name = item["name"]
-        id = item["id"]
+    tree = {}
 
-        nested_dict.setdefault(cat, {}).setdefault(subcat, []).append({
-            'id': id,
-            'name': name,
+    for row in response:
+        category = row["category"]
+        category_id = row["category_id"]
+        category_label = row["category_label"]
+        subcat_id = row["subcategory_id"]
+        subcat_name = row["subcategory"]
+        subcat_label = row["subcategory_label"]
+
+        if category not in tree:
+            tree[category] = []
+
+        if('id' not in tree[category]):
+            tree[category] = {
+                "id": category_id,
+                "label": category_label,
+                "subcategories": []
+            }
+        
+
+        subcat_entry = next(
+            (sc for sc in tree[category]["subcategories"] if sc["id"] == subcat_id), None
+        )
+        
+
+        if not subcat_entry:
+            subcat_entry = {
+                "name": subcat_name,
+                "id": subcat_id,
+                "label": subcat_label,
+                "category_id": category_id,
+                "topics": []
+            }
+            tree[category]["subcategories"].append(subcat_entry)
+
+        subcat_entry["topics"].append({
+            "name": row["topic"],
+            "id": row["topic_id"],
+            "label": row["topic_label"],
+            "content_id": row["id"]
         })
 
-    return nested_dict
+    return tree

@@ -9,6 +9,9 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 log = logging.getLogger(__name__)
 
+def revalidate_all():
+    for geo_level in ['region', 'county', 'municipality']:
+        revalidate_frontend(geo_level)
 
 def revalidate_frontend(geo_level: str):
     payload = {"geoLevel": geo_level}

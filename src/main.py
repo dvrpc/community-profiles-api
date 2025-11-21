@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import profile, content, viz, source
+from routers import profile, content, viz, source, tree
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,6 +34,7 @@ app.include_router(profile.router)
 app.include_router(content.router)
 app.include_router(viz.router)
 app.include_router(source.router)
+app.include_router(tree.router)
 
 app.add_middleware(
     CORSMiddleware,

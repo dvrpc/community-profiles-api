@@ -1,6 +1,7 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends
 from typing import List
 from schemas.source import Source, SourceRequest
+from services.auth import require_admin
 import repository.source_repository as source_repo
 
 router = APIRouter(
@@ -15,18 +16,18 @@ async def get_sources():
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_source(source: SourceRequest):
+async def create_source(source: SourceRequest, admin=Depends(require_admin)):
     res = await source_repo.create(source)
     return res
 
 
 @router.put("/{id}")
-async def update_source(id: int, source: SourceRequest):
+async def update_source(id: int, source: SourceRequest, admin=Depends(require_admin)):
     res = await source_repo.update(id, source)
     return res
 
 
 @router.delete("/{id}")
-async def update_source(id: int):
+async def update_source(id: int, admin=Depends(require_admin)):
     res = await source_repo.delete(id)
     return res

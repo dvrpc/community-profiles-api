@@ -12,6 +12,9 @@ def execute_update(query, params=None):
             cur.execute(query, params)
             db.conn.commit()
             log.info(f"{cur.rowcount} row(s) affected.")
+            row = cur.fetchone()
+            if(row):
+                return row
             return cur.rowcount
     except psycopg.Error as e:
         log.error(f"Database error executing update:\n{query}\n{e}")
