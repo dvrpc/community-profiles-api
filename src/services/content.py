@@ -7,7 +7,6 @@ import repository.content_repository as content_repo
 import repository.content_history_repository as content_history_repo
 from services.revalidate import revalidate_frontend
 from jinja.template import env
-from utils.consts import subcategory_map
 
 log = logging.getLogger(__name__)
 
@@ -44,11 +43,25 @@ def populate_template(md, profile):
 
 async def build_content(geo_level, profile):
     all_content = await content_repo.find_by_geo(geo_level)
-    content_map = copy.deepcopy(subcategory_map)
+    print(all_content)
 
+    content_map = {}
+    
     for content in all_content:
         populated_content = populate_template(content['file'], profile)
-        content_map[content['category']][content['subcategory']].append({
+        
+        category = content['category']
+        subcategory = content['subcategory']
+        
+        if category not in content_map:
+            content_map[category] = {}
+            
+        if subcategory not in content_map[category]:
+            content_map[category][subcategory] = []
+            
+        print(content_map)
+            
+        content_map[category][subcategory].append({
             'id': content['id'],
             'name': content['topic'],
             'content': populated_content
@@ -83,27 +96,39 @@ async def update_content(id: int, body: str):
 
 
 async def build_template_tree(geo_level):
+    category_response = await content_repo.find_category_tree()
+    
+    tree = {}
+    
+    for row in category_response:
+        category = row["name"]
+        
+        tree[category] = {
+            "id": row["category_id"],
+            "label": row["label"],
+            "content_id": row["content_id"],
+            "subcategories": []
+        }
+
     response = await content_repo.find_tree(geo_level)
 
-    tree = {}
 
     for row in response:
         category = row["category"]
         category_id = row["category_id"]
-        category_label = row["category_label"]
         subcat_id = row["subcategory_id"]
         subcat_name = row["subcategory"]
         subcat_label = row["subcategory_label"]
+        
+        # if category not in tree:
+        #     tree[category] = []
 
-        if category not in tree:
-            tree[category] = []
-
-        if('id' not in tree[category]):
-            tree[category] = {
-                "id": category_id,
-                "label": category_label,
-                "subcategories": []
-            }
+        # if('id' not in tree[category]):
+        #     tree[category] = {
+        #         "id": category_id,
+        #         "label": category_label,
+        #         "subcategories": []
+        #     }
         
 
         subcat_entry = next(

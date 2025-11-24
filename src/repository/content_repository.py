@@ -63,6 +63,20 @@ async def find_tree(geo_level):
     """
     return fetch_many(query, (geo_level,))
 
+async def find_category_tree():
+    query = """
+        SELECT
+            c.id as content_id,
+            c.category_id as category_id,
+            cat."name" as name,
+            cat."label" as label
+        FROM content c
+        join category cat on cat.id = c.category_id
+        WHERE 
+            c.category_id is not null;
+    """
+    return fetch_many(query)
+
 async def create(topic_id, geo_level, file):
     now = datetime.now()
     log.info(

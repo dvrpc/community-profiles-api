@@ -1,4 +1,6 @@
-import repository.tree_repository as tree_repo
+import repository.subcategory_repository as subcategory_repo
+import repository.topic_repository as topic_repo
+
 import services.revalidate as revalidation_service
 import repository.content_repository as content_repo
 import repository.viz_repository as viz_repo
@@ -16,7 +18,7 @@ def create_label(name: str):
 
 async def create_subcategory(category_id: int, name: str):
     label = create_label(name)
-    res = await tree_repo.create_subcategory(category_id, name, label)
+    res = await subcategory_repo.create(category_id, name, label)
     subcategory_id = res[0]
     log.info(f"Created subcategory: {subcategory_id}")
     await create_topic(subcategory_id, 'new-topic')
@@ -25,7 +27,7 @@ async def create_subcategory(category_id: int, name: str):
 
 async def create_topic(subcategory_id, name):
     label = create_label(name)
-    res = await tree_repo.create_topic(subcategory_id, name, label)
+    res = await topic_repo.create(subcategory_id, name, label)
     topic_id = res[0]
     log.info(f"Created topic: {topic_id}")
   
@@ -36,5 +38,19 @@ async def create_topic(subcategory_id, name):
         log.info(f"Created viz: {viz_res[0]}")
 
         
+    revalidation_service.revalidate_all()
+    return res
+
+async def update_subcategory(id: int, name: str):
+    label = create_label(name)
+
+    res = await subcategory_repo.update(id, name, label)
+    revalidation_service.revalidate_all()
+
+    return res
+
+async def update_topic(id: str, name: str):
+    label = create_label(name)
+    res = await topic_repo.update(id, name, label)
     revalidation_service.revalidate_all()
     return res
