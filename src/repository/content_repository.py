@@ -20,6 +20,18 @@ async def find_by_geo(geo_level):
     return fetch_many(query, (geo_level,))
 
 
+async def find_category_content(geo_level):
+    log.info(f"Fetching category content...")
+    query = """
+        SELECT c.id, cat.name as category, cat.id as category_id, c.file, cat.sort_weight as sort_weight
+        FROM content c
+        JOIN category cat on cat.id = c.category_id 
+        WHERE geo_level = %s
+        ORDER by sort_weight DESC
+    """
+    return fetch_many(query, (geo_level,))
+
+
 async def find_one(id: int):
     log.info(f"Fetching content {id}...")
     query = """
@@ -38,8 +50,10 @@ async def update(id, body):
         UPDATE content
         SET file = %s, create_date = %s
         WHERE id = %s
+        RETURNING id
     """
     return execute_update(query, (body, now, id))
+
 
 async def find_tree(geo_level):
     query = """
@@ -59,23 +73,26 @@ async def find_tree(geo_level):
         join subcategory s on s.id = t.subcategory_id 
         join category cat on cat.id = s.category_id 
         where c.geo_level = %s
-
     """
     return fetch_many(query, (geo_level,))
 
-async def find_category_tree():
+
+async def find_category_tree(geo_level):
     query = """
         SELECT
             c.id as content_id,
             c.category_id as category_id,
             cat."name" as name,
-            cat."label" as label
+            cat."label" as label,
+            cat.sort_weight as sort_weight
         FROM content c
         join category cat on cat.id = c.category_id
         WHERE 
-            c.category_id is not null;
+            c.category_id is not null AND c.geo_level = %s
+        ORDER by sort_weight DESC
     """
-    return fetch_many(query)
+    return fetch_many(query, (geo_level,))
+
 
 async def create(topic_id, geo_level, file):
     now = datetime.now()

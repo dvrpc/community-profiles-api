@@ -13,7 +13,7 @@ def execute_update(query, params=None):
             db.conn.commit()
             log.info(f"{cur.rowcount} row(s) affected.")
             row = cur.fetchone()
-            if(row):
+            if (row):
                 return row
             return cur.rowcount
     except psycopg.Error as e:

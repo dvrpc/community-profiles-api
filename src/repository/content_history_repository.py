@@ -12,7 +12,7 @@ async def create(dict):
     placeholders = ', '.join(['%s'] * len(dict))
     values = tuple(dict.values())
 
-    query = f"INSERT INTO content_history ({columns}) VALUES ({placeholders})"
+    query = f"INSERT INTO content_history ({columns}) VALUES ({placeholders}) RETURNING id"
 
     log.info(f"Inserting row into content_history...")
     return execute_update(query, values)
