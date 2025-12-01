@@ -42,24 +42,31 @@ def populate_template(md, profile):
 
 
 async def build_content(geo_level, profile):
+    category_content = await content_repo.find_category_content(geo_level)
     all_content = await content_repo.find_by_geo(geo_level)
 
     content_map = {}
-    
+
+    for content in category_content:
+        populated_content = populate_template(content['file'], profile)
+
+        content_map[content['category']] = {
+            "content_id": content["id"],
+            "category_id": content["category_id"],
+            "content": populated_content,
+            "subcategories": {}
+        }
+
     for content in all_content:
         populated_content = populate_template(content['file'], profile)
-        
+
         category = content['category']
         subcategory = content['subcategory']
-        
-        if category not in content_map:
-            content_map[category] = {}
-            
-        if subcategory not in content_map[category]:
-            content_map[category][subcategory] = []
-            
-            
-        content_map[category][subcategory].append({
+
+        if subcategory not in content_map[category]['subcategories']:
+            content_map[category]['subcategories'][subcategory] = []
+
+        content_map[category]['subcategories'][subcategory].append({
             'id': content['id'],
             'name': content['topic'],
             'content': populated_content
@@ -94,13 +101,13 @@ async def update_content(id: int, body: str):
 
 
 async def build_template_tree(geo_level):
-    category_response = await content_repo.find_category_tree()
-    
+    category_response = await content_repo.find_category_tree(geo_level)
+
     tree = {}
-    
+
     for row in category_response:
         category = row["name"]
-        
+
         tree[category] = {
             "id": row["category_id"],
             "label": row["label"],
@@ -110,14 +117,13 @@ async def build_template_tree(geo_level):
 
     response = await content_repo.find_tree(geo_level)
 
-
     for row in response:
         category = row["category"]
         category_id = row["category_id"]
         subcat_id = row["subcategory_id"]
         subcat_name = row["subcategory"]
         subcat_label = row["subcategory_label"]
-        
+
         # if category not in tree:
         #     tree[category] = []
 
@@ -127,12 +133,11 @@ async def build_template_tree(geo_level):
         #         "label": category_label,
         #         "subcategories": []
         #     }
-        
 
         subcat_entry = next(
-            (sc for sc in tree[category]["subcategories"] if sc["id"] == subcat_id), None
+            (sc for sc in tree[category]["subcategories"]
+             if sc["id"] == subcat_id), None
         )
-        
 
         if not subcat_entry:
             subcat_entry = {
