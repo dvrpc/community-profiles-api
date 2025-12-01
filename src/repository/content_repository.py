@@ -35,9 +35,23 @@ async def find_category_content(geo_level):
 async def find_one(id: int):
     log.info(f"Fetching content {id}...")
     query = """
-        SELECT *
-        FROM content
-        WHERE id = %s
+        SELECT 
+            c.*,
+            COALESCE(
+                array_agg(cs.source_id ORDER BY cs.source_id) 
+                FILTER (WHERE cs.source_id IS NOT NULL), 
+                '{}'
+            ) AS source_ids,
+                COALESCE(
+                array_agg(cp.product_id ORDER BY cp.product_id) 
+                FILTER (WHERE cp.product_id IS NOT NULL), 
+                '{}'
+            ) AS product_ids
+        FROM content c
+        LEFT JOIN content_source cs ON cs.content_id = c.id
+        LEFT JOIN content_product cp ON cp.content_id = c.id
+        WHERE c.id = %s
+        GROUP BY c.id;
     """
     return fetch_one(query, (id,))
 
@@ -54,6 +68,16 @@ async def update(id, body):
     """
     return execute_update(query, (body, now, id))
 
+async def update_content_properties(id, values):
+    log.info(
+        f"Updating content: {id}")
+    query = f"""
+        UPDATE content
+        SET {values}
+        WHERE id = %s
+        RETURNING id
+    """
+    return execute_update(query, (id,))
 
 async def find_tree(geo_level):
     query = """

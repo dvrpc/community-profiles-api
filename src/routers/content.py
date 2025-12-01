@@ -60,7 +60,13 @@ async def update_content(id: int, body: str = Body(..., media_type="text/plain")
     res = await content_service.update_content(id, body)
     return res
 
-
+@router.put('/{id}/properties')
+async def update_content_properties(id: int, body: dict = Body(..., media_type="application/json"), admin=Depends(require_admin)):
+    res = await content_service.update_content_properties(id, body)
+    return res
+    # tree = await content_service.build_template_tree(geo_level)
+    # return tree
+    
 @router.get('/{id}/history')
 async def get_content_history(id: int):
     current = await content_repo.find_one(id)
@@ -70,6 +76,7 @@ async def get_content_history(id: int):
     all_content += history
 
     return all_content
+
 
 
 @router.get('/tree/{geo_level}')

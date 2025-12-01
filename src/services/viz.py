@@ -48,6 +48,7 @@ async def update_viz(id: int, body: str):
             await viz_history_repo.delete(history[-1]['id'])
 
         current_viz['parent_id'] = current_viz.pop('id')
+        del current_viz['source_ids']
         await viz_history_repo.create(current_viz)
         return {"message": "viz updated succesfully"}
     else:

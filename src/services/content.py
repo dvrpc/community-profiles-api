@@ -5,6 +5,10 @@ import logging
 
 import repository.content_repository as content_repo
 import repository.content_history_repository as content_history_repo
+from services.content_source import sync_content_source
+from services.viz_source import sync_viz_source
+from services.content_product import sync_content_product
+
 from services.revalidate import revalidate_frontend
 from jinja.template import env
 
@@ -92,6 +96,9 @@ async def update_content(id: int, body: str):
             await content_history_repo.delete(history[-1]['id'])
 
         current_content['parent_id'] = current_content.pop('id')
+        for key in ['source_ids', 'product_ids']:
+            del current_content[key]
+            
         await content_history_repo.create(current_content)
         revalidate_frontend(current_content['geo_level'])
         return {"message": "Content updated succesfully"}
@@ -124,16 +131,6 @@ async def build_template_tree(geo_level):
         subcat_name = row["subcategory"]
         subcat_label = row["subcategory_label"]
 
-        # if category not in tree:
-        #     tree[category] = []
-
-        # if('id' not in tree[category]):
-        #     tree[category] = {
-        #         "id": category_id,
-        #         "label": category_label,
-        #         "subcategories": []
-        #     }
-
         subcat_entry = next(
             (sc for sc in tree[category]["subcategories"]
              if sc["id"] == subcat_id), None
@@ -157,3 +154,34 @@ async def build_template_tree(geo_level):
         })
 
     return tree
+
+async def update_content_properties(id, properties):
+    if 'content_sources' in properties:
+        await sync_content_source(id, properties['content_sources'])
+        del properties['content_sources']
+    if 'viz_sources' in properties:
+        await sync_viz_source(id, properties['viz_sources'])
+        del properties['viz_sources']
+    if 'related_products' in properties:
+        await sync_content_product(id, properties['related_products'])
+        del properties['related_products']
+    
+    request_values = ""
+    
+    if not properties:
+        return 
+    for key, value in properties.items():
+        if(isinstance(value, str)):
+            pair = f"{key} = '{value}'"
+        else:
+            pair = f"{key} = {value}"
+
+        if not request_values:
+            request_values += pair
+        else: 
+            request_values = request_values +  ", " + pair
+            
+    update_id = await content_repo.update_content_properties(id, request_values)
+    return update_id
+    
+    

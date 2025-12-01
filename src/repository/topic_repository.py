@@ -6,7 +6,7 @@ async def create(subcategory_id, name, label):
         INSERT INTO topic (name, subcategory_id, label) VALUES (%s, %s, %s)
         RETURNING (id)
     """
-    return execute_update(query, (name, subcategory_id, ))
+    return execute_update(query, (name, subcategory_id, label))
 
 async def update(id, name, label):
     query = """

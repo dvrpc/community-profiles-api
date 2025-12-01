@@ -33,8 +33,9 @@ async def create_topic(subcategory_id, name):
   
     for geo_level in ['region', 'county', 'municipality']:
         content_res = await content_repo.create(topic_id, geo_level, default_content_file)
-        log.info(f"Created content: {content_res[0]}")
-        viz_res = await viz_repo.create(topic_id, geo_level, default_viz_file)
+        content_id = content_res[0]
+        log.info(f"Created content: {content_id}")
+        viz_res = await viz_repo.create(topic_id, geo_level, default_viz_file, content_id)
         log.info(f"Created viz: {viz_res[0]}")
 
         
