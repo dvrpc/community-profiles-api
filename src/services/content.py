@@ -43,7 +43,6 @@ def populate_template(md, profile):
 
 async def build_content(geo_level, profile):
     all_content = await content_repo.find_by_geo(geo_level)
-    print(all_content)
 
     content_map = {}
     
@@ -59,7 +58,6 @@ async def build_content(geo_level, profile):
         if subcategory not in content_map[category]:
             content_map[category][subcategory] = []
             
-        print(content_map)
             
         content_map[category][subcategory].append({
             'id': content['id'],

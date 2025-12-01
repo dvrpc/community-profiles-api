@@ -3,7 +3,8 @@ from typing import Optional
 
 
 class SourceRequest(BaseModel):
-    name: str = Field(..., min_length=1, description="Name of the source")
+    agency: str = Field(..., min_length=1, description="Name of the source")
+    dataset: str = Field(..., min_length=1, description="Name of the source")
     year_from: Optional[int] = Field(
         None, gt=1900, description="Starting year (optional, >1900)")
     year_to: int = Field(..., gt=1900, description="Ending year (>1900)")

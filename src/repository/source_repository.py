@@ -13,21 +13,21 @@ async def find_all_sources():
 
 async def create(source: SourceRequest):
     query = """
-        INSERT INTO source (name, year_from, year_to, citation)
-        VALUES (%s, %s, %s, %s)
-        RETURNING id, name, year_from, year_to, citation;
+        INSERT INTO source (agency, dataset, year_from, year_to, citation)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id, agency, dataset, year_from, year_to, citation;
     """
-    return execute_update(query, (source.name, source.year_from, source.year_to, source.citation))
+    return execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation))
 
 
 async def update(id, source: SourceRequest):
     query = """
         UPDATE source
-        SET name = %s, year_from = %s, year_to = %s, citation = %s
+        SET agency = %s, dataset = %s, year_from = %s, year_to = %s, citation = %s
         WHERE id = %s
-        RETURNING id, name, year_from, year_to, citation;
+        RETURNING id, agency, dataset, year_from, year_to, citation;
     """
-    return execute_update(query, (source.name, source.year_from, source.year_to, source.citation, id))
+    return execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation, id))
 
 
 async def delete(id):
@@ -35,5 +35,4 @@ async def delete(id):
         DELETE FROM source
         WHERE id = %s;
     """
-    print(query)
     return execute_update(query, (id,))
