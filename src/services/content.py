@@ -2,11 +2,15 @@ import mistune
 import copy
 import logging
 
-from repository.content_repository import fetch_content, fetch_single_content, update_single_content, fetch_template_tree
-from repository.content_history_repository import create_content_history, delete_content_history, fetch_content_history
+
+import repository.content_repository as content_repo
+import repository.content_history_repository as content_history_repo
+from services.content_source import sync_content_source
+from services.viz_source import sync_viz_source
+from services.content_product import sync_content_product
+
 from services.revalidate import revalidate_frontend
 from jinja.template import env
-from utils.consts import subcategory_map
 
 log = logging.getLogger(__name__)
 
@@ -42,13 +46,33 @@ def populate_template(md, profile):
 
 
 async def build_content(geo_level, profile):
-    all_content = await fetch_content(geo_level)
-    content_map = copy.deepcopy(subcategory_map)
+    category_content = await content_repo.find_category_content(geo_level)
+    all_content = await content_repo.find_by_geo(geo_level)
+
+    content_map = {}
+
+    for content in category_content:
+        populated_content = populate_template(content['file'], profile)
+
+        content_map[content['category']] = {
+            "content_id": content["id"],
+            "category_id": content["category_id"],
+            "content": populated_content,
+            "subcategories": {}
+        }
 
     for content in all_content:
         populated_content = populate_template(content['file'], profile)
-        content_map[content['category']][content['subcategory']].append({
-            'name': content['name'],
+
+        category = content['category']
+        subcategory = content['subcategory']
+
+        if subcategory not in content_map[category]['subcategories']:
+            content_map[category]['subcategories'][subcategory] = []
+
+        content_map[category]['subcategories'][subcategory].append({
+            'id': content['id'],
+            'name': content['topic'],
             'content': populated_content
         })
 
@@ -60,19 +84,23 @@ async def build_single_content(template: str, profile):
     return populated_content
 
 
-async def update_content(category: str, subcategory: str, topic: str, geo_level, body: str):
-    current_content = await fetch_single_content(category, subcategory, topic, geo_level)
+async def update_content(id: int, body: str):
+    current_content = await content_repo.find_one(id)
 
     if (current_content):
-        await update_single_content(category, subcategory, topic, geo_level, body)
-        
-        history = await fetch_content_history(category, subcategory, topic, geo_level)
+        await content_repo.update(id, body)
 
-        if(len(history) > 20):
-            await delete_content_history(history[-1]['id'])
+        history = await content_history_repo.find_by_parent_id(id)
+
+        if (len(history) > 20):
+            await content_history_repo.delete(history[-1]['id'])
+
+        current_content['parent_id'] = current_content.pop('id')
+        for key in ['source_ids', 'product_ids', 'label']:
+            del current_content[key]
             
-        await create_content_history(current_content)
-        revalidate_frontend(geo_level)
+        await content_history_repo.create(current_content)
+        revalidate_frontend(current_content['geo_level'])
         return {"message": "Content updated succesfully"}
     else:
         # create
@@ -80,14 +108,80 @@ async def update_content(category: str, subcategory: str, topic: str, geo_level,
 
 
 async def build_template_tree(geo_level):
-    response = await fetch_template_tree(geo_level)
-    nested_dict = {}
+    category_response = await content_repo.find_category_tree(geo_level)
 
-    for item in response:
-        cat = item["category"]
-        subcat = item["subcategory"]
-        name = item["name"]
+    tree = {}
 
-        nested_dict.setdefault(cat, {}).setdefault(subcat, []).append(name)
+    for row in category_response:
+        category = row["name"]
 
-    return nested_dict
+        tree[category] = {
+            "id": row["category_id"],
+            "label": row["label"],
+            "content_id": row["content_id"],
+            "subcategories": []
+        }
+
+    response = await content_repo.find_tree(geo_level)
+
+    for row in response:
+        category = row["category"]
+        category_id = row["category_id"]
+        subcat_id = row["subcategory_id"]
+        subcat_name = row["subcategory"]
+        subcat_label = row["subcategory_label"]
+
+        subcat_entry = next(
+            (sc for sc in tree[category]["subcategories"]
+             if sc["id"] == subcat_id), None
+        )
+
+        if not subcat_entry:
+            subcat_entry = {
+                "name": subcat_name,
+                "id": subcat_id,
+                "label": subcat_label,
+                "category_id": category_id,
+                "topics": []
+            }
+            tree[category]["subcategories"].append(subcat_entry)
+
+        subcat_entry["topics"].append({
+            "name": row["topic"],
+            "id": row["topic_id"],
+            "label": row["topic_label"],
+            "content_id": row["id"]
+        })
+
+    return tree
+
+async def update_content_properties(id, properties):
+    if 'content_sources' in properties:
+        await sync_content_source(id, properties['content_sources'])
+        del properties['content_sources']
+    if 'viz_sources' in properties:
+        await sync_viz_source(id, properties['viz_sources'])
+        del properties['viz_sources']
+    if 'related_products' in properties:
+        await sync_content_product(id, properties['related_products'])
+        del properties['related_products']
+    
+    request_values = ""
+    
+    if not properties:
+        return 
+    for key, value in properties.items():
+        if(isinstance(value, str)):
+            pair = f"{key} = '{value}'"
+        else:
+            pair = f"{key} = {value}"
+
+        if not request_values:
+            request_values += pair
+        else: 
+            request_values = request_values +  ", " + pair
+            
+    update_id = await content_repo.update_content_properties(id, request_values)
+    return update_id
+    
+    

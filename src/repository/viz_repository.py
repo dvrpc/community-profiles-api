@@ -6,50 +6,42 @@ from repository.utils import fetch_one, fetch_many, execute_update
 
 log = logging.getLogger(__name__)
 
-
-async def fetch_viz(geo_level, category, subcategory, topic, all_info=False):
-    log.info(
-        f"Fetching {geo_level}/{category}/{subcategory}/{topic} viz...")
+async def find_one(id: int):
+    log.info(f"Fetching viz {id}...")
     query = """
-        SELECT *
-        FROM viz
-        WHERE geo_level = %s
-          AND category = %s
-          AND subcategory = %s
-          AND name = %s
+        SELECT 
+            v.*,
+            COALESCE(
+                array_agg(vs.source_id ORDER BY vs.source_id) 
+                FILTER (WHERE vs.source_id IS NOT NULL), 
+                '{}'
+            ) AS source_ids
+        FROM viz v
+        LEFT JOIN viz_source vs ON vs.viz_id = v.id
+        WHERE v.id = %s
+        GROUP BY v.id, v.geo_level, v.file, v.create_date , v.topic_id;
     """
-    result = fetch_one(query, (geo_level, category, subcategory, topic))
-    file = json.loads(result["file"]) if result else None
-
-    if (all_info):
-        result['file'] = file
-        return result
-
-    return file
+    return fetch_one(query, (id,))
 
 
-async def fetch_viz_template(geo_level, category, subcategory, topic):
-    log.info(
-        f"Fetching {geo_level}/{category}/{subcategory}/{topic} viz template...")
-    query = """
-        SELECT file
-        FROM viz
-        WHERE geo_level = %s
-          AND category = %s
-          AND subcategory = %s
-          AND name = %s
-    """
-    result = fetch_one(query, (geo_level, category, subcategory, topic))
-    return json.loads(result["file"]) if result else None
-
-
-async def update_single_viz(category, subcategory, topic, geo_level, body):
+async def update(id, body):
     now = datetime.now()
     log.info(
-        f"Updating viz for {category}/{subcategory}/{topic}/{geo_level}")
+        f"Updating viz: {id}")
     query = """
         UPDATE viz
         SET file = %s, create_date = %s
-        WHERE category = %s AND subcategory = %s AND name = %s AND geo_level = %s
+        WHERE id = %s
     """
-    return execute_update(query, (body, now, category, subcategory, topic, geo_level))
+    return execute_update(query, (body, now, id))
+
+async def create(topic_id, geo_level, file, content_id):
+    now = datetime.now()
+    log.info(
+        f"Creating viz for topic_id: {topic_id}")
+    query = """
+        INSERT into viz (geo_level, create_date, topic_id, file, id)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id
+    """
+    return execute_update(query, (geo_level, now, topic_id, file, content_id))

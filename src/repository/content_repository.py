@@ -7,56 +7,125 @@ from repository.utils import fetch_one, fetch_many, execute_update
 log = logging.getLogger(__name__)
 
 
-async def fetch_content(geo_level):
+async def find_by_geo(geo_level):
     log.info(f"Fetching {geo_level} content...")
     query = """
-        SELECT category, subcategory, name, file
-        FROM content
+        SELECT c.id, cat.name as category, s.name as subcategory, t.name as topic, c.file
+        FROM content c
+        JOIN topic t ON t.id = topic_id
+        JOIN subcategory s on s.id = t.subcategory_id 
+        JOIN category cat on cat.id = s.category_id 
         WHERE geo_level = %s
     """
     return fetch_many(query, (geo_level,))
 
 
-async def fetch_content_template(geo_level, category, subcategory, topic):
-    log.info(
-        f"Fetching {geo_level}/{category}/{subcategory}/{topic} content template...")
+async def find_category_content(geo_level):
+    log.info(f"Fetching category content...")
     query = """
-        SELECT file
-        FROM content
+        SELECT c.id, cat.name as category, cat.id as category_id, c.file, cat.sort_weight as sort_weight
+        FROM content c
+        JOIN category cat on cat.id = c.category_id 
         WHERE geo_level = %s
-          AND category = %s
-          AND subcategory = %s
-          AND name = %s
+        ORDER by sort_weight DESC
     """
-    result = fetch_one(query, (geo_level, category, subcategory, topic))
-    return result["file"] if result else None
+    return fetch_many(query, (geo_level,))
 
 
-async def fetch_single_content(category, subcategory, topic, geo_level):
-    log.info(f"Fetching {category}/{subcategory}/{topic} content...")
+async def find_one(id: int):
+    log.info(f"Fetching content {id}...")
     query = """
-        SELECT *
-        FROM content
-        WHERE category = %s
-          AND subcategory = %s
-          AND name = %s
-          AND geo_level = %s
+        SELECT 
+            c.*,
+            t.label,
+            COALESCE(cs.source_ids, '{}') AS source_ids,
+            COALESCE(cp.product_ids, '{}') AS product_ids
+        FROM content c
+        LEFT JOIN topic t ON t.id = c.topic_id
+        LEFT JOIN (
+            SELECT content_id, array_agg(source_id ORDER BY source_id) AS source_ids
+            FROM content_source
+            GROUP BY content_id
+        ) cs ON cs.content_id = c.id
+        LEFT JOIN (
+            SELECT content_id, array_agg(product_id ORDER BY product_id) AS product_ids
+            FROM content_product
+            GROUP BY content_id
+        ) cp ON cp.content_id = c.id
+        WHERE c.id = %s;
     """
-    return fetch_one(query, (category, subcategory, topic, geo_level))
+    return fetch_one(query, (id,))
 
 
-async def update_single_content(category, subcategory, topic, geo_level, body):
+async def update(id, body):
     now = datetime.now()
     log.info(
-        f"Updating content for {category}/{subcategory}/{topic}/{geo_level}")
+        f"Updating content: {id}")
     query = """
         UPDATE content
         SET file = %s, create_date = %s
-        WHERE category = %s AND subcategory = %s AND name = %s AND geo_level = %s
+        WHERE id = %s
+        RETURNING id
     """
-    return execute_update(query, (body, now, category, subcategory, topic, geo_level))
+    return execute_update(query, (body, now, id))
 
-async def fetch_template_tree(geo_level):
-    query = "SELECT category, subcategory, name FROM content WHERE geo_level = %s"
+async def update_content_properties(id, values):
+    log.info(
+        f"Updating content: {id}")
+    query = f"""
+        UPDATE content
+        SET {values}
+        WHERE id = {id}
+        RETURNING id
+    """
+    return execute_update(query)
+
+async def find_tree(geo_level):
+    query = """
+        SELECT 
+            c.id AS id,
+            t.name AS topic,
+            t.label AS topic_label,
+            t.id AS topic_id,
+            s.id AS subcategory_id,
+            s.name AS subcategory,
+            s.label AS subcategory_label,
+            cat.name as category,
+            cat.label as category_label,
+            cat.id as category_id
+        FROM content c
+        JOIN topic t ON t.id = c.topic_id
+        join subcategory s on s.id = t.subcategory_id 
+        join category cat on cat.id = s.category_id 
+        where c.geo_level = %s
+    """
     return fetch_many(query, (geo_level,))
 
+
+async def find_category_tree(geo_level):
+    query = """
+        SELECT
+            c.id as content_id,
+            c.category_id as category_id,
+            cat."name" as name,
+            cat."label" as label,
+            cat.sort_weight as sort_weight
+        FROM content c
+        join category cat on cat.id = c.category_id
+        WHERE 
+            c.category_id is not null AND c.geo_level = %s
+        ORDER by sort_weight DESC
+    """
+    return fetch_many(query, (geo_level,))
+
+
+async def create(topic_id, geo_level, file):
+    now = datetime.now()
+    log.info(
+        f"Creating content for topic_id: {topic_id}")
+    query = """
+        INSERT into content (geo_level, create_date, topic_id, file)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id
+    """
+    return execute_update(query, (geo_level, now, topic_id, file))

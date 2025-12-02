@@ -1,6 +1,9 @@
 import logging
-from repository.viz_repository import fetch_viz, update_single_viz
-from repository.viz_history_repository import create_viz_history, delete_viz_history, fetch_viz_history
+# from repository.viz_repository import find_by_filters, update
+# from repository.viz_history_repository import create, delete, find_by_filters
+
+import repository.viz_repository as viz_repo
+import repository.viz_history_repository as viz_history_repo
 
 log = logging.getLogger(__name__)
 
@@ -34,18 +37,19 @@ async def build_viz(viz, profile):
     return populated_viz
 
 
-async def update_viz(category: str, subcategory: str, topic: str, geo_level, body: str):
-    current_viz = await fetch_viz(geo_level, category, subcategory, topic, all_info=True)
-
+async def update_viz(id: int, body: str):
+    current_viz = await viz_repo.find_one(id)
     if (current_viz):
-        await update_single_viz(category, subcategory, topic, geo_level, body)
+        await viz_repo.update(id, body)
 
-        history = await fetch_viz_history(category, subcategory, topic, geo_level)
+        history = await viz_history_repo.find_by_parent_id(id)
 
         if (len(history) > 20):
-            await delete_viz_history(history[-1]['id'])
+            await viz_history_repo.delete(history[-1]['id'])
 
-        await create_viz_history(current_viz)
+        current_viz['parent_id'] = current_viz.pop('id')
+        del current_viz['source_ids']
+        await viz_history_repo.create(current_viz)
         return {"message": "viz updated succesfully"}
     else:
         # create
