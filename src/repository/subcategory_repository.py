@@ -25,5 +25,5 @@ async def create(category_id, name, label):
     # query = f"INSERT INTO content_history ({columns}) VALUES ({placeholders})"
 
 async def delete(id):
-    query = "DELETE FROM subcategory WHERE id = %s"
+    query = "DELETE FROM subcategory WHERE id = %s RETURNING id;"
     return execute_update(query, (id,))

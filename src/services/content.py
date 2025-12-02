@@ -96,7 +96,7 @@ async def update_content(id: int, body: str):
             await content_history_repo.delete(history[-1]['id'])
 
         current_content['parent_id'] = current_content.pop('id')
-        for key in ['source_ids', 'product_ids']:
+        for key in ['source_ids', 'product_ids', 'label']:
             del current_content[key]
             
         await content_history_repo.create(current_content)

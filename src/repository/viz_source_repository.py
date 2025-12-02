@@ -16,7 +16,8 @@ async def create(viz_id, source_id):
 async def delete(viz_id, source_ids):
     query = """
         DELETE FROM viz_source
-        WHERE viz_id = %s AND source_id = ANY(%s);
+        WHERE viz_id = %s AND source_id = ANY(%s)
+        RETURNING viz_id, source_id;
     """
     return execute_update(query, (viz_id, source_ids))
 

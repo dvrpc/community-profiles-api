@@ -1,3 +1,4 @@
+from typing import Optional, Union
 import repository.subcategory_repository as subcategory_repo
 import repository.topic_repository as topic_repo
 
@@ -50,8 +51,13 @@ async def update_subcategory(id: int, name: str):
 
     return res
 
-async def update_topic(id: str, name: str):
-    label = create_label(name)
-    res = await topic_repo.update(id, name, label)
+async def update_topic(id: str, name: Optional[str] = None, label: Optional[str] = None):
+    values = ""
+    if not label:
+        label = create_label(name)
+        values = f"name = '{name}', label = '{label}'"
+    else:
+        values = f"label = '{label}'"
+    res = await topic_repo.update(id, values)
     revalidation_service.revalidate_all()
     return res

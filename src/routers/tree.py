@@ -1,3 +1,4 @@
+from typing import Optional, Union
 from fastapi import APIRouter, Depends
 
 import repository.subcategory_repository as subcategory_repo
@@ -19,8 +20,8 @@ async def update_subcategory(id: int, name: str, admin=Depends(require_admin)):
     return res
 
 @router.put('/topic')
-async def update_topic(id: str, name: str, admin=Depends(require_admin)):
-    res = await tree_service.update_topic(id, name)
+async def update_topic(id: str, name: Optional[str] = None, label: Optional[str] = None, admin=Depends(require_admin)):
+    res = await tree_service.update_topic(id, name, label)
     return res
 
 @router.post('/subcategory')

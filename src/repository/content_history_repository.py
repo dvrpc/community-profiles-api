@@ -32,5 +32,5 @@ async def find_by_parent_id(parent_id):
 
 async def delete(id):
     log.info(f"Deleting content_history id {id}")
-    query = "DELETE FROM content_history WHERE id = %s"
+    query = "DELETE FROM content_history WHERE id = %s RETURNING id"
     return execute_update(query, (id,))

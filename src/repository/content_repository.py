@@ -37,21 +37,22 @@ async def find_one(id: int):
     query = """
         SELECT 
             c.*,
-            COALESCE(
-                array_agg(cs.source_id ORDER BY cs.source_id) 
-                FILTER (WHERE cs.source_id IS NOT NULL), 
-                '{}'
-            ) AS source_ids,
-                COALESCE(
-                array_agg(cp.product_id ORDER BY cp.product_id) 
-                FILTER (WHERE cp.product_id IS NOT NULL), 
-                '{}'
-            ) AS product_ids
+            t.label,
+            COALESCE(cs.source_ids, '{}') AS source_ids,
+            COALESCE(cp.product_ids, '{}') AS product_ids
         FROM content c
-        LEFT JOIN content_source cs ON cs.content_id = c.id
-        LEFT JOIN content_product cp ON cp.content_id = c.id
-        WHERE c.id = %s
-        GROUP BY c.id;
+        LEFT JOIN topic t ON t.id = c.topic_id
+        LEFT JOIN (
+            SELECT content_id, array_agg(source_id ORDER BY source_id) AS source_ids
+            FROM content_source
+            GROUP BY content_id
+        ) cs ON cs.content_id = c.id
+        LEFT JOIN (
+            SELECT content_id, array_agg(product_id ORDER BY product_id) AS product_ids
+            FROM content_product
+            GROUP BY content_id
+        ) cp ON cp.content_id = c.id
+        WHERE c.id = %s;
     """
     return fetch_one(query, (id,))
 
@@ -74,10 +75,10 @@ async def update_content_properties(id, values):
     query = f"""
         UPDATE content
         SET {values}
-        WHERE id = %s
+        WHERE id = {id}
         RETURNING id
     """
-    return execute_update(query, (id,))
+    return execute_update(query)
 
 async def find_tree(geo_level):
     query = """

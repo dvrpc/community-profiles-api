@@ -8,17 +8,18 @@ async def create(subcategory_id, name, label):
     """
     return execute_update(query, (name, subcategory_id, label))
 
-async def update(id, name, label):
-    query = """
+async def update(id, values):
+    query = f"""
         UPDATE topic
-        SET name = %s, label = %s
-        WHERE id = %s;
+        SET {values}
+        WHERE id = {id}
         RETURNING (id)
     """
-    
-    return execute_update(query, (name, label, id))
+    return execute_update(query)
+
+
 
 
 async def delete(id):
-    query = "DELETE FROM topic WHERE id = %s"
+    query = "DELETE FROM topic WHERE id = %s RETURNING id;"
     return execute_update(query, (id,))

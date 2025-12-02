@@ -33,6 +33,7 @@ async def update(id, source: SourceRequest):
 async def delete(id):
     query = """
         DELETE FROM source
-        WHERE id = %s;
+        WHERE id = %s
+        RETURNING id;
     """
     return execute_update(query, (id,))

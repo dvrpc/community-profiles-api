@@ -16,7 +16,8 @@ async def create(content_id, product_id):
 async def delete(content_id, product_ids):
     query = """
         DELETE FROM content_product
-        WHERE content_id = %s AND product_id = ANY(%s);
+        WHERE content_id = %s AND product_id = ANY(%s)
+        RETURNING content_id, product_id;
     """
     return execute_update(query, (content_id, product_ids))
 
