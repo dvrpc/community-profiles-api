@@ -98,7 +98,7 @@ async def update_content(id: int, body: str):
         current_content['parent_id'] = current_content.pop('id')
         for key in ['source_ids', 'product_ids', 'label']:
             del current_content[key]
-            
+
         await content_history_repo.create(current_content)
         revalidate_frontend(current_content['geo_level'])
         return {"message": "Content updated succesfully"}
@@ -155,6 +155,7 @@ async def build_template_tree(geo_level):
 
     return tree
 
+
 async def update_content_properties(id, properties):
     if 'content_sources' in properties:
         await sync_content_source(id, properties['content_sources'])
@@ -165,23 +166,21 @@ async def update_content_properties(id, properties):
     if 'related_products' in properties:
         await sync_content_product(id, properties['related_products'])
         del properties['related_products']
-    
+
     request_values = ""
-    
+
     if not properties:
-        return 
+        return
     for key, value in properties.items():
-        if(isinstance(value, str)):
+        if (isinstance(value, str)):
             pair = f"{key} = '{value}'"
         else:
             pair = f"{key} = {value}"
 
         if not request_values:
             request_values += pair
-        else: 
-            request_values = request_values +  ", " + pair
-            
+        else:
+            request_values = request_values + ", " + pair
+
     update_id = await content_repo.update_content_properties(id, request_values)
     return update_id
-    
-    

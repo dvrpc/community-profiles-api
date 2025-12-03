@@ -15,7 +15,7 @@ async def get_sources():
     return sources
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("")
 async def create_source(source: SourceRequest, admin=Depends(require_admin)):
     res = await source_repo.create(source)
     return res

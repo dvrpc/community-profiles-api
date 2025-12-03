@@ -16,6 +16,7 @@ async def find_by_geo(geo_level):
         JOIN subcategory s on s.id = t.subcategory_id 
         JOIN category cat on cat.id = s.category_id 
         WHERE geo_level = %s
+        ORDER BY t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
 
@@ -38,6 +39,7 @@ async def find_one(id: int):
         SELECT 
             c.*,
             t.label,
+            t.sort_weight,
             COALESCE(cs.source_ids, '{}') AS source_ids,
             COALESCE(cp.product_ids, '{}') AS product_ids
         FROM content c
@@ -69,6 +71,7 @@ async def update(id, body):
     """
     return execute_update(query, (body, now, id))
 
+
 async def update_content_properties(id, values):
     log.info(
         f"Updating content: {id}")
@@ -80,13 +83,15 @@ async def update_content_properties(id, values):
     """
     return execute_update(query)
 
+
 async def find_tree(geo_level):
     query = """
         SELECT 
             c.id AS id,
+            t.id AS topic_id,
             t.name AS topic,
             t.label AS topic_label,
-            t.id AS topic_id,
+            t.sort_weight as sort_weight,
             s.id AS subcategory_id,
             s.name AS subcategory,
             s.label AS subcategory_label,
@@ -94,10 +99,11 @@ async def find_tree(geo_level):
             cat.label as category_label,
             cat.id as category_id
         FROM content c
-        JOIN topic t ON t.id = c.topic_id
-        join subcategory s on s.id = t.subcategory_id 
-        join category cat on cat.id = s.category_id 
+        JOIN topic AS t ON t.id = c.topic_id
+        join subcategory AS s on s.id = t.subcategory_id 
+        join category AS cat on cat.id = s.category_id 
         where c.geo_level = %s
+        ORDER by t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
 
