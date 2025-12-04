@@ -9,7 +9,7 @@ from services.content_source import sync_content_source
 from services.viz_source import sync_viz_source
 from services.content_product import sync_content_product
 
-from services.revalidate import revalidate_frontend
+from services.revalidate import revalidate_frontend, revalidate_all
 from jinja.template import env
 
 log = logging.getLogger(__name__)
@@ -70,10 +70,21 @@ async def build_content(geo_level, profile):
         if subcategory not in content_map[category]['subcategories']:
             content_map[category]['subcategories'][subcategory] = []
 
+        citations = content['citations']
+        products = content['products']
+
+        if citations[0] is None:
+            citations = []
+
+        if products[0] is None:
+            products = []
+
         content_map[category]['subcategories'][subcategory].append({
             'id': content['id'],
             'name': content['topic'],
-            'content': populated_content
+            'content': populated_content,
+            'citations': citations,
+            'related_products': products
         })
 
     return content_map
@@ -170,7 +181,7 @@ async def update_content_properties(id, properties):
     request_values = ""
 
     if not properties:
-        return
+        revalidate_all()
     for key, value in properties.items():
         if (isinstance(value, str)):
             pair = f"{key} = '{value}'"
@@ -182,5 +193,6 @@ async def update_content_properties(id, properties):
         else:
             request_values = request_values + ", " + pair
 
-    update_id = await content_repo.update_content_properties(id, request_values)
-    return update_id
+    updated_content = await content_repo.update_content_properties(id, request_values)
+    revalidate_frontend(updated_content[1])
+    return updated_content[0]

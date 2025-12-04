@@ -1,5 +1,4 @@
 from datetime import datetime
-from fastapi_cache.decorator import cache
 import logging
 
 from repository.utils import fetch_one, fetch_many, execute_update
@@ -10,13 +9,30 @@ log = logging.getLogger(__name__)
 async def find_by_geo(geo_level):
     log.info(f"Fetching {geo_level} content...")
     query = """
-        SELECT c.id, cat.name as category, s.name as subcategory, t.name as topic, c.file
-        FROM content c
-        JOIN topic t ON t.id = topic_id
-        JOIN subcategory s on s.id = t.subcategory_id 
-        JOIN category cat on cat.id = s.category_id 
-        WHERE geo_level = %s
-        ORDER BY t.sort_weight DESC;
+    SELECT 
+        c.id,
+        c.file,
+        cat.name AS category, 
+        s.name AS subcategory, 
+        t.name AS topic, 
+        ARRAY_AGG(DISTINCT sc.citation) AS citations,
+        ARRAY_AGG(DISTINCT cp.product_id) AS products
+    FROM content c
+    JOIN topic t ON t.id = c.topic_id
+    JOIN subcategory s ON s.id = t.subcategory_id 
+    JOIN category cat ON cat.id = s.category_id
+    LEFT JOIN content_source cs ON cs.content_id = c.id
+    LEFT JOIN source sc ON sc.id = cs.source_id
+    LEFT JOIN content_product cp ON cp.content_id = c.id
+    WHERE c.geo_level = %s
+    GROUP BY 
+        c.id, 
+        cat.name, 
+        s.name, 
+        t.name,
+        t.sort_weight
+    ORDER BY 
+        t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
 
@@ -79,7 +95,7 @@ async def update_content_properties(id, values):
         UPDATE content
         SET {values}
         WHERE id = {id}
-        RETURNING id
+        RETURNING id, geo_level
     """
     return execute_update(query)
 
