@@ -9,7 +9,7 @@ from services.content_source import sync_content_source
 from services.viz_source import sync_viz_source
 from services.content_product import sync_content_product
 
-from services.revalidate import revalidate_frontend
+from services.revalidate import revalidate_frontend, revalidate_all
 from jinja.template import env
 
 log = logging.getLogger(__name__)
@@ -58,22 +58,48 @@ async def build_content(geo_level, profile):
             "content_id": content["id"],
             "category_id": content["category_id"],
             "content": populated_content,
-            "subcategories": {}
+            "subcategories": []
         }
 
     for content in all_content:
         populated_content = populate_template(content['file'], profile)
 
         category = content['category']
+        subcategory_id = content['subcategory_id']
         subcategory = content['subcategory']
+        subcategory_label = content['subcategory_label']
 
-        if subcategory not in content_map[category]['subcategories']:
-            content_map[category]['subcategories'][subcategory] = []
+        subcat_entry = next(
+            (sc for sc in content_map[category]["subcategories"]
+             if sc["id"] == subcategory_id), None
+        )
 
-        content_map[category]['subcategories'][subcategory].append({
+        if not subcat_entry:
+            subcat_entry ={
+                'id': subcategory_id,
+                'name': subcategory,
+                'label': subcategory_label,
+                'topics': []
+            }
+            content_map[category]["subcategories"].append(subcat_entry)
+
+        topic_label = content['topic_label']
+        citations = content['citations']
+        products = content['products']
+
+        if citations[0] is None:
+            citations = []
+
+        if products[0] is None:
+            products = []
+
+        subcat_entry['topics'].append({
             'id': content['id'],
             'name': content['topic'],
-            'content': populated_content
+            'label': topic_label,
+            'content': populated_content,
+            'citations': citations,
+            'related_products': products
         })
 
     return content_map
@@ -98,7 +124,7 @@ async def update_content(id: int, body: str):
         current_content['parent_id'] = current_content.pop('id')
         for key in ['source_ids', 'product_ids', 'label']:
             del current_content[key]
-            
+
         await content_history_repo.create(current_content)
         revalidate_frontend(current_content['geo_level'])
         return {"message": "Content updated succesfully"}
@@ -130,6 +156,7 @@ async def build_template_tree(geo_level):
         subcat_id = row["subcategory_id"]
         subcat_name = row["subcategory"]
         subcat_label = row["subcategory_label"]
+        sort_weight = row["subcategory_sort_weight"]
 
         subcat_entry = next(
             (sc for sc in tree[category]["subcategories"]
@@ -142,6 +169,7 @@ async def build_template_tree(geo_level):
                 "id": subcat_id,
                 "label": subcat_label,
                 "category_id": category_id,
+                "sort_weight": sort_weight,
                 "topics": []
             }
             tree[category]["subcategories"].append(subcat_entry)
@@ -155,6 +183,7 @@ async def build_template_tree(geo_level):
 
     return tree
 
+
 async def update_content_properties(id, properties):
     if 'content_sources' in properties:
         await sync_content_source(id, properties['content_sources'])
@@ -165,23 +194,23 @@ async def update_content_properties(id, properties):
     if 'related_products' in properties:
         await sync_content_product(id, properties['related_products'])
         del properties['related_products']
-    
+
     request_values = ""
-    
+
     if not properties:
-        return 
+        revalidate_all()
+        return id
     for key, value in properties.items():
-        if(isinstance(value, str)):
+        if (isinstance(value, str)):
             pair = f"{key} = '{value}'"
         else:
             pair = f"{key} = {value}"
 
         if not request_values:
             request_values += pair
-        else: 
-            request_values = request_values +  ", " + pair
-            
-    update_id = await content_repo.update_content_properties(id, request_values)
-    return update_id
-    
-    
+        else:
+            request_values = request_values + ", " + pair
+
+    updated_content = await content_repo.update_content_properties(id, request_values)
+    revalidate_frontend(updated_content[1])
+    return updated_content[0]

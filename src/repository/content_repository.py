@@ -1,5 +1,4 @@
 from datetime import datetime
-from fastapi_cache.decorator import cache
 import logging
 
 from repository.utils import fetch_one, fetch_many, execute_update
@@ -10,12 +9,37 @@ log = logging.getLogger(__name__)
 async def find_by_geo(geo_level):
     log.info(f"Fetching {geo_level} content...")
     query = """
-        SELECT c.id, cat.name as category, s.name as subcategory, t.name as topic, c.file
-        FROM content c
-        JOIN topic t ON t.id = topic_id
-        JOIN subcategory s on s.id = t.subcategory_id 
-        JOIN category cat on cat.id = s.category_id 
-        WHERE geo_level = %s
+    SELECT 
+        c.id,
+        c.file,
+        cat.name AS category, 
+        s.name AS subcategory,
+        s.id AS subcategory_id,
+        s.label AS subcategory_label,
+        t.name AS topic, 
+        t.label AS topic_label,
+        ARRAY_AGG(DISTINCT sc.citation) AS citations,
+        ARRAY_AGG(DISTINCT cp.product_id) AS products
+    FROM content c
+    JOIN topic t ON t.id = c.topic_id
+    JOIN subcategory s ON s.id = t.subcategory_id 
+    JOIN category cat ON cat.id = s.category_id
+    LEFT JOIN content_source cs ON cs.content_id = c.id
+    LEFT JOIN source sc ON sc.id = cs.source_id
+    LEFT JOIN content_product cp ON cp.content_id = c.id
+    WHERE c.geo_level = %s
+    GROUP BY 
+        c.id, 
+        cat.name, 
+        s.name, 
+        t.name,
+        t.sort_weight,
+        s.sort_weight,
+        s.id,
+        t.label
+    ORDER BY 
+        s.sort_weight DESC,
+        t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
 
@@ -38,6 +62,7 @@ async def find_one(id: int):
         SELECT 
             c.*,
             t.label,
+            t.sort_weight,
             COALESCE(cs.source_ids, '{}') AS source_ids,
             COALESCE(cp.product_ids, '{}') AS product_ids
         FROM content c
@@ -69,6 +94,7 @@ async def update(id, body):
     """
     return execute_update(query, (body, now, id))
 
+
 async def update_content_properties(id, values):
     log.info(
         f"Updating content: {id}")
@@ -76,28 +102,32 @@ async def update_content_properties(id, values):
         UPDATE content
         SET {values}
         WHERE id = {id}
-        RETURNING id
+        RETURNING id, geo_level
     """
     return execute_update(query)
+
 
 async def find_tree(geo_level):
     query = """
         SELECT 
             c.id AS id,
+            t.id AS topic_id,
             t.name AS topic,
             t.label AS topic_label,
-            t.id AS topic_id,
+            t.sort_weight as sort_weight,
             s.id AS subcategory_id,
             s.name AS subcategory,
             s.label AS subcategory_label,
+            s.sort_weight as subcategory_sort_weight,
             cat.name as category,
             cat.label as category_label,
             cat.id as category_id
         FROM content c
-        JOIN topic t ON t.id = c.topic_id
-        join subcategory s on s.id = t.subcategory_id 
-        join category cat on cat.id = s.category_id 
+        JOIN topic AS t ON t.id = c.topic_id
+        join subcategory AS s on s.id = t.subcategory_id 
+        join category AS cat on cat.id = s.category_id 
         where c.geo_level = %s
+        ORDER by s.sort_weight DESC, t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
 
