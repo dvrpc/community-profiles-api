@@ -13,9 +13,9 @@ router = APIRouter(
 )
 
 
-@router.put('/subcategory')
-async def update_subcategory(id: int, name: str, admin=Depends(require_admin)):
-    res = await tree_service.update_subcategory(id, name)
+@router.put('/subcategory/{id}')
+async def update_subcategory(id, subcategory: dict, admin=Depends(require_admin)):
+    res = await tree_service.update_subcategory(id, subcategory)
     return res
 
 

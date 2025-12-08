@@ -13,8 +13,11 @@ async def find_by_geo(geo_level):
         c.id,
         c.file,
         cat.name AS category, 
-        s.name AS subcategory, 
+        s.name AS subcategory,
+        s.id AS subcategory_id,
+        s.label AS subcategory_label,
         t.name AS topic, 
+        t.label AS topic_label,
         ARRAY_AGG(DISTINCT sc.citation) AS citations,
         ARRAY_AGG(DISTINCT cp.product_id) AS products
     FROM content c
@@ -30,8 +33,12 @@ async def find_by_geo(geo_level):
         cat.name, 
         s.name, 
         t.name,
-        t.sort_weight
+        t.sort_weight,
+        s.sort_weight,
+        s.id,
+        t.label
     ORDER BY 
+        s.sort_weight DESC,
         t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
@@ -111,6 +118,7 @@ async def find_tree(geo_level):
             s.id AS subcategory_id,
             s.name AS subcategory,
             s.label AS subcategory_label,
+            s.sort_weight as subcategory_sort_weight,
             cat.name as category,
             cat.label as category_label,
             cat.id as category_id
@@ -119,7 +127,7 @@ async def find_tree(geo_level):
         join subcategory AS s on s.id = t.subcategory_id 
         join category AS cat on cat.id = s.category_id 
         where c.geo_level = %s
-        ORDER by t.sort_weight DESC;
+        ORDER by s.sort_weight DESC, t.sort_weight DESC;
     """
     return fetch_many(query, (geo_level,))
 

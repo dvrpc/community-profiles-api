@@ -48,13 +48,6 @@ async def create_topic(subcategory_id, name):
     return res
 
 
-async def update_subcategory(id: int, name: str):
-    label = create_label(name)
-
-    res = await subcategory_repo.update(id, name, label)
-    revalidation_service.revalidate_all()
-
-    return res
 
 
 async def update_topic(id: str, topic: dict):
@@ -74,3 +67,29 @@ async def update_topic(id: str, topic: dict):
     res = await topic_repo.update(id, value_str)
     revalidation_service.revalidate_all()
     return res
+
+async def update_subcategory(id: str, subcategory: dict):
+    values = []
+
+    if 'name' in subcategory:
+        label = create_label(subcategory['name'])
+        values.append(f"name = '{subcategory['name']}'")
+        values.append(f"label = '{label}'")
+    else:
+        if 'label' in subcategory:
+            values.append(f"label = '{subcategory['label']}'")
+        if 'sort_weight' in subcategory:
+            values.append(f"sort_weight = {subcategory['sort_weight']}")
+
+    value_str = ','.join(values)
+    res = await subcategory_repo.update(id, value_str)
+    revalidation_service.revalidate_all()
+    return res
+
+# async def update_subcategory(id: int, name: str):
+#     label = create_label(name)
+
+#     res = await subcategory_repo.update(id, name, label)
+#     revalidation_service.revalidate_all()
+
+#     return res

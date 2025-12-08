@@ -1,17 +1,23 @@
-from repository.utils import fetch_many, execute_update
+from repository.utils import fetch_many, execute_update, fetch_one
 
 
-
-
-async def update(id, name, label):
+async def get(id):
     query = """
-        UPDATE subcategory
-        SET name = %s, label = %s
+        SELECT * 
+        FROM subcategory
         WHERE id = %s;
+    """
+    return fetch_one(query, (id,))
+
+async def update(id, values):
+    query = f"""
+        UPDATE subcategory
+        SET {values}
+        WHERE id = {id}
         RETURNING (id)
     """
-    
-    return execute_update(query, (name, label, id))
+    return execute_update(query)
+
 
 
 

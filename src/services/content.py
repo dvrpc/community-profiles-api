@@ -58,18 +58,32 @@ async def build_content(geo_level, profile):
             "content_id": content["id"],
             "category_id": content["category_id"],
             "content": populated_content,
-            "subcategories": {}
+            "subcategories": []
         }
 
     for content in all_content:
         populated_content = populate_template(content['file'], profile)
 
         category = content['category']
+        subcategory_id = content['subcategory_id']
         subcategory = content['subcategory']
+        subcategory_label = content['subcategory_label']
 
-        if subcategory not in content_map[category]['subcategories']:
-            content_map[category]['subcategories'][subcategory] = []
+        subcat_entry = next(
+            (sc for sc in content_map[category]["subcategories"]
+             if sc["id"] == subcategory_id), None
+        )
 
+        if not subcat_entry:
+            subcat_entry ={
+                'id': subcategory_id,
+                'name': subcategory,
+                'label': subcategory_label,
+                'topics': []
+            }
+            content_map[category]["subcategories"].append(subcat_entry)
+
+        topic_label = content['topic_label']
         citations = content['citations']
         products = content['products']
 
@@ -79,9 +93,10 @@ async def build_content(geo_level, profile):
         if products[0] is None:
             products = []
 
-        content_map[category]['subcategories'][subcategory].append({
+        subcat_entry['topics'].append({
             'id': content['id'],
             'name': content['topic'],
+            'label': topic_label,
             'content': populated_content,
             'citations': citations,
             'related_products': products
@@ -141,6 +156,7 @@ async def build_template_tree(geo_level):
         subcat_id = row["subcategory_id"]
         subcat_name = row["subcategory"]
         subcat_label = row["subcategory_label"]
+        sort_weight = row["subcategory_sort_weight"]
 
         subcat_entry = next(
             (sc for sc in tree[category]["subcategories"]
@@ -153,6 +169,7 @@ async def build_template_tree(geo_level):
                 "id": subcat_id,
                 "label": subcat_label,
                 "category_id": category_id,
+                "sort_weight": sort_weight,
                 "topics": []
             }
             tree[category]["subcategories"].append(subcat_entry)
@@ -182,6 +199,7 @@ async def update_content_properties(id, properties):
 
     if not properties:
         revalidate_all()
+        return id
     for key, value in properties.items():
         if (isinstance(value, str)):
             pair = f"{key} = '{value}'"
