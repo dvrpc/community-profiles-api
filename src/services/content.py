@@ -178,6 +178,7 @@ async def build_template_tree(geo_level):
             "name": row["topic"],
             "id": row["topic_id"],
             "label": row["topic_label"],
+            "is_visible": row['is_visible'],
             "content_id": row["id"]
         })
 

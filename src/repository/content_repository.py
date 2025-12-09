@@ -27,7 +27,7 @@ async def find_by_geo(geo_level):
     LEFT JOIN content_source cs ON cs.content_id = c.id
     LEFT JOIN source sc ON sc.id = cs.source_id
     LEFT JOIN content_product cp ON cp.content_id = c.id
-    WHERE c.geo_level = %s
+    WHERE c.geo_level = %s AND c.is_visible = True
     GROUP BY 
         c.id, 
         cat.name, 
@@ -111,6 +111,7 @@ async def find_tree(geo_level):
     query = """
         SELECT 
             c.id AS id,
+            c.is_visible,
             t.id AS topic_id,
             t.name AS topic,
             t.label AS topic_label,
