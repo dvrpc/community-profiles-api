@@ -4,6 +4,7 @@ import repository.content_repository as content_repo
 import repository.content_history_repository as content_history_repo
 import services.content as content_service
 from services.auth import require_admin
+from schemas.content import ContentRequest
 
 router = APIRouter(
     prefix="/content",
@@ -56,14 +57,16 @@ async def get_content_preview(geo_level: str, geoid: str = None, body: str = Bod
 
 
 @router.put('/{id}')
-async def update_content(id: int, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
+async def update_content(id: int, body: ContentRequest = Body(..., media_type="application/json"), admin=Depends(require_admin)):
     res = await content_service.update_content(id, body)
     return res
+
 
 @router.put('/{id}/properties')
 async def update_content_properties(id: int, body: dict = Body(..., media_type="application/json"), admin=Depends(require_admin)):
     res = await content_service.update_content_properties(id, body)
     return res
+
 
 @router.get('/{id}/history')
 async def get_content_history(id: int):
@@ -74,7 +77,6 @@ async def get_content_history(id: int):
     all_content += history
 
     return all_content
-
 
 
 @router.get('/tree/{geo_level}')

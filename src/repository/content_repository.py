@@ -82,17 +82,26 @@ async def find_one(id: int):
     return fetch_one(query, (id,))
 
 
-async def update(id, body):
+async def find_one_basic(id: int):
+    log.info(f"Fetching content {id}...")
+    query = """
+        SELECT * from content
+        WHERE id = %s;
+    """
+    return fetch_one(query, (id,))
+
+
+async def update(id, text, user):
     now = datetime.now()
     log.info(
         f"Updating content: {id}")
     query = """
         UPDATE content
-        SET file = %s, create_date = %s
+        SET file = %s, create_date = %s, last_edited_by = %s
         WHERE id = %s
         RETURNING id
     """
-    return execute_update(query, (body, now, id))
+    return execute_update(query, (text, now, user, id))
 
 
 async def update_content_properties(id, values):
