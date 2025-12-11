@@ -100,7 +100,10 @@ async def build_content(geo_level, profile):
             'label': topic_label,
             'content': populated_content,
             'citations': citations,
-            'related_products': products
+            'related_products': products,
+            'catalog_link': content['catalog_link'] if content['catalog_link'] is not None else "",
+            'census_link': content['census_link'] if content['census_link'] is not None else "",
+            'other_link': content['other_link'] if content['other_link'] is not None else ""
         })
 
     return content_map

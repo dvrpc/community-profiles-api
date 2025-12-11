@@ -12,6 +12,9 @@ async def find_by_geo(geo_level):
     SELECT 
         c.id,
         c.file,
+        c.catalog_link,
+        c.census_link,
+        c.other_link,
         cat.name AS category, 
         s.name AS subcategory,
         s.id AS subcategory_id,
