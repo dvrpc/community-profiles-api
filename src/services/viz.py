@@ -1,7 +1,7 @@
 import logging
 # from repository.viz_repository import find_by_filters, update
 # from repository.viz_history_repository import create, delete, find_by_filters
-
+from schemas.viz import VizRequest
 import repository.viz_repository as viz_repo
 import repository.viz_history_repository as viz_history_repo
 
@@ -37,10 +37,10 @@ async def build_viz(viz, profile):
     return populated_viz
 
 
-async def update_viz(id: int, body: str):
-    current_viz = await viz_repo.find_one(id)
+async def update_viz(id: int, body: VizRequest):
+    current_viz = await viz_repo.find_one_basic(id)
     if (current_viz):
-        await viz_repo.update(id, body)
+        await viz_repo.update(id, body.text, body.user)
 
         history = await viz_history_repo.find_by_parent_id(id)
 
@@ -48,7 +48,7 @@ async def update_viz(id: int, body: str):
             await viz_history_repo.delete(history[-1]['id'])
 
         current_viz['parent_id'] = current_viz.pop('id')
-        del current_viz['source_ids']
+
         await viz_history_repo.create(current_viz)
         return {"message": "viz updated succesfully"}
     else:

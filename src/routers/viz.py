@@ -7,6 +7,7 @@ import repository.viz_repository as viz_repo
 import repository.viz_history_repository as viz_history_repo
 import services.viz as viz_service
 from services.auth import require_admin
+from schemas.viz import VizRequest
 import json
 
 
@@ -69,7 +70,7 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 
 
 @router.put('/{id}')
-async def update_viz(id: int, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
+async def update_viz(id: int, body: VizRequest, admin=Depends(require_admin)):
     res = await viz_service.update_viz(id, body)
     return res
 

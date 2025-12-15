@@ -8,6 +8,7 @@ import repository.content_history_repository as content_history_repo
 from services.content_source import sync_content_source
 from services.viz_source import sync_viz_source
 from services.content_product import sync_content_product
+from schemas.content import ContentRequest
 
 from services.revalidate import revalidate_frontend, revalidate_all
 from jinja.template import env
@@ -75,7 +76,7 @@ async def build_content(geo_level, profile):
         )
 
         if not subcat_entry:
-            subcat_entry ={
+            subcat_entry = {
                 'id': subcategory_id,
                 'name': subcategory,
                 'label': subcategory_label,
@@ -99,7 +100,10 @@ async def build_content(geo_level, profile):
             'label': topic_label,
             'content': populated_content,
             'citations': citations,
-            'related_products': products
+            'related_products': products,
+            'catalog_link': content['catalog_link'] if content['catalog_link'] is not None else "",
+            'census_link': content['census_link'] if content['census_link'] is not None else "",
+            'other_link': content['other_link'] if content['other_link'] is not None else ""
         })
 
     return content_map
@@ -110,11 +114,11 @@ async def build_single_content(template: str, profile):
     return populated_content
 
 
-async def update_content(id: int, body: str):
-    current_content = await content_repo.find_one(id)
+async def update_content(id: int, body: ContentRequest):
+    current_content = await content_repo.find_one_basic(id)
 
     if (current_content):
-        await content_repo.update(id, body)
+        await content_repo.update(id, body.text, body.user)
 
         history = await content_history_repo.find_by_parent_id(id)
 
@@ -122,8 +126,6 @@ async def update_content(id: int, body: str):
             await content_history_repo.delete(history[-1]['id'])
 
         current_content['parent_id'] = current_content.pop('id')
-        for key in ['source_ids', 'product_ids', 'label']:
-            del current_content[key]
 
         await content_history_repo.create(current_content)
         revalidate_frontend(current_content['geo_level'])
@@ -178,6 +180,7 @@ async def build_template_tree(geo_level):
             "name": row["topic"],
             "id": row["topic_id"],
             "label": row["topic_label"],
+            "is_visible": row['is_visible'],
             "content_id": row["id"]
         })
 

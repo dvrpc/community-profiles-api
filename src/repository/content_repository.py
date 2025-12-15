@@ -12,6 +12,9 @@ async def find_by_geo(geo_level):
     SELECT 
         c.id,
         c.file,
+        c.catalog_link,
+        c.census_link,
+        c.other_link,
         cat.name AS category, 
         s.name AS subcategory,
         s.id AS subcategory_id,
@@ -27,7 +30,7 @@ async def find_by_geo(geo_level):
     LEFT JOIN content_source cs ON cs.content_id = c.id
     LEFT JOIN source sc ON sc.id = cs.source_id
     LEFT JOIN content_product cp ON cp.content_id = c.id
-    WHERE c.geo_level = %s
+    WHERE c.geo_level = %s AND c.is_visible = True
     GROUP BY 
         c.id, 
         cat.name, 
@@ -82,17 +85,26 @@ async def find_one(id: int):
     return fetch_one(query, (id,))
 
 
-async def update(id, body):
+async def find_one_basic(id: int):
+    log.info(f"Fetching content {id}...")
+    query = """
+        SELECT * from content
+        WHERE id = %s;
+    """
+    return fetch_one(query, (id,))
+
+
+async def update(id, text, user):
     now = datetime.now()
     log.info(
         f"Updating content: {id}")
     query = """
         UPDATE content
-        SET file = %s, create_date = %s
+        SET file = %s, create_date = %s, last_edited_by = %s
         WHERE id = %s
         RETURNING id
     """
-    return execute_update(query, (body, now, id))
+    return execute_update(query, (text, now, user, id))
 
 
 async def update_content_properties(id, values):
@@ -111,6 +123,7 @@ async def find_tree(geo_level):
     query = """
         SELECT 
             c.id AS id,
+            c.is_visible,
             t.id AS topic_id,
             t.name AS topic,
             t.label AS topic_label,
