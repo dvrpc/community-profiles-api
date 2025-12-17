@@ -12,6 +12,7 @@ from schemas.content import ContentRequest
 
 from services.revalidate import revalidate_frontend, revalidate_all
 from jinja.template import env
+from jinja2 import meta
 
 log = logging.getLogger(__name__)
 
@@ -38,9 +39,13 @@ content_category_map = {
     'roadways': []
 }
 
-
-def populate_template(md, profile):
-    html_conversion = mistune.html(md)
+excluded_variables = {'geoid', 'state', 'county', 'mun_name'}
+def get_template_variables(html_conversion):
+    parsed = env.parse(html_conversion)
+    variables = meta.find_undeclared_variables(parsed)
+    return variables - excluded_variables
+    
+def populate_template(html_conversion, profile):
     template = env.from_string(html_conversion)
     rendered_html = template.render(profile)
     return rendered_html
@@ -53,7 +58,8 @@ async def build_content(geo_level, profile):
     content_map = {}
 
     for content in category_content:
-        populated_content = populate_template(content['file'], profile)
+        html_conversion = mistune.html(content['file'])
+        populated_content = populate_template(html_conversion, profile)
 
         content_map[content['category']] = {
             "content_id": content["id"],
@@ -63,7 +69,10 @@ async def build_content(geo_level, profile):
         }
 
     for content in all_content:
-        populated_content = populate_template(content['file'], profile)
+        html_conversion = mistune.html(content['file'])
+        
+        populated_content = populate_template(html_conversion, profile)
+        variables = get_template_variables(html_conversion)
 
         category = content['category']
         subcategory_id = content['subcategory_id']
@@ -103,14 +112,16 @@ async def build_content(geo_level, profile):
             'related_products': products,
             'catalog_link': content['catalog_link'] if content['catalog_link'] is not None else "",
             'census_link': content['census_link'] if content['census_link'] is not None else "",
-            'other_link': content['other_link'] if content['other_link'] is not None else ""
+            'other_link': content['other_link'] if content['other_link'] is not None else "",
+            'variables': variables
         })
 
     return content_map
 
 
 async def build_single_content(template: str, profile):
-    populated_content = populate_template(template, profile)
+    html_conversion = mistune.html(template)
+    populated_content = populate_template(html_conversion, profile)
     return populated_content
 
 

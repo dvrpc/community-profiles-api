@@ -1,7 +1,7 @@
 from fastapi_cache.decorator import cache
 import logging
 
-from repository.utils import fetch_one
+from repository.utils import fetch_many, fetch_one
 
 log = logging.getLogger(__name__)
 
@@ -25,3 +25,12 @@ async def find_region():
     log.info("Fetching regional profile")
     query = "SELECT * FROM region"
     return fetch_one(query)
+
+async def find_variable_names(geo_level):
+    query = """
+        select column_name
+        from information_schema.columns
+        where table_name = %s
+    """
+    return fetch_many(query, (geo_level,))
+    
