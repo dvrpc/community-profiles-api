@@ -2,14 +2,13 @@
 -- PostgreSQL database dump
 --
 
-\restrict rve7meV35U30pepY4FQw6GKFADH1eKtxdH2lGDKZ5jyI74BXwHDhccWqTSyGISk
-
--- Dumped from database version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
--- Dumped by pg_dump version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
+-- Dumped from database version 14.22 (Ubuntu 14.22-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 17.2 (Ubuntu 17.2-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -18,12 +17,21 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: category; Type: TABLE; Schema: public; Owner: -
+-- Name: category; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.category (
@@ -34,8 +42,10 @@ CREATE TABLE public.category (
 );
 
 
+ALTER TABLE public.category OWNER TO postgres;
+
 --
--- Name: category_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: category_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.category_id_seq
@@ -47,15 +57,17 @@ CREATE SEQUENCE public.category_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.category_id_seq OWNER TO postgres;
+
 --
--- Name: category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.category_id_seq OWNED BY public.category.id;
 
 
 --
--- Name: content; Type: TABLE; Schema: public; Owner: -
+-- Name: content; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.content (
@@ -66,15 +78,14 @@ CREATE TABLE public.content (
     topic_id integer,
     category_id integer,
     is_visible boolean DEFAULT true,
-    census_link character varying(255),
-    catalog_link character varying(255),
-    last_edited_by character varying(255),
-    other_link character varying(255)
+    last_edited_by character varying(255)
 );
 
 
+ALTER TABLE public.content OWNER TO postgres;
+
 --
--- Name: content_history; Type: TABLE; Schema: public; Owner: -
+-- Name: content_history; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.content_history (
@@ -84,17 +95,16 @@ CREATE TABLE public.content_history (
     topic_id integer,
     category_id integer,
     is_visible boolean,
-    census_link character varying(255),
-    catalog_link character varying(255),
     parent_id integer,
     id integer NOT NULL,
-    last_edited_by character varying(255),
-    other_link character varying(255)
+    last_edited_by character varying(255)
 );
 
 
+ALTER TABLE public.content_history OWNER TO postgres;
+
 --
--- Name: content_history_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: content_history_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 ALTER TABLE public.content_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -108,7 +118,7 @@ ALTER TABLE public.content_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENT
 
 
 --
--- Name: content_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: content_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.content_id_seq
@@ -120,15 +130,29 @@ CREATE SEQUENCE public.content_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.content_id_seq OWNER TO postgres;
+
 --
--- Name: content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.content_id_seq OWNED BY public.content.id;
 
 
 --
--- Name: content_product; Type: TABLE; Schema: public; Owner: -
+-- Name: content_link; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.content_link (
+    content_id integer NOT NULL,
+    link_id integer NOT NULL
+);
+
+
+ALTER TABLE public.content_link OWNER TO postgres;
+
+--
+-- Name: content_product; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.content_product (
@@ -137,8 +161,10 @@ CREATE TABLE public.content_product (
 );
 
 
+ALTER TABLE public.content_product OWNER TO postgres;
+
 --
--- Name: content_source; Type: TABLE; Schema: public; Owner: -
+-- Name: content_source; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.content_source (
@@ -147,8 +173,10 @@ CREATE TABLE public.content_source (
 );
 
 
+ALTER TABLE public.content_source OWNER TO postgres;
+
 --
--- Name: county; Type: TABLE; Schema: public; Owner: -
+-- Name: county; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.county (
@@ -728,8 +756,45 @@ CREATE TABLE public.county (
 );
 
 
+ALTER TABLE public.county OWNER TO postgres;
+
 --
--- Name: municipality; Type: TABLE; Schema: public; Owner: -
+-- Name: link; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.link (
+    id integer NOT NULL,
+    link character varying(255) NOT NULL,
+    type character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.link OWNER TO postgres;
+
+--
+-- Name: links_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.links_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.links_id_seq OWNER TO postgres;
+
+--
+-- Name: links_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.links_id_seq OWNED BY public.link.id;
+
+
+--
+-- Name: municipality; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.municipality (
@@ -1290,8 +1355,10 @@ CREATE TABLE public.municipality (
 );
 
 
+ALTER TABLE public.municipality OWNER TO postgres;
+
 --
--- Name: region; Type: TABLE; Schema: public; Owner: -
+-- Name: region; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.region (
@@ -1866,8 +1933,10 @@ CREATE TABLE public.region (
 );
 
 
+ALTER TABLE public.region OWNER TO postgres;
+
 --
--- Name: source; Type: TABLE; Schema: public; Owner: -
+-- Name: source; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.source (
@@ -1880,8 +1949,10 @@ CREATE TABLE public.source (
 );
 
 
+ALTER TABLE public.source OWNER TO postgres;
+
 --
--- Name: source_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: source_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.source_id_seq
@@ -1893,15 +1964,17 @@ CREATE SEQUENCE public.source_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.source_id_seq OWNER TO postgres;
+
 --
--- Name: source_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: source_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.source_id_seq OWNED BY public.source.id;
 
 
 --
--- Name: subcategory; Type: TABLE; Schema: public; Owner: -
+-- Name: subcategory; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.subcategory (
@@ -1913,8 +1986,10 @@ CREATE TABLE public.subcategory (
 );
 
 
+ALTER TABLE public.subcategory OWNER TO postgres;
+
 --
--- Name: subcategory_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: subcategory_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.subcategory_id_seq
@@ -1926,15 +2001,17 @@ CREATE SEQUENCE public.subcategory_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.subcategory_id_seq OWNER TO postgres;
+
 --
--- Name: subcategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: subcategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.subcategory_id_seq OWNED BY public.subcategory.id;
 
 
 --
--- Name: topic; Type: TABLE; Schema: public; Owner: -
+-- Name: topic; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.topic (
@@ -1946,8 +2023,10 @@ CREATE TABLE public.topic (
 );
 
 
+ALTER TABLE public.topic OWNER TO postgres;
+
 --
--- Name: topic_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: topic_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.topic_id_seq
@@ -1959,15 +2038,53 @@ CREATE SEQUENCE public.topic_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.topic_id_seq OWNER TO postgres;
+
 --
--- Name: topic_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: topic_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.topic_id_seq OWNED BY public.topic.id;
 
 
 --
--- Name: viz_history; Type: TABLE; Schema: public; Owner: -
+-- Name: variable; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.variable (
+    id integer NOT NULL,
+    name text NOT NULL,
+    category text NOT NULL,
+    data_source text,
+    geo_level text,
+    acs_variable text,
+    gis_table text,
+    resource_ids text,
+    data_year integer,
+    catalog_table text,
+    description text,
+    acs_concept text
+);
+
+
+ALTER TABLE public.variable OWNER TO postgres;
+
+--
+-- Name: variables_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.variable ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.variables_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: viz_history; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.viz_history (
@@ -1981,8 +2098,10 @@ CREATE TABLE public.viz_history (
 );
 
 
+ALTER TABLE public.viz_history OWNER TO postgres;
+
 --
--- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 ALTER TABLE public.viz_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -1996,7 +2115,7 @@ ALTER TABLE public.viz_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY 
 
 
 --
--- Name: viz; Type: TABLE; Schema: public; Owner: -
+-- Name: viz; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.viz (
@@ -2009,8 +2128,10 @@ CREATE TABLE public.viz (
 );
 
 
+ALTER TABLE public.viz OWNER TO postgres;
+
 --
--- Name: viz_source; Type: TABLE; Schema: public; Owner: -
+-- Name: viz_source; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.viz_source (
@@ -2019,43 +2140,52 @@ CREATE TABLE public.viz_source (
 );
 
 
+ALTER TABLE public.viz_source OWNER TO postgres;
+
 --
--- Name: category id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: category id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.category ALTER COLUMN id SET DEFAULT nextval('public.category_id_seq'::regclass);
 
 
 --
--- Name: content id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: content id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content ALTER COLUMN id SET DEFAULT nextval('public.content_id_seq'::regclass);
 
 
 --
--- Name: source id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: link id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.link ALTER COLUMN id SET DEFAULT nextval('public.links_id_seq'::regclass);
+
+
+--
+-- Name: source id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.source ALTER COLUMN id SET DEFAULT nextval('public.source_id_seq'::regclass);
 
 
 --
--- Name: subcategory id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcategory id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.subcategory ALTER COLUMN id SET DEFAULT nextval('public.subcategory_id_seq'::regclass);
 
 
 --
--- Name: topic id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: topic id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.topic ALTER COLUMN id SET DEFAULT nextval('public.topic_id_seq'::regclass);
 
 
 --
--- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.category (id, name, label, sort_weight) FROM stdin;
@@ -2071,201 +2201,210 @@ COPY public.category (id, name, label, sort_weight) FROM stdin;
 
 
 --
--- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.content (geo_level, file, create_date, id, topic_id, category_id, is_visible, census_link, catalog_link, last_edited_by, other_link) FROM stdin;
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward.\n	2025-10-20 15:28:41.091245	82	5	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward.\n	2025-10-20 15:28:41.091245	16	5	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div>\n	2025-10-20 15:28:41.091245	67	12	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. hello 12\n\n{{display_variable(total_pop, 'Population')}}\n	2025-11-04 11:16:02.468487	70	24	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050', county + ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2025-10-20 15:28:41.091245	69	25	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc region\n	2025-11-25 11:58:39.719926	11	10	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 123\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n</div>\n	2025-12-02 09:50:28.26238	66	1	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc\n	2025-12-02 11:02:31.827238	68	18	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n\npopulation1\n\n{{display_variable(total_pop, 'Population', county + ' County')}}\n	2025-12-11 10:32:19.251428	37	24	\N	t			Colin Kirby	
-county	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123456\n \n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050', county + ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu. 4\n	2025-12-01 16:28:57.198896	36	25	\N	t	https://catalog.dvrpc.org/dataset/adopted-2050-v2-0-population-employment-forecasts,https://catalog.dvrpc.org/dataset/land-use-totals	https://catalog.dvrpc.org/dataset/adopted-2050-v2-0-population-employment-forecasts,https://catalog.dvrpc.org/dataset/land-use-totals	\N	https://catalog.dvrpc.org/dataset/adopted-2050-v2-0-population-employment-forecasts,https://catalog.dvrpc.org/dataset/land-use-totals
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 12345677\n	2025-12-02 12:45:33.179071	38	33	\N	t	d	abc	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	71	33	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	2	18	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234567\n\n{{display_variable(total_pop, 'Population')}}\n	2025-11-04 11:09:19.048915	4	24	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2025-10-20 15:28:41.091245	3	25	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-12 12:04:31.533394	39	13	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	40	14	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	41	28	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc\n	2025-11-03 14:30:26.672563	42	34	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	72	13	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	73	14	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	74	28	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	75	34	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	6	13	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	7	14	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	8	28	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	9	34	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n1234567\n	2025-11-12 11:50:44.220696	43	11	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	76	11	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	10	11	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	78	15	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	79	26	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	12	15	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	13	26	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-19 10:05:24.009846	46	26	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-12 11:45:27.786063	47	6	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	48	8	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. muni\n	2025-11-25 11:58:26.834227	77	10	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	80	6	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	81	8	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	14	6	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	15	8	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	58	20	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	92	20	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	26	20	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	59	17	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	93	17	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	27	17	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	57	16	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	91	16	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	85	7	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	25	16	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	63	3	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	64	22	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	97	3	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	98	22	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	31	3	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	32	22	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	65	32	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	99	32	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	33	32	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	52	9	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	53	29	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	54	30	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	86	9	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	87	29	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	62	31	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	22	30	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	96	31	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	30	31	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	60	4	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	61	27	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	94	4	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	95	27	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	28	4	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	29	27	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward. 12345\n	2025-11-17 10:47:42.762916	100	5	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2345	2025-11-17 10:45:38.356564	51	7	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	19	7	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	49	19	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	83	19	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	17	19	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\ntest	2025-10-27 16:23:26.168283	101	1	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	50	23	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	84	23	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	18	23	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc1234\n	2025-11-04 10:53:23.941854	35	18	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	5	33	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	88	30	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	20	9	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	21	29	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	55	2	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	56	21	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	89	2	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	90	21	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	23	2	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	24	21	\N	t	\N	\N	\N	\N
-county	county ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. 123	2025-11-25 11:59:11.160237	137	\N	1	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	140	\N	2	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	141	\N	2	t	\N	\N	\N	\N
-region	region ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n	2025-11-25 11:59:05.654913	138	\N	1	t	\N	\N	\N	\N
-municipality	muni ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 12:01:21.625969	139	\N	1	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	142	\N	2	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	144	\N	3	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	145	\N	3	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	146	\N	4	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	147	\N	4	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	148	\N	4	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	149	\N	5	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	150	\N	5	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 15:23:50.154339	186	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 15:23:50.165602	187	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 15:23:50.174807	188	\N	\N	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	151	\N	5	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	152	\N	6	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	153	\N	6	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	154	\N	6	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	155	\N	7	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	156	\N	7	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	157	\N	7	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	158	\N	8	t	\N	\N	\N	\N
-region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	159	\N	8	t	\N	\N	\N	\N
-municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	160	\N	8	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123 county\n	2025-11-25 11:47:45.593111	45	15	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n county	2025-11-25 11:48:28.397472	44	10	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:36:09.571631	161	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:36:09.585237	162	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:36:09.59456	163	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:58:14.738207	164	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:09:54.568826	168	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:09:54.589094	170	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:09:54.57912	169	\N	\N	t	123	abc	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:59:47.518121	165	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:59:47.5285	166	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:59:47.5382	167	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nhelli	2025-12-01 16:23:03.995216	172	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:22:53.414121	171	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:22:53.437687	173	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abcd\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div>\n	2025-12-02 10:52:11.510207	1	12	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div> 123\n	2025-11-17 10:54:44.441259	34	12	\N	t	123	abc12	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.295494	177	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.306822	178	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.316488	179	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.66402	174	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.676426	175	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.68664	176	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 10:49:57.858924	180	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 10:49:57.870654	181	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 10:49:57.878343	182	\N	\N	t	\N	\N	\N	\N
-region	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 10:50:23.350887	183	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 10:50:23.357528	184	\N	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-08 10:50:23.364853	185	\N	\N	t	\N	\N	\N	\N
-county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. 1	2025-12-11 10:32:06.896066	143	\N	3	t	\N	\N	Colin Kirby	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 123\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n{{display_variable(over_65_pop, '65 and Over', moe=over_65_pop_moe)}}\n</div>\n\n123	2025-11-17 11:26:20.471326	102	1	\N	t	ggg	b	\N	
+COPY public.content (geo_level, file, create_date, id, topic_id, category_id, is_visible, last_edited_by) FROM stdin;
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward.\n	2025-10-20 15:28:41.091245	82	5	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward.\n	2025-10-20 15:28:41.091245	16	5	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div>\n	2025-10-20 15:28:41.091245	67	12	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. hello 12\n\n{{display_variable(total_pop, 'Population')}}\n	2025-11-04 11:16:02.468487	70	24	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050', county + ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2025-10-20 15:28:41.091245	69	25	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc region\n	2025-11-25 11:58:39.719926	11	10	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 123\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n</div>\n	2025-12-02 09:50:28.26238	66	1	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc\n	2025-12-02 11:02:31.827238	68	18	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123456\n \n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050', county + ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu. 4\n	2025-12-01 16:28:57.198896	36	25	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 12345677\n	2025-12-02 12:45:33.179071	38	33	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	71	33	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	2	18	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234567\n\n{{display_variable(total_pop, 'Population')}}\n	2025-11-04 11:09:19.048915	4	24	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2025-10-20 15:28:41.091245	3	25	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-12 12:04:31.533394	39	13	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	41	28	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc\n	2025-11-03 14:30:26.672563	42	34	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	72	13	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	73	14	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	74	28	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	75	34	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	6	13	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	7	14	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	8	28	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	9	34	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n1234567\n	2025-11-12 11:50:44.220696	43	11	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	76	11	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	10	11	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	78	15	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	79	26	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	12	15	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	13	26	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-19 10:05:24.009846	46	26	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-12 11:45:27.786063	47	6	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	48	8	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. muni\n	2025-11-25 11:58:26.834227	77	10	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	80	6	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	81	8	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	14	6	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	15	8	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	58	20	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	92	20	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	26	20	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:36:09.571631	161	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	59	17	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	93	17	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	27	17	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	57	16	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	91	16	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	85	7	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	25	16	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	63	3	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	64	22	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	97	3	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	98	22	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	31	3	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	32	22	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	65	32	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	99	32	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	33	32	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	52	9	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	53	29	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	54	30	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	86	9	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	87	29	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	62	31	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	22	30	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	96	31	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	30	31	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	60	4	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	61	27	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	94	4	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	95	27	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	28	4	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	29	27	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward. 12345\n	2025-11-17 10:47:42.762916	100	5	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2345	2025-11-17 10:45:38.356564	51	7	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	19	7	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	49	19	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	83	19	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	17	19	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\ntest	2025-10-27 16:23:26.168283	101	1	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	50	23	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	84	23	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	18	23	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	5	33	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	88	30	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	20	9	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	21	29	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	55	2	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	56	21	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	89	2	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	90	21	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	23	2	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	24	21	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:36:09.585237	162	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:36:09.59456	163	\N	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:58:14.738207	164	\N	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:09:54.568826	168	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:09:54.589094	170	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:09:54.57912	169	\N	\N	t	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	140	\N	2	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	141	\N	2	t	\N
+region	region ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n	2025-11-25 11:59:05.654913	138	\N	1	t	\N
+municipality	muni ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 12:01:21.625969	139	\N	1	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	142	\N	2	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	144	\N	3	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	145	\N	3	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:59:47.518121	165	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:59:47.5285	166	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 15:59:47.5382	167	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nhelli	2025-12-01 16:23:03.995216	172	\N	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:22:53.414121	171	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-01 16:22:53.437687	173	\N	\N	t	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	146	\N	4	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	147	\N	4	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	148	\N	4	t	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	149	\N	5	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	150	\N	5	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	151	\N	5	t	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	152	\N	6	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	153	\N	6	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abcd\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div>\n	2025-12-02 10:52:11.510207	1	12	\N	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	154	\N	6	t	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	155	\N	7	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	156	\N	7	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	157	\N	7	t	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	158	\N	8	t	\N
+region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	159	\N	8	t	\N
+municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	160	\N	8	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123 county\n	2025-11-25 11:47:45.593111	45	15	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n county	2025-11-25 11:48:28.397472	44	10	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div> 123\n	2025-11-17 10:54:44.441259	34	12	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.295494	177	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.306822	178	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.316488	179	\N	\N	t	\N
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.66402	174	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.676426	175	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.68664	176	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123 \n\npopulation\n\n{{display_variable(total_pop, 'Population', county + ' County')}}\n	2025-12-10 15:18:08.232969	37	24	\N	t	Colin Kirby
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. abc	2025-12-10 15:20:58.624234	143	\N	3	t	Colin Kirby
+region	{% from 'display_variable.jinja' import display_variable %}	2025-12-03 15:27:20.124375	180	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}	2025-12-03 15:27:20.128381	181	\N	\N	t	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-03 15:27:20.130042	182	\N	\N	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 1234\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n{{display_variable(over_65_pop, '65 and Over', moe=over_65_pop_moe)}}\n</div>\n\n1234567	2025-12-10 15:18:12.614678	102	1	\N	t	Colin Kirby
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc12345\n	2025-12-04 13:32:02.395481	35	18	\N	t	\N
+county	county ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. 1234	2025-12-10 13:28:30.343772	137	\N	1	t	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nIn data_year, the typical household in Greater Philadelphia would have had to pay approximately [median_home_value / median_regional_hh_income] times their annual income to purchase the median home in county_name. \n\nHouseholds needed to earn approximately [hh_income_for_median_apt] to affordably rent the median cost rental home in [county_name] in [data_year]. In [current_year], [per_rent_burdened] percent of renters in {{county}} were cost burdened, [diff_from_region] than the regional threshold of [regional_per_rent_burdened] percent. \n\n{{county}}’s housing stock is [age_vs_region] compared to the region. [per_pre_1940] percent of the county’s homes were built prior to 1940 while over [per_post_1980] percent has been built after 1980. \n	2026-05-13 15:53:20.328438	40	14	\N	t	Colin Kirby
 \.
 
 
 --
--- Data for Name: content_history; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: content_history; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.content_history (geo_level, file, create_date, topic_id, category_id, is_visible, census_link, catalog_link, parent_id, id, last_edited_by, other_link) FROM stdin;
+COPY public.content_history (geo_level, file, create_date, topic_id, category_id, is_visible, parent_id, id, last_edited_by) FROM stdin;
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n\npopulation\n\n{{display_variable(total_pop, 'Population', county + ' County')}}\n	2025-12-10 15:11:10.954648	24	\N	t	37	21	Colin Kirby
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 123\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n{{display_variable(over_65_pop, '65 and Over', moe=over_65_pop_moe)}}\n</div>\n\n1234567	2025-12-10 13:59:21.904227	1	\N	t	102	22	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. 	2025-12-03 14:42:40.202878	\N	3	t	143	23	\N
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.  1	2025-12-10 15:20:46.557478	\N	3	t	143	24	Colin Kirby
+county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-12-10 15:20:55.094133	\N	3	t	143	25	Colin Kirby
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	14	\N	t	40	26	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nIn data_year, the typical household in Greater Philadelphia would have had to pay approximately [median_home_value / median_regional_hh_income] times their annual income to purchase the median home in county_name. \n\nHouseholds needed to earn approximately [hh_income_for_median_apt] to affordably rent the median cost rental home in [county_name] in [data_year]. In [current_year], [per_rent_burdened] percent of renters in [county_name] were cost burdened, [diff_from_region] than the regional threshold of [regional_per_rent_burdened] percent. \n\n{{county}}’s housing stock is [age_vs_region] compared to the region. [per_pre_1940] percent of the county’s homes were built prior to 1940 while over [per_post_1980] percent has been built after 1980. \n	2026-05-13 15:36:40.068343	14	\N	t	40	27	Colin Kirby
 \.
 
 
 --
--- Data for Name: content_product; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: content_link; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.content_link (content_id, link_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: content_product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.content_product (content_id, product_id) FROM stdin;
-36	WEB22016
+36	24156
 36	24131
-36	25108
-36	24122
-36	21021
-36	26108
-36	24121
+37	24131
+37	23017
+37	24109
+37	22120
 \.
 
 
 --
--- Data for Name: content_source; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: content_source; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.content_source (content_id, source_id) FROM stdin;
-36	5
+37	5
+37	10
 \.
 
 
 --
--- Data for Name: county; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: county; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.county (geoid, state, county, total_pop, total_pop_moe, male_pop, male_pop_moe, female_pop, female_pop_moe, median_age, median_age_moe, under_18_pop, under_18_pop_moe, not_hispanic_or_latino_pop, not_hispanic_or_latino_pop_moe, white_alone_pop, white_alone_pop_moe, black_alone_pop, black_alone_pop_moe, am_indian_alone_pop, am_indian_alone_pop_moe, asian_alone_pop, asian_alone_pop_moe, haw_pac_alone_pop, haw_pac_alone_pop_moe, other_alone_pop, other_alone_pop_moe, hispanic_or_latino_pop, hispanic_or_latino_pop_moe, total_hh, total_hh_moe, owner_hh, owner_hh_moe, rent_hh, rent_hh_moe, median_hh_inc, median_hh_inc_moe, median_family_inc, median_family_inc_moe, per_cap_inc, per_cap_inc_moe, pov_level, pov_level_moe, labor_force, labor_force_moe, comm_drive, comm_drive_moe, comm_drive_alone, comm_drive_alone_moe, comm_pool, comm_pool_moe, comm_trans, comm_trans_moe, comm_bus, comm_bus_moe, comm_subway, comm_subway_moe, comm_rail, comm_rail_moe, comm_light_rail, comm_light_rail_moe, comm_ferry, comm_ferry_moe, comm_walk, comm_walk_moe, comm_bike, comm_bike_moe, comm_taxi_motor_other, comm_taxi_motor_other_moe, wfh, wfh_moe, male_armed_forces_16_19, male_armed_forces_16_19_moe, male_armed_forces_20_21, male_armed_forces_20_21_moe, male_armed_forces_22_24, male_armed_forces_22_24_moe, male_armed_forces_25_29, male_armed_forces_25_29_moe, male_armed_forces_30_34, male_armed_forces_30_34_moe, male_armed_forces_35_44, male_armed_forces_35_44_moe, male_armed_forces_45_54, male_armed_forces_45_54_moe, male_armed_forces_55_59, male_armed_forces_55_59_moe, male_armed_forces_60_61, male_armed_forces_60_61_moe, male_armed_forces_62_64, male_armed_forces_62_64_moe, male_employed_16_19, male_employed_16_19_moe, male_employed_20_21, male_employed_20_21_moe, male_employed_22_24, male_employed_22_24_moe, male_employed_25_29, male_employed_25_29_moe, male_employed_30_34, male_employed_30_34_moe, male_employed_35_44, male_employed_35_44_moe, male_employed_45_54, male_employed_45_54_moe, male_employed_55_59, male_employed_55_59_moe, male_employed_60_61, male_employed_60_61_moe, male_employed_62_64, male_employed_62_64_moe, male_employed_65_69, male_employed_65_69_moe, male_employed_70_74, male_employed_70_74_moe, male_employed_75, male_employed_75_moe, male_unemployed_16_19, male_unemployed_16_19_moe, male_unemployed_20_21, male_unemployed_20_21_moe, male_unemployed_22_24, male_unemployed_22_24_moe, male_unemployed_25_29, male_unemployed_25_29_moe, male_unemployed_30_34, male_unemployed_30_34_moe, male_unemployed_35_44, male_unemployed_35_44_moe, male_unemployed_45_54, male_unemployed_45_54_moe, male_unemployed_55_59, male_unemployed_55_59_moe, male_unemployed_60_61, male_unemployed_60_61_moe, male_unemployed_62_64, male_unemployed_62_64_moe, male_unemployed_65_69, male_unemployed_65_69_moe, male_unemployed_70_74, male_unemployed_70_74_moe, male_unemployed_75, male_unemployed_75_moe, male_not_in_labor_force_16_19, male_not_in_labor_force_16_19_moe, male_not_in_labor_force_20_21, male_not_in_labor_force_20_21_moe, male_not_in_labor_force_22_24, male_not_in_labor_force_22_24_moe, male_not_in_labor_force_25_29, male_not_in_labor_force_25_29_moe, male_not_in_labor_force_30_34, male_not_in_labor_force_30_34_moe, male_not_in_labor_force_35_44, male_not_in_labor_force_35_44_moe, male_not_in_labor_force_45_54, male_not_in_labor_force_45_54_moe, male_not_in_labor_force_55_59, male_not_in_labor_force_55_59_moe, male_not_in_labor_force_60_61, male_not_in_labor_force_60_61_moe, male_not_in_labor_force_62_64, male_not_in_labor_force_62_64_moe, male_not_in_labor_force_65_69, male_not_in_labor_force_65_69_moe, male_not_in_labor_force_70_74, male_not_in_labor_force_70_74_moe, male_not_in_labor_force_75, male_not_in_labor_force_75_moe, female_armed_forces_16_19, female_armed_forces_16_19_moe, female_armed_forces_20_21, female_armed_forces_20_21_moe, female_armed_forces_22_24, female_armed_forces_22_24_moe, female_armed_forces_25_29, female_armed_forces_25_29_moe, female_armed_forces_30_34, female_armed_forces_30_34_moe, female_armed_forces_35_44, female_armed_forces_35_44_moe, female_armed_forces_45_54, female_armed_forces_45_54_moe, female_armed_forces_55_59, female_armed_forces_55_59_moe, female_armed_forces_60_61, female_armed_forces_60_61_moe, female_armed_forces_62_64, female_armed_forces_62_64_moe, female_employed_16_19, female_employed_16_19_moe, female_employed_20_21, female_employed_20_21_moe, female_employed_22_24, female_employed_22_24_moe, female_employed_25_29, female_employed_25_29_moe, female_employed_30_34, female_employed_30_34_moe, female_employed_35_44, female_employed_35_44_moe, female_employed_45_54, female_employed_45_54_moe, female_employed_55_59, female_employed_55_59_moe, female_employed_60_61, female_employed_60_61_moe, female_employed_62_64, female_employed_62_64_moe, female_employed_65_69, female_employed_65_69_moe, female_employed_70_74, female_employed_70_74_moe, female_employed_75, female_employed_75_moe, female_unemployed_16_19, female_unemployed_16_19_moe, female_unemployed_20_21, female_unemployed_20_21_moe, female_unemployed_22_24, female_unemployed_22_24_moe, female_unemployed_25_29, female_unemployed_25_29_moe, female_unemployed_30_34, female_unemployed_30_34_moe, female_unemployed_35_44, female_unemployed_35_44_moe, female_unemployed_45_54, female_unemployed_45_54_moe, female_unemployed_55_59, female_unemployed_55_59_moe, female_unemployed_60_61, female_unemployed_60_61_moe, female_unemployed_62_64, female_unemployed_62_64_moe, female_unemployed_65_69, female_unemployed_65_69_moe, female_unemployed_70_74, female_unemployed_70_74_moe, female_unemployed_75, female_unemployed_75_moe, female_not_in_labor_force_16_19, female_not_in_labor_force_16_19_moe, female_not_in_labor_force_20_21, female_not_in_labor_force_20_21_moe, female_not_in_labor_force_22_24, female_not_in_labor_force_22_24_moe, female_not_in_labor_force_25_29, female_not_in_labor_force_25_29_moe, female_not_in_labor_force_30_34, female_not_in_labor_force_30_34_moe, female_not_in_labor_force_35_44, female_not_in_labor_force_35_44_moe, female_not_in_labor_force_45_54, female_not_in_labor_force_45_54_moe, female_not_in_labor_force_55_59, female_not_in_labor_force_55_59_moe, female_not_in_labor_force_60_61, female_not_in_labor_force_60_61_moe, female_not_in_labor_force_62_64, female_not_in_labor_force_62_64_moe, female_not_in_labor_force_65_69, female_not_in_labor_force_65_69_moe, female_not_in_labor_force_70_74, female_not_in_labor_force_70_74_moe, female_not_in_labor_force_75, female_not_in_labor_force_75_moe, hh_inc_10k, hh_inc_10k_moe, hh_inc_10k_15k, hh_inc_10k_15k_moe, hh_inc_15k_20k, hh_inc_15k_20k_moe, hh_inc_20k_25k, hh_inc_20k_25k_moe, hh_inc_25k_30k, hh_inc_25k_30k_moe, hh_inc_30k_35k, hh_inc_30k_35k_moe, hh_inc_35k_40k, hh_inc_35k_40k_moe, hh_inc_40k_45k, hh_inc_40k_45k_moe, hh_inc_45k_50k, hh_inc_45k_50k_moe, hh_inc_50k_60k, hh_inc_50k_60k_moe, hh_inc_60k_75k, hh_inc_60k_75k_moe, hh_inc_75k_100k, hh_inc_75k_100k_moe, hh_inc_100k_125k, hh_inc_100k_125k_moe, hh_inc_125k_150k, hh_inc_125k_150k_moe, hh_inc_150k_200k, hh_inc_150k_200k_moe, hh_inc_200k, hh_inc_200k_moe, fam_inc_10k, fam_inc_10k_moe, fam_inc_10k_15k, fam_inc_10k_15k_moe, fam_inc_15k_20k, fam_inc_15k_20k_moe, fam_inc_20k_25k, fam_inc_20k_25k_moe, fam_inc_25k_30k, fam_inc_25k_30k_moe, fam_inc_30k_35k, fam_inc_30k_35k_moe, fam_inc_35k_40k, fam_inc_35k_40k_moe, fam_inc_40k_45k, fam_inc_40k_45k_moe, fam_inc_45k_50k, fam_inc_45k_50k_moe, fam_inc_50k_60k, fam_inc_50k_60k_moe, fam_inc_60k_75k, fam_inc_60k_75k_moe, fam_inc_75k_100k, fam_inc_75k_100k_moe, fam_inc_100k_125k, fam_inc_100k_125k_moe, fam_inc_125k_150k, fam_inc_125k_150k_moe, fam_inc_150k_200k, fam_inc_150k_200k_moe, fam_inc_200k, fam_inc_200k_moe, owner_no_vehicle, owner_no_vehicle_moe, owner_1_vehicle, owner_1_vehicle_moe, owner_2_vehicle, owner_2_vehicle_moe, owner_3_vehicle, owner_3_vehicle_moe, owner_4_vehicle, owner_4_vehicle_moe, owner_5_vehicle, owner_5_vehicle_moe, renter_no_vehicle, renter_no_vehicle_moe, renter_1_vehicle, renter_1_vehicle_moe, renter_2_vehicle, renter_2_vehicle_moe, renter_3_vehicle, renter_3_vehicle_moe, renter_4_vehicle, renter_4_vehicle_moe, renter_5_vehicle, renter_5_vehicle_moe, family_hh, family_hh_moe, nonfamily_hh, nonfamily_hh_moe, mean_hh_size, mean_hh_size_moe, less_hs, less_hs_moe, hs_no_college, hs_no_college_moe, some_college, some_college_moe, bachelors_degree, bachelors_degree_moe, graduate_degree, graduate_degree_moe, speak_only_english, speak_only_english_moe, spanish, spanish_moe, spanish_w, spanish_w_moe, spanish_lim, spanish_lim_moe, french_haitian_or_cajun, french_haitian_or_cajun_moe, french_haitian_or_cajun_w, french_haitian_or_cajun_w_moe, french_haitian_or_cajun_lim, french_haitian_or_cajun_lim_moe, german_or_other_west_germanic_languages, german_or_other_west_germanic_languages_moe, german_or_other_west_germanic_languages_w, german_or_other_west_germanic_languages_w_moe, german_or_other_west_germanic_languages_lim, german_or_other_west_germanic_languages_lim_moe, russian_polish_or_other_slavic_languages, russian_polish_or_other_slavic_languages_moe, russian_polish_or_other_slavic_languages_w, russian_polish_or_other_slavic_languages_w_moe, russian_polish_or_other_slavic_languages_lim, russian_polish_or_other_slavic_languages_lim_moe, other_indo_european_languages, other_indo_european_languages_moe, other_indo_european_languages_w, other_indo_european_languages_w_moe, sother_indo_european_languages_lim, sother_indo_european_languages_lim_moe, korean, korean_moe, korean_w, korean_w_moe, korean_lim, korean_lim_moe, chinese_mandarin_cantonese, chinese_mandarin_cantonese_moe, chinese_mandarin_cantonese_w, chinese_mandarin_cantonese_w_moe, chinese_mandarin_cantonese_lim, chinese_mandarin_cantonese_lim_moe, vietnamese, vietnamese_moe, vietnamese_w, vietnamese_w_moe, vietnamese_lim, vietnamese_lim_moe, tagalog_filipino, tagalog_filipino_moe, tagalog_filipino_w, tagalog_filipino_w_moe, tagalog_filipino_lim, tagalog_filipino_lim_moe, other_asian_and_pacific_island_languages, other_asian_and_pacific_island_languages_moe, other_asian_and_pacific_island_languages_w, other_asian_and_pacific_island_languages_w_moe, other_asian_and_pacific_island_languages_lim, other_asian_and_pacific_island_languages_lim_moe, arabic, arabic_moe, arabic_w, arabic_w_moe, arabic_lim, arabic_lim_moe, other_and_unspecified_languages, other_and_unspecified_languages_moe, other_and_unspecified_languages_w, other_and_unspecified_languages_w_moe, other_and_unspecified_languages_lim, other_and_unspecified_languages_lim_moe, over_65_pop, over_65_pop_moe, under_5_pop, under_5_pop_moe, age_5_to_9_pop, age_5_to_9_pop_moe, age_10_to_14_pop, age_10_to_14_pop_moe, age_15_to_19_pop, age_15_to_19_pop_moe, age_20_to_24_pop, age_20_to_24_pop_moe, age_25_to_29_pop, age_25_to_29_pop_moe, age_30_to_34_pop, age_30_to_34_pop_moe, age_35_to_39_pop, age_35_to_39_pop_moe, age_40_to_44_pop, age_40_to_44_pop_moe, age_45_to_49_pop, age_45_to_49_pop_moe, age_50_to_54_pop, age_50_to_54_pop_moe, age_55_to_59_pop, age_55_to_59_pop_moe, age_60_to_64_pop, age_60_to_64_pop_moe, age_65_to_69_pop, age_65_to_69_pop_moe, age_70_to_74_pop, age_70_to_74_pop_moe, age_75_to_79_pop, age_75_to_79_pop_moe, age_80_to_84_pop, age_80_to_84_pop_moe, age_85_over_pop, age_85_over_pop_moe, under_18_pov_level, under_18_pov_level_moe, over_65_pov_level, over_65_pov_level_moe, mean_hh_inc, mean_hh_inc_moe, mean_family_inc, mean_family_inc_moe, total_fam, total_fam_moe, mean_family_size, mean_family_size_moe, co_name, buffer_bbox, existing_trail_mi, planned_trail_mi, freight_rail_mi, highway_mi, unique_freight_centers, fy25_pa_lines, fy26_nj_lines, fy25_pa_points, fy26_nj_points, septa_bus_stops, septa_bus_routes_mi, njt_bus_stops, njt_bus_routes_mi, passenger_rail_stations, passenger_rail_mi, pop20, pop25, pop30, pop35, pop40, pop45, pop50, emp20, emp25, emp30, emp35, emp40, emp45, emp50, popabs50, poppct50, empabs50, emppct50, total_acres, agriculture_acres, commercial_acres, industrial_acres, institutional_acres, military_acres, mining_acres, recreation_acres, residential_acres, transportation_acres, undeveloped_acres, utility_acres, water_acres, wooded_acres, road_pm2_good, road_pm2_fair, road_pm2_poor, road_iri_good, road_iri_fair, road_iri_poor, road_dot_index_good, road_dot_index_fair, road_dot_index_poor, bridge_all_good, bridge_all_fair, bridge_all_poor, bridge_nhs_good, bridge_nhs_fair, bridge_nhs_poor, bridge_nonnhs_good, bridge_nonnhs_fair, bridge_nonnhs_poor, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv, percent_cost_burdened) FROM stdin;
@@ -2282,7 +2421,15 @@ COPY public.county (geoid, state, county, total_pop, total_pop_moe, male_pop, ma
 
 
 --
--- Data for Name: municipality; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: link; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.link (id, link, type) FROM stdin;
+\.
+
+
+--
+-- Data for Name: municipality; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.municipality (geoid, mun_name, county, state, total_pop, total_pop_moe, male_pop, male_pop_moe, female_pop, female_pop_moe, median_age, median_age_moe, under_18_pop, under_18_pop_moe, not_hispanic_or_latino_pop, not_hispanic_or_latino_pop_moe, white_alone_pop, white_alone_pop_moe, black_alone_pop, black_alone_pop_moe, am_indian_alone_pop, am_indian_alone_pop_moe, asian_alone_pop, asian_alone_pop_moe, haw_pac_alone_pop, haw_pac_alone_pop_moe, other_alone_pop, other_alone_pop_moe, hispanic_or_latino_pop, hispanic_or_latino_pop_moe, total_hh, total_hh_moe, owner_hh, owner_hh_moe, rent_hh, rent_hh_moe, median_hh_inc, median_hh_inc_moe, median_family_inc, median_family_inc_moe, per_cap_inc, per_cap_inc_moe, pov_level, pov_level_moe, labor_force, labor_force_moe, comm_drive, comm_drive_moe, comm_drive_alone, comm_drive_alone_moe, comm_pool, comm_pool_moe, comm_trans, comm_trans_moe, comm_bus, comm_bus_moe, comm_subway, comm_subway_moe, comm_rail, comm_rail_moe, comm_light_rail, comm_light_rail_moe, comm_ferry, comm_ferry_moe, comm_walk, comm_walk_moe, comm_bike, comm_bike_moe, comm_taxi_motor_other, comm_taxi_motor_other_moe, wfh, wfh_moe, male_armed_forces_16_19, male_armed_forces_16_19_moe, male_armed_forces_20_21, male_armed_forces_20_21_moe, male_armed_forces_22_24, male_armed_forces_22_24_moe, male_armed_forces_25_29, male_armed_forces_25_29_moe, male_armed_forces_30_34, male_armed_forces_30_34_moe, male_armed_forces_35_44, male_armed_forces_35_44_moe, male_armed_forces_45_54, male_armed_forces_45_54_moe, male_armed_forces_55_59, male_armed_forces_55_59_moe, male_armed_forces_60_61, male_armed_forces_60_61_moe, male_armed_forces_62_64, male_armed_forces_62_64_moe, male_employed_16_19, male_employed_16_19_moe, male_employed_20_21, male_employed_20_21_moe, male_employed_22_24, male_employed_22_24_moe, male_employed_25_29, male_employed_25_29_moe, male_employed_30_34, male_employed_30_34_moe, male_employed_35_44, male_employed_35_44_moe, male_employed_45_54, male_employed_45_54_moe, male_employed_55_59, male_employed_55_59_moe, male_employed_60_61, male_employed_60_61_moe, male_employed_62_64, male_employed_62_64_moe, male_employed_65_69, male_employed_65_69_moe, male_employed_70_74, male_employed_70_74_moe, male_employed_75, male_employed_75_moe, male_unemployed_16_19, male_unemployed_16_19_moe, male_unemployed_20_21, male_unemployed_20_21_moe, male_unemployed_22_24, male_unemployed_22_24_moe, male_unemployed_25_29, male_unemployed_25_29_moe, male_unemployed_30_34, male_unemployed_30_34_moe, male_unemployed_35_44, male_unemployed_35_44_moe, male_unemployed_45_54, male_unemployed_45_54_moe, male_unemployed_55_59, male_unemployed_55_59_moe, male_unemployed_60_61, male_unemployed_60_61_moe, male_unemployed_62_64, male_unemployed_62_64_moe, male_unemployed_65_69, male_unemployed_65_69_moe, male_unemployed_70_74, male_unemployed_70_74_moe, male_unemployed_75, male_unemployed_75_moe, male_not_in_labor_force_16_19, male_not_in_labor_force_16_19_moe, male_not_in_labor_force_20_21, male_not_in_labor_force_20_21_moe, male_not_in_labor_force_22_24, male_not_in_labor_force_22_24_moe, male_not_in_labor_force_25_29, male_not_in_labor_force_25_29_moe, male_not_in_labor_force_30_34, male_not_in_labor_force_30_34_moe, male_not_in_labor_force_35_44, male_not_in_labor_force_35_44_moe, male_not_in_labor_force_45_54, male_not_in_labor_force_45_54_moe, male_not_in_labor_force_55_59, male_not_in_labor_force_55_59_moe, male_not_in_labor_force_60_61, male_not_in_labor_force_60_61_moe, male_not_in_labor_force_62_64, male_not_in_labor_force_62_64_moe, male_not_in_labor_force_65_69, male_not_in_labor_force_65_69_moe, male_not_in_labor_force_70_74, male_not_in_labor_force_70_74_moe, male_not_in_labor_force_75, male_not_in_labor_force_75_moe, female_armed_forces_16_19, female_armed_forces_16_19_moe, female_armed_forces_20_21, female_armed_forces_20_21_moe, female_armed_forces_22_24, female_armed_forces_22_24_moe, female_armed_forces_25_29, female_armed_forces_25_29_moe, female_armed_forces_30_34, female_armed_forces_30_34_moe, female_armed_forces_35_44, female_armed_forces_35_44_moe, female_armed_forces_45_54, female_armed_forces_45_54_moe, female_armed_forces_55_59, female_armed_forces_55_59_moe, female_armed_forces_60_61, female_armed_forces_60_61_moe, female_armed_forces_62_64, female_armed_forces_62_64_moe, female_employed_16_19, female_employed_16_19_moe, female_employed_20_21, female_employed_20_21_moe, female_employed_22_24, female_employed_22_24_moe, female_employed_25_29, female_employed_25_29_moe, female_employed_30_34, female_employed_30_34_moe, female_employed_35_44, female_employed_35_44_moe, female_employed_45_54, female_employed_45_54_moe, female_employed_55_59, female_employed_55_59_moe, female_employed_60_61, female_employed_60_61_moe, female_employed_62_64, female_employed_62_64_moe, female_employed_65_69, female_employed_65_69_moe, female_employed_70_74, female_employed_70_74_moe, female_employed_75, female_employed_75_moe, female_unemployed_16_19, female_unemployed_16_19_moe, female_unemployed_20_21, female_unemployed_20_21_moe, female_unemployed_22_24, female_unemployed_22_24_moe, female_unemployed_25_29, female_unemployed_25_29_moe, female_unemployed_30_34, female_unemployed_30_34_moe, female_unemployed_35_44, female_unemployed_35_44_moe, female_unemployed_45_54, female_unemployed_45_54_moe, female_unemployed_55_59, female_unemployed_55_59_moe, female_unemployed_60_61, female_unemployed_60_61_moe, female_unemployed_62_64, female_unemployed_62_64_moe, female_unemployed_65_69, female_unemployed_65_69_moe, female_unemployed_70_74, female_unemployed_70_74_moe, female_unemployed_75, female_unemployed_75_moe, female_not_in_labor_force_16_19, female_not_in_labor_force_16_19_moe, female_not_in_labor_force_20_21, female_not_in_labor_force_20_21_moe, female_not_in_labor_force_22_24, female_not_in_labor_force_22_24_moe, female_not_in_labor_force_25_29, female_not_in_labor_force_25_29_moe, female_not_in_labor_force_30_34, female_not_in_labor_force_30_34_moe, female_not_in_labor_force_35_44, female_not_in_labor_force_35_44_moe, female_not_in_labor_force_45_54, female_not_in_labor_force_45_54_moe, female_not_in_labor_force_55_59, female_not_in_labor_force_55_59_moe, female_not_in_labor_force_60_61, female_not_in_labor_force_60_61_moe, female_not_in_labor_force_62_64, female_not_in_labor_force_62_64_moe, female_not_in_labor_force_65_69, female_not_in_labor_force_65_69_moe, female_not_in_labor_force_70_74, female_not_in_labor_force_70_74_moe, female_not_in_labor_force_75, female_not_in_labor_force_75_moe, hh_inc_10k, hh_inc_10k_moe, hh_inc_10k_15k, hh_inc_10k_15k_moe, hh_inc_15k_20k, hh_inc_15k_20k_moe, hh_inc_20k_25k, hh_inc_20k_25k_moe, hh_inc_25k_30k, hh_inc_25k_30k_moe, hh_inc_30k_35k, hh_inc_30k_35k_moe, hh_inc_35k_40k, hh_inc_35k_40k_moe, hh_inc_40k_45k, hh_inc_40k_45k_moe, hh_inc_45k_50k, hh_inc_45k_50k_moe, hh_inc_50k_60k, hh_inc_50k_60k_moe, hh_inc_60k_75k, hh_inc_60k_75k_moe, hh_inc_75k_100k, hh_inc_75k_100k_moe, hh_inc_100k_125k, hh_inc_100k_125k_moe, hh_inc_125k_150k, hh_inc_125k_150k_moe, hh_inc_150k_200k, hh_inc_150k_200k_moe, hh_inc_200k, hh_inc_200k_moe, fam_inc_10k, fam_inc_10k_moe, fam_inc_10k_15k, fam_inc_10k_15k_moe, fam_inc_15k_20k, fam_inc_15k_20k_moe, fam_inc_20k_25k, fam_inc_20k_25k_moe, fam_inc_25k_30k, fam_inc_25k_30k_moe, fam_inc_30k_35k, fam_inc_30k_35k_moe, fam_inc_35k_40k, fam_inc_35k_40k_moe, fam_inc_40k_45k, fam_inc_40k_45k_moe, fam_inc_45k_50k, fam_inc_45k_50k_moe, fam_inc_50k_60k, fam_inc_50k_60k_moe, fam_inc_60k_75k, fam_inc_60k_75k_moe, fam_inc_75k_100k, fam_inc_75k_100k_moe, fam_inc_100k_125k, fam_inc_100k_125k_moe, fam_inc_125k_150k, fam_inc_125k_150k_moe, fam_inc_150k_200k, fam_inc_150k_200k_moe, fam_inc_200k, fam_inc_200k_moe, owner_no_vehicle, owner_no_vehicle_moe, owner_1_vehicle, owner_1_vehicle_moe, owner_2_vehicle, owner_2_vehicle_moe, owner_3_vehicle, owner_3_vehicle_moe, owner_4_vehicle, owner_4_vehicle_moe, owner_5_vehicle, owner_5_vehicle_moe, renter_no_vehicle, renter_no_vehicle_moe, renter_1_vehicle, renter_1_vehicle_moe, renter_2_vehicle, renter_2_vehicle_moe, renter_3_vehicle, renter_3_vehicle_moe, renter_4_vehicle, renter_4_vehicle_moe, renter_5_vehicle, renter_5_vehicle_moe, family_hh, family_hh_moe, nonfamily_hh, nonfamily_hh_moe, mean_hh_size, mean_hh_size_moe, less_hs, less_hs_moe, hs_no_college, hs_no_college_moe, some_college, some_college_moe, bachelors_degree, bachelors_degree_moe, graduate_degree, graduate_degree_moe, speak_only_english, speak_only_english_moe, spanish, spanish_moe, spanish_w, spanish_w_moe, spanish_lim, spanish_lim_moe, french_haitian_or_cajun, french_haitian_or_cajun_moe, french_haitian_or_cajun_w, french_haitian_or_cajun_w_moe, french_haitian_or_cajun_lim, french_haitian_or_cajun_lim_moe, german_or_other_west_germanic_languages, german_or_other_west_germanic_languages_moe, german_or_other_west_germanic_languages_w, german_or_other_west_germanic_languages_w_moe, german_or_other_west_germanic_languages_lim, german_or_other_west_germanic_languages_lim_moe, russian_polish_or_other_slavic_languages, russian_polish_or_other_slavic_languages_moe, russian_polish_or_other_slavic_languages_w, russian_polish_or_other_slavic_languages_w_moe, russian_polish_or_other_slavic_languages_lim, russian_polish_or_other_slavic_languages_lim_moe, other_indo_european_languages, other_indo_european_languages_moe, other_indo_european_languages_w, other_indo_european_languages_w_moe, sother_indo_european_languages_lim, sother_indo_european_languages_lim_moe, korean, korean_moe, korean_w, korean_w_moe, korean_lim, korean_lim_moe, chinese_mandarin_cantonese, chinese_mandarin_cantonese_moe, chinese_mandarin_cantonese_w, chinese_mandarin_cantonese_w_moe, chinese_mandarin_cantonese_lim, chinese_mandarin_cantonese_lim_moe, vietnamese, vietnamese_moe, vietnamese_w, vietnamese_w_moe, vietnamese_lim, vietnamese_lim_moe, tagalog_filipino, tagalog_filipino_moe, tagalog_filipino_w, tagalog_filipino_w_moe, tagalog_filipino_lim, tagalog_filipino_lim_moe, other_asian_and_pacific_island_languages, other_asian_and_pacific_island_languages_moe, other_asian_and_pacific_island_languages_w, other_asian_and_pacific_island_languages_w_moe, other_asian_and_pacific_island_languages_lim, other_asian_and_pacific_island_languages_lim_moe, arabic, arabic_moe, arabic_w, arabic_w_moe, arabic_lim, arabic_lim_moe, other_and_unspecified_languages, other_and_unspecified_languages_moe, other_and_unspecified_languages_w, other_and_unspecified_languages_w_moe, other_and_unspecified_languages_lim, other_and_unspecified_languages_lim_moe, over_65_pop, over_65_pop_moe, under_5_pop, under_5_pop_moe, age_5_to_9_pop, age_5_to_9_pop_moe, age_10_to_14_pop, age_10_to_14_pop_moe, age_15_to_19_pop, age_15_to_19_pop_moe, age_20_to_24_pop, age_20_to_24_pop_moe, age_25_to_29_pop, age_25_to_29_pop_moe, age_30_to_34_pop, age_30_to_34_pop_moe, age_35_to_39_pop, age_35_to_39_pop_moe, age_40_to_44_pop, age_40_to_44_pop_moe, age_45_to_49_pop, age_45_to_49_pop_moe, age_50_to_54_pop, age_50_to_54_pop_moe, age_55_to_59_pop, age_55_to_59_pop_moe, age_60_to_64_pop, age_60_to_64_pop_moe, age_65_to_69_pop, age_65_to_69_pop_moe, age_70_to_74_pop, age_70_to_74_pop_moe, age_75_to_79_pop, age_75_to_79_pop_moe, age_80_to_84_pop, age_80_to_84_pop_moe, age_85_over_pop, age_85_over_pop_moe, under_18_pov_level, under_18_pov_level_moe, over_65_pov_level, over_65_pov_level_moe, mean_hh_inc, mean_hh_inc_moe, mean_family_inc, mean_family_inc_moe, total_fam, total_fam_moe, mean_family_size, mean_family_size_moe, buffer_bbox, existing_trail_mi, planned_trail_mi, freight_rail_mi, highway_mi, unique_freight_centers, fy25_pa_lines, fy26_nj_lines, fy25_pa_points, fy26_nj_points, septa_bus_stops, septa_bus_routes_mi, njt_bus_stops, njt_bus_routes_mi, passenger_rail_stations, passenger_rail_mi, pop20, pop25, pop30, pop35, pop40, pop45, pop50, emp20, emp25, emp30, emp35, emp40, emp45, emp50, popabs50, poppct50, empabs50, emppct50, total_acres, agriculture_acres, commercial_acres, industrial_acres, institutional_acres, military_acres, mining_acres, recreation_acres, residential_acres, transportation_acres, undeveloped_acres, utility_acres, water_acres, wooded_acres, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv) FROM stdin;
@@ -2641,7 +2788,7 @@ COPY public.municipality (geoid, mun_name, county, state, total_pop, total_pop_m
 
 
 --
--- Data for Name: region; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: region; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.region (median_hh_inc, median_hh_inc_moe, median_age, median_age_moe, median_family_inc, median_family_inc_moe, per_cap_inc, per_cap_inc_moe, mean_family_inc, mean_family_inc_moe, mean_family_size, mean_family_size_moe, mean_hh_size, mean_hh_size_moe, total_pop, total_pop_moe, male_pop, male_pop_moe, female_pop, female_pop_moe, under_18_pop, under_18_pop_moe, not_hispanic_or_latino_pop, not_hispanic_or_latino_pop_moe, white_alone_pop, white_alone_pop_moe, black_alone_pop, black_alone_pop_moe, am_indian_alone_pop, am_indian_alone_pop_moe, asian_alone_pop, asian_alone_pop_moe, haw_pac_alone_pop, haw_pac_alone_pop_moe, other_alone_pop, other_alone_pop_moe, hispanic_or_latino_pop, hispanic_or_latino_pop_moe, total_hh, total_hh_moe, owner_hh, owner_hh_moe, rent_hh, rent_hh_moe, pov_level, pov_level_moe, labor_force, labor_force_moe, comm_drive, comm_drive_moe, comm_drive_alone, comm_drive_alone_moe, comm_pool, comm_pool_moe, comm_trans, comm_trans_moe, comm_bus, comm_bus_moe, comm_subway, comm_subway_moe, comm_rail, comm_rail_moe, comm_light_rail, comm_light_rail_moe, comm_ferry, comm_ferry_moe, comm_walk, comm_walk_moe, comm_bike, comm_bike_moe, comm_taxi_motor_other, comm_taxi_motor_other_moe, wfh, wfh_moe, male_armed_forces_16_19, male_armed_forces_16_19_moe, male_armed_forces_20_21, male_armed_forces_20_21_moe, male_armed_forces_22_24, male_armed_forces_22_24_moe, male_armed_forces_25_29, male_armed_forces_25_29_moe, male_armed_forces_30_34, male_armed_forces_30_34_moe, male_armed_forces_35_44, male_armed_forces_35_44_moe, male_armed_forces_45_54, male_armed_forces_45_54_moe, male_armed_forces_55_59, male_armed_forces_55_59_moe, male_armed_forces_60_61, male_armed_forces_60_61_moe, male_armed_forces_62_64, male_armed_forces_62_64_moe, male_employed_16_19, male_employed_16_19_moe, male_employed_20_21, male_employed_20_21_moe, male_employed_22_24, male_employed_22_24_moe, male_employed_25_29, male_employed_25_29_moe, male_employed_30_34, male_employed_30_34_moe, male_employed_35_44, male_employed_35_44_moe, male_employed_45_54, male_employed_45_54_moe, male_employed_55_59, male_employed_55_59_moe, male_employed_60_61, male_employed_60_61_moe, male_employed_62_64, male_employed_62_64_moe, male_employed_65_69, male_employed_65_69_moe, male_employed_70_74, male_employed_70_74_moe, male_employed_75, male_employed_75_moe, male_unemployed_16_19, male_unemployed_16_19_moe, male_unemployed_20_21, male_unemployed_20_21_moe, male_unemployed_22_24, male_unemployed_22_24_moe, male_unemployed_25_29, male_unemployed_25_29_moe, male_unemployed_30_34, male_unemployed_30_34_moe, male_unemployed_35_44, male_unemployed_35_44_moe, male_unemployed_45_54, male_unemployed_45_54_moe, male_unemployed_55_59, male_unemployed_55_59_moe, male_unemployed_60_61, male_unemployed_60_61_moe, male_unemployed_62_64, male_unemployed_62_64_moe, male_unemployed_65_69, male_unemployed_65_69_moe, male_unemployed_70_74, male_unemployed_70_74_moe, male_unemployed_75, male_unemployed_75_moe, male_not_in_labor_force_16_19, male_not_in_labor_force_16_19_moe, male_not_in_labor_force_20_21, male_not_in_labor_force_20_21_moe, male_not_in_labor_force_22_24, male_not_in_labor_force_22_24_moe, male_not_in_labor_force_25_29, male_not_in_labor_force_25_29_moe, male_not_in_labor_force_30_34, male_not_in_labor_force_30_34_moe, male_not_in_labor_force_35_44, male_not_in_labor_force_35_44_moe, male_not_in_labor_force_45_54, male_not_in_labor_force_45_54_moe, male_not_in_labor_force_55_59, male_not_in_labor_force_55_59_moe, male_not_in_labor_force_60_61, male_not_in_labor_force_60_61_moe, male_not_in_labor_force_62_64, male_not_in_labor_force_62_64_moe, male_not_in_labor_force_65_69, male_not_in_labor_force_65_69_moe, male_not_in_labor_force_70_74, male_not_in_labor_force_70_74_moe, male_not_in_labor_force_75, male_not_in_labor_force_75_moe, female_armed_forces_16_19, female_armed_forces_16_19_moe, female_armed_forces_20_21, female_armed_forces_20_21_moe, female_armed_forces_22_24, female_armed_forces_22_24_moe, female_armed_forces_25_29, female_armed_forces_25_29_moe, female_armed_forces_30_34, female_armed_forces_30_34_moe, female_armed_forces_35_44, female_armed_forces_35_44_moe, female_armed_forces_45_54, female_armed_forces_45_54_moe, female_armed_forces_55_59, female_armed_forces_55_59_moe, female_armed_forces_60_61, female_armed_forces_60_61_moe, female_armed_forces_62_64, female_armed_forces_62_64_moe, female_employed_16_19, female_employed_16_19_moe, female_employed_20_21, female_employed_20_21_moe, female_employed_22_24, female_employed_22_24_moe, female_employed_25_29, female_employed_25_29_moe, female_employed_30_34, female_employed_30_34_moe, female_employed_35_44, female_employed_35_44_moe, female_employed_45_54, female_employed_45_54_moe, female_employed_55_59, female_employed_55_59_moe, female_employed_60_61, female_employed_60_61_moe, female_employed_62_64, female_employed_62_64_moe, female_employed_65_69, female_employed_65_69_moe, female_employed_70_74, female_employed_70_74_moe, female_employed_75, female_employed_75_moe, female_unemployed_16_19, female_unemployed_16_19_moe, female_unemployed_20_21, female_unemployed_20_21_moe, female_unemployed_22_24, female_unemployed_22_24_moe, female_unemployed_25_29, female_unemployed_25_29_moe, female_unemployed_30_34, female_unemployed_30_34_moe, female_unemployed_35_44, female_unemployed_35_44_moe, female_unemployed_45_54, female_unemployed_45_54_moe, female_unemployed_55_59, female_unemployed_55_59_moe, female_unemployed_60_61, female_unemployed_60_61_moe, female_unemployed_62_64, female_unemployed_62_64_moe, female_unemployed_65_69, female_unemployed_65_69_moe, female_unemployed_70_74, female_unemployed_70_74_moe, female_unemployed_75, female_unemployed_75_moe, female_not_in_labor_force_16_19, female_not_in_labor_force_16_19_moe, female_not_in_labor_force_20_21, female_not_in_labor_force_20_21_moe, female_not_in_labor_force_22_24, female_not_in_labor_force_22_24_moe, female_not_in_labor_force_25_29, female_not_in_labor_force_25_29_moe, female_not_in_labor_force_30_34, female_not_in_labor_force_30_34_moe, female_not_in_labor_force_35_44, female_not_in_labor_force_35_44_moe, female_not_in_labor_force_45_54, female_not_in_labor_force_45_54_moe, female_not_in_labor_force_55_59, female_not_in_labor_force_55_59_moe, female_not_in_labor_force_60_61, female_not_in_labor_force_60_61_moe, female_not_in_labor_force_62_64, female_not_in_labor_force_62_64_moe, female_not_in_labor_force_65_69, female_not_in_labor_force_65_69_moe, female_not_in_labor_force_70_74, female_not_in_labor_force_70_74_moe, female_not_in_labor_force_75, female_not_in_labor_force_75_moe, hh_inc_10k, hh_inc_10k_moe, hh_inc_10k_15k, hh_inc_10k_15k_moe, hh_inc_15k_20k, hh_inc_15k_20k_moe, hh_inc_20k_25k, hh_inc_20k_25k_moe, hh_inc_25k_30k, hh_inc_25k_30k_moe, hh_inc_30k_35k, hh_inc_30k_35k_moe, hh_inc_35k_40k, hh_inc_35k_40k_moe, hh_inc_40k_45k, hh_inc_40k_45k_moe, hh_inc_45k_50k, hh_inc_45k_50k_moe, hh_inc_50k_60k, hh_inc_50k_60k_moe, hh_inc_60k_75k, hh_inc_60k_75k_moe, hh_inc_75k_100k, hh_inc_75k_100k_moe, hh_inc_100k_125k, hh_inc_100k_125k_moe, hh_inc_125k_150k, hh_inc_125k_150k_moe, hh_inc_150k_200k, hh_inc_150k_200k_moe, hh_inc_200k, hh_inc_200k_moe, fam_inc_10k, fam_inc_10k_moe, fam_inc_10k_15k, fam_inc_10k_15k_moe, fam_inc_15k_20k, fam_inc_15k_20k_moe, fam_inc_20k_25k, fam_inc_20k_25k_moe, fam_inc_25k_30k, fam_inc_25k_30k_moe, fam_inc_30k_35k, fam_inc_30k_35k_moe, fam_inc_35k_40k, fam_inc_35k_40k_moe, fam_inc_40k_45k, fam_inc_40k_45k_moe, fam_inc_45k_50k, fam_inc_45k_50k_moe, fam_inc_50k_60k, fam_inc_50k_60k_moe, fam_inc_60k_75k, fam_inc_60k_75k_moe, fam_inc_75k_100k, fam_inc_75k_100k_moe, fam_inc_100k_125k, fam_inc_100k_125k_moe, fam_inc_125k_150k, fam_inc_125k_150k_moe, fam_inc_150k_200k, fam_inc_150k_200k_moe, fam_inc_200k, fam_inc_200k_moe, owner_no_vehicle, owner_no_vehicle_moe, owner_1_vehicle, owner_1_vehicle_moe, owner_2_vehicle, owner_2_vehicle_moe, owner_3_vehicle, owner_3_vehicle_moe, owner_4_vehicle, owner_4_vehicle_moe, owner_5_vehicle, owner_5_vehicle_moe, renter_no_vehicle, renter_no_vehicle_moe, renter_1_vehicle, renter_1_vehicle_moe, renter_2_vehicle, renter_2_vehicle_moe, renter_3_vehicle, renter_3_vehicle_moe, renter_4_vehicle, renter_4_vehicle_moe, renter_5_vehicle, renter_5_vehicle_moe, family_hh, family_hh_moe, nonfamily_hh, nonfamily_hh_moe, less_hs, less_hs_moe, hs_no_college, hs_no_college_moe, some_college, some_college_moe, bachelors_degree, bachelors_degree_moe, graduate_degree, graduate_degree_moe, speak_only_english, speak_only_english_moe, spanish, spanish_moe, spanish_w, spanish_w_moe, spanish_lim, spanish_lim_moe, french_haitian_or_cajun, french_haitian_or_cajun_moe, french_haitian_or_cajun_w, french_haitian_or_cajun_w_moe, french_haitian_or_cajun_lim, french_haitian_or_cajun_lim_moe, german_or_other_west_germanic_languages, german_or_other_west_germanic_languages_moe, german_or_other_west_germanic_languages_w, german_or_other_west_germanic_languages_w_moe, german_or_other_west_germanic_languages_lim, german_or_other_west_germanic_languages_lim_moe, russian_polish_or_other_slavic_languages, russian_polish_or_other_slavic_languages_moe, russian_polish_or_other_slavic_languages_w, russian_polish_or_other_slavic_languages_w_moe, russian_polish_or_other_slavic_languages_lim, russian_polish_or_other_slavic_languages_lim_moe, other_indo_european_languages, other_indo_european_languages_moe, other_indo_european_languages_w, other_indo_european_languages_w_moe, sother_indo_european_languages_lim, sother_indo_european_languages_lim_moe, korean, korean_moe, korean_w, korean_w_moe, korean_lim, korean_lim_moe, chinese_mandarin_cantonese, chinese_mandarin_cantonese_moe, chinese_mandarin_cantonese_w, chinese_mandarin_cantonese_w_moe, chinese_mandarin_cantonese_lim, chinese_mandarin_cantonese_lim_moe, vietnamese, vietnamese_moe, vietnamese_w, vietnamese_w_moe, vietnamese_lim, vietnamese_lim_moe, tagalog_filipino, tagalog_filipino_moe, tagalog_filipino_w, tagalog_filipino_w_moe, tagalog_filipino_lim, tagalog_filipino_lim_moe, other_asian_and_pacific_island_languages, other_asian_and_pacific_island_languages_moe, other_asian_and_pacific_island_languages_w, other_asian_and_pacific_island_languages_w_moe, other_asian_and_pacific_island_languages_lim, other_asian_and_pacific_island_languages_lim_moe, arabic, arabic_moe, arabic_w, arabic_w_moe, arabic_lim, arabic_lim_moe, other_and_unspecified_languages, other_and_unspecified_languages_moe, other_and_unspecified_languages_w, other_and_unspecified_languages_w_moe, other_and_unspecified_languages_lim, other_and_unspecified_languages_lim_moe, over_65_pop, over_65_pop_moe, under_5_pop, under_5_pop_moe, age_5_to_9_pop, age_5_to_9_pop_moe, age_10_to_14_pop, age_10_to_14_pop_moe, age_15_to_19_pop, age_15_to_19_pop_moe, age_20_to_24_pop, age_20_to_24_pop_moe, age_25_to_29_pop, age_25_to_29_pop_moe, age_30_to_34_pop, age_30_to_34_pop_moe, age_35_to_39_pop, age_35_to_39_pop_moe, age_40_to_44_pop, age_40_to_44_pop_moe, age_45_to_49_pop, age_45_to_49_pop_moe, age_50_to_54_pop, age_50_to_54_pop_moe, age_55_to_59_pop, age_55_to_59_pop_moe, age_60_to_64_pop, age_60_to_64_pop_moe, age_65_to_69_pop, age_65_to_69_pop_moe, age_70_to_74_pop, age_70_to_74_pop_moe, age_75_to_79_pop, age_75_to_79_pop_moe, age_80_to_84_pop, age_80_to_84_pop_moe, age_85_over_pop, age_85_over_pop_moe, under_18_pov_level, under_18_pov_level_moe, over_65_pov_level, over_65_pov_level_moe, mean_hh_inc, mean_hh_inc_moe, total_fam, total_fam_moe, existing_trail_mi, planned_trail_mi, freight_rail_mi, highway_mi, unique_freight_centers, fy25_pa_lines, fy26_nj_lines, fy25_pa_points, fy26_nj_points, septa_bus_stops, septa_bus_routes_mi, njt_bus_stops, njt_bus_routes_mi, passenger_rail_stations, passenger_rail_mi, pop20, pop25, pop30, pop35, pop40, pop45, pop50, emp20, emp25, emp30, emp35, emp40, emp45, emp50, popabs50, poppct50, empabs50, emppct50, total_acres, agriculture_acres, commercial_acres, industrial_acres, institutional_acres, military_acres, mining_acres, recreation_acres, residential_acres, transportation_acres, undeveloped_acres, utility_acres, water_acres, wooded_acres, road_pm2_good, road_pm2_fair, road_pm2_poor, road_iri_good, road_iri_fair, road_iri_poor, road_dot_index_good, road_dot_index_fair, road_dot_index_poor, bridge_all_good, bridge_all_fair, bridge_all_poor, bridge_nhs_good, bridge_nhs_fair, bridge_nhs_poor, bridge_nonnhs_good, bridge_nonnhs_fair, bridge_nonnhs_poor, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv, percent_cost_burdened) FROM stdin;
@@ -2650,24 +2797,29 @@ COPY public.region (median_hh_inc, median_hh_inc_moe, median_age, median_age_moe
 
 
 --
--- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.source (id, agency, year_from, year_to, citation, dataset) FROM stdin;
 5	U.S Census Bureau	\N	2022	U.S Census Bureau, “Age and Sex,” American Community Survey 5-Year Estimates Subject Tables, Table S0101, 2022	“Age and Sex,” American Community Survey 5-Year Estimates Subject Tables, Table S0101
+11	fdsafsad	\N	2025	fdsafsad, fafsf, 2025	fafsf
+9	DVRPC	\N	2020	DVRPC, Circuit Trails, 2020	Circuit Trails
+10	SEPTA	\N	2022	SEPTA, Bus Network, 2022	Bus Network
 \.
 
 
 --
--- Data for Name: subcategory; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: subcategory; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.subcategory (id, name, category_id, label, sort_weight) FROM stdin;
 1	income-poverty	1	Income Poverty	0
 2	pedestrian	2	Pedestrian	0
+3	housing	3	Housing	0
 4	commute	2	Commute	0
 5	crash	4	Crash	0
 6	transportation	1	Transportation	0
+7	demographics	3	Demographics	0
 8	cycling	2	Cycling	0
 9	employment	1	Employment	0
 10	health	4	Health	0
@@ -2678,13 +2830,11 @@ COPY public.subcategory (id, name, category_id, label, sort_weight) FROM stdin;
 15	transit	6	Transit	0
 16	tip	5	Tip	0
 17	conditions	5	Conditions	0
-3	housing	3	Housing	1
-7	demographics	3	Demographics	2
 \.
 
 
 --
--- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.topic (id, name, subcategory_id, label, sort_weight) FROM stdin;
@@ -2698,7 +2848,6 @@ COPY public.topic (id, name, subcategory_id, label, sort_weight) FROM stdin;
 9	emphasis-areas	5	Emphasis Areas	0
 10	employment	9	Employment	0
 11	employment-forecasts	9	Employment Forecasts	0
-12	gender	7	Gender	0
 13	household-vehicles	3	Household Vehicles	0
 14	housing-burden	3	Housing Burden	0
 15	income	1	Income	0
@@ -2718,15 +2867,333 @@ COPY public.topic (id, name, subcategory_id, label, sort_weight) FROM stdin;
 31	tip	12	Tip	0
 32	tip	16	Tip	0
 34	units-permits	3	Units Permits	0
-33	title-vi	7	Title VI	0
-24	population	7	Population	2
-1	age	7	Age	1
-25	population-forecasts	7	Population Forecasts	0
+24	population	7	Population	10
+25	population-forecasts	7	Population Forecasts	9
+1	age	7	Age	8
+12	gender	7	Gender	7
+33	title-vi	7	Title VI	6
 \.
 
 
 --
--- Data for Name: viz; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: variable; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.variable (id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept) FROM stdin;
+1	total_pop	Demographic	acs	all	B01003_001E	\N	\N	2024	\N	Estimate!!Total	Total Population
+2	male_pop	Demographic	acs	all	B01001_002E	\N	\N	2024	\N	Estimate!!Total:!!Male:	Sex by Age
+3	female_pop	Demographic	acs	all	B01001_026E	\N	\N	2024	\N	Estimate!!Total:!!Female:	Sex by Age
+4	median_age	Demographic	acs	all	B01002_001E	\N	\N	2024	\N	Estimate!!Median age --!!Total:	Median Age by Sex
+5	18_pop	Demographic	acs	all	B09001_001E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!Under 18 years:	\N
+6	65_pop	Demographic	acs	all	S0103_C02_001E	\N	\N	2024	\N	Estimate!!Total:!!Population 65 years and over:	\N
+7	not_hispanic_or_latino_pop	Demographic	acs	all	B03002_002E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:	Hispanic or Latino Origin by Race
+8	white_alone_pop	Demographic	acs	all	B03002_003E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:!!White alone	Hispanic or Latino Origin by Race
+9	black_alone_pop	Demographic	acs	all	B03002_004E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone	Hispanic or Latino Origin by Race
+10	am_indian_alone_pop	Demographic	acs	all	B03002_005E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:!!American Indian and Alaska Native alone	Hispanic or Latino Origin by Race
+11	asian_alone_pop	Demographic	acs	all	B03002_006E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:!!Asian alone	Hispanic or Latino Origin by Race
+12	haw_pac_alone_pop	Demographic	acs	all	B03002_007E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:!!Native Hawaiian and Other Pacific Islander alone	Hispanic or Latino Origin by Race
+13	other_alone_pop	Demographic	acs	all	B03002_008E	\N	\N	2024	\N	Estimate!!Total:!!Not Hispanic or Latino:!!Some other race alone	Hispanic or Latino Origin by Race
+14	hispanic_or_latino_pop	Demographic	acs	all	B03002_012E	\N	\N	2024	\N	Estimate!!Total:!!Hispanic or Latino:	Hispanic or Latino Origin by Race
+15	less_hs	Demographic	acs	all	B06009_002E	\N	\N	2024	\N	Estimate!!Total:!!Less than high school graduate	Place of Birth by Educational Attainment in the United States
+16	hs_no_college	Demographic	acs	all	B06009_003E	\N	\N	2024	\N	Estimate!!Total:!!High school graduate (includes equivalency)	Place of Birth by Educational Attainment in the United States
+17	some_college	Demographic	acs	all	B06009_004E	\N	\N	2024	\N	Estimate!!Total:!!Some college or associate's degree	Place of Birth by Educational Attainment in the United States
+18	bachelors_degree	Demographic	acs	all	B06009_005E	\N	\N	2024	\N	Estimate!!Total:!!Bachelor's degree	Place of Birth by Educational Attainment in the United States
+19	graduate_degree	Demographic	acs	all	B06009_006E	\N	\N	2024	\N	Estimate!!Total:!!Graduate or professional degree	Place of Birth by Educational Attainment in the United States
+20	speak_only_english	Demographic	acs	all	C16001_002E	\N	\N	2024	\N	Estimate!!Total:!!Speak only English	Language Spoken at Home for the Population 5 Years and Over
+21	spanish	Demographic	acs	all	C16001_003E	\N	\N	2024	\N	Estimate!!Total:!!Spanish:	Language Spoken at Home for the Population 5 Years and Over
+22	spanish_w	Demographic	acs	all	C16001_004E	\N	\N	2024	\N	Estimate!!Total:!!Spanish:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+23	spanish_lim	Demographic	acs	all	C16001_005E	\N	\N	2024	\N	Estimate!!Total:!!Spanish:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+24	french_haitian_or_cajun	Demographic	acs	all	C16001_006E	\N	\N	2024	\N	Estimate!!Total:!!French, Haitian, or Cajun:	Language Spoken at Home for the Population 5 Years and Over
+25	french_haitian_or_cajun_w	Demographic	acs	all	C16001_007E	\N	\N	2024	\N	Estimate!!Total:!!French, Haitian, or Cajun:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+26	french_haitian_or_cajun_lim	Demographic	acs	all	C16001_008E	\N	\N	2024	\N	Estimate!!Total:!!French, Haitian, or Cajun:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+27	german_or_other_west_germanic_languages	Demographic	acs	all	C16001_009E	\N	\N	2024	\N	Estimate!!Total:!!German or other West Germanic languages:	Language Spoken at Home for the Population 5 Years and Over
+28	german_or_other_west_germanic_languages_w	Demographic	acs	all	C16001_010E	\N	\N	2024	\N	Estimate!!Total:!!German or other West Germanic languages:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+29	german_or_other_west_germanic_languages_lim	Demographic	acs	all	C16001_011E	\N	\N	2024	\N	Estimate!!Total:!!German or other West Germanic languages:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+30	russian_polish_or_other_slavic_languages	Demographic	acs	all	C16001_012E	\N	\N	2024	\N	Estimate!!Total:!!Russian, Polish, or other Slavic languages:	Language Spoken at Home for the Population 5 Years and Over
+31	russian_polish_or_other_slavic_languages_w	Demographic	acs	all	C16001_013E	\N	\N	2024	\N	Estimate!!Total:!!Russian, Polish, or other Slavic languages:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+32	russian_polish_or_other_slavic_languages_lim	Demographic	acs	all	C16001_014E	\N	\N	2024	\N	Estimate!!Total:!!Russian, Polish, or other Slavic languages:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+33	other_indo_european_languages	Demographic	acs	all	C16001_015E	\N	\N	2024	\N	Estimate!!Total:!!Other Indo-European languages:	Language Spoken at Home for the Population 5 Years and Over
+34	other_indo_european_languages_w	Demographic	acs	all	C16001_016E	\N	\N	2024	\N	Estimate!!Total:!!Other Indo-European languages:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+35	sother_indo_european_languages_lim	Demographic	acs	all	C16001_017E	\N	\N	2024	\N	Estimate!!Total:!!Other Indo-European languages:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+36	korean	Demographic	acs	all	C16001_018E	\N	\N	2024	\N	Estimate!!Total:!!Korean:	Language Spoken at Home for the Population 5 Years and Over
+37	korean_w	Demographic	acs	all	C16001_019E	\N	\N	2024	\N	Estimate!!Total:!!Korean:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+38	korean_lim	Demographic	acs	all	C16001_020E	\N	\N	2024	\N	Estimate!!Total:!!Korean:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+39	chinese_mandarin_cantonese	Demographic	acs	all	C16001_021E	\N	\N	2024	\N	Estimate!!Total:!!Chinese (incl. Mandarin, Cantonese):	Language Spoken at Home for the Population 5 Years and Over
+40	chinese_mandarin_cantonese_w	Demographic	acs	all	C16001_022E	\N	\N	2024	\N	Estimate!!Total:!!Chinese (incl. Mandarin, Cantonese):!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+41	chinese_mandarin_cantonese_lim	Demographic	acs	all	C16001_023E	\N	\N	2024	\N	Estimate!!Total:!!Chinese (incl. Mandarin, Cantonese):!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+42	vietnamese	Demographic	acs	all	C16001_024E	\N	\N	2024	\N	Estimate!!Total:!!Vietnamese:	Language Spoken at Home for the Population 5 Years and Over
+43	vietnamese_w	Demographic	acs	all	C16001_025E	\N	\N	2024	\N	Estimate!!Total:!!Vietnamese:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+44	vietnamese_lim	Demographic	acs	all	C16001_026E	\N	\N	2024	\N	Estimate!!Total:!!Vietnamese:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+45	tagalog_filipino	Demographic	acs	all	C16001_027E	\N	\N	2024	\N	Estimate!!Total:!!Tagalog (incl. Filipino):	Language Spoken at Home for the Population 5 Years and Over
+46	tagalog_filipino_w	Demographic	acs	all	C16001_028E	\N	\N	2024	\N	Estimate!!Total:!!Tagalog (incl. Filipino):!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+47	tagalog_filipino_lim	Demographic	acs	all	C16001_029E	\N	\N	2024	\N	Estimate!!Total:!!Tagalog (incl. Filipino):!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+48	other_asian_and_pacific_island_languages	Demographic	acs	all	C16001_030E	\N	\N	2024	\N	Estimate!!Total:!!Other Asian and Pacific Island languages:	Language Spoken at Home for the Population 5 Years and Over
+49	other_asian_and_pacific_island_languages_w	Demographic	acs	all	C16001_031E	\N	\N	2024	\N	Estimate!!Total:!!Other Asian and Pacific Island languages:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+50	other_asian_and_pacific_island_languages_lim	Demographic	acs	all	C16001_032E	\N	\N	2024	\N	Estimate!!Total:!!Other Asian and Pacific Island languages:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+51	arabic	Demographic	acs	all	C16001_033E	\N	\N	2024	\N	Estimate!!Total:!!Arabic:	Language Spoken at Home for the Population 5 Years and Over
+52	arabic_w	Demographic	acs	all	C16001_034E	\N	\N	2024	\N	Estimate!!Total:!!Arabic:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+53	arabic_lim	Demographic	acs	all	C16001_035E	\N	\N	2024	\N	Estimate!!Total:!!Arabic:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+54	other_and_unspecified_languages	Demographic	acs	all	C16001_036E	\N	\N	2024	\N	Estimate!!Total:!!Other and unspecified languages:	Language Spoken at Home for the Population 5 Years and Over
+55	other_and_unspecified_languages_w	Demographic	acs	all	C16001_037E	\N	\N	2024	\N	Estimate!!Total:!!Other and unspecified languages:!!Speak English "very well"	Language Spoken at Home for the Population 5 Years and Over
+56	other_and_unspecified_languages_lim	Demographic	acs	all	C16001_038E	\N	\N	2024	\N	Estimate!!Total:!!Other and unspecified languages:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over
+57	under_5_pop	Demographic	acs	all	S0101_C01_002E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!Under 5 years	Age and Sex
+58	5_to_9_pop	Demographic	acs	all	S0101_C01_003E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!5 to 9 years	Age and Sex
+59	10_to_14_pop	Demographic	acs	all	S0101_C01_004E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!10 to 14 years	Age and Sex
+60	15_to_19_pop	Demographic	acs	all	S0101_C01_005E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!15 to 19 years	Age and Sex
+61	20_to_24_pop	Demographic	acs	all	S0101_C01_006E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!20 to 24 years	Age and Sex
+62	25_to_29_pop	Demographic	acs	all	S0101_C01_007E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!25 to 29 years	Age and Sex
+63	30_to_34_pop	Demographic	acs	all	S0101_C01_008E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!30 to 34 years	Age and Sex
+64	35_to_39_pop	Demographic	acs	all	S0101_C01_009E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!35 to 39 years	Age and Sex
+65	40_to_44_pop	Demographic	acs	all	S0101_C01_010E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!40 to 44 years	Age and Sex
+66	45_to_49_pop	Demographic	acs	all	S0101_C01_011E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!45 to 49 years	Age and Sex
+67	50_to_54_pop	Demographic	acs	all	S0101_C01_012E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!50 to 54 years	Age and Sex
+68	55_to_59_pop	Demographic	acs	all	S0101_C01_013E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!55 to 59 years	Age and Sex
+69	60_to_64_pop	Demographic	acs	all	S0101_C01_014E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!60 to 64 years	Age and Sex
+70	65_to_69_pop	Demographic	acs	all	S0101_C01_015E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!65 to 69 years	Age and Sex
+71	70_to_74_pop	Demographic	acs	all	S0101_C01_016E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!70 to 74 years	Age and Sex
+72	75_to_79_pop	Demographic	acs	all	S0101_C01_017E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!75 to 79 years	Age and Sex
+73	80_to_84_pop	Demographic	acs	all	S0101_C01_018E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!80 to 84 years	Age and Sex
+74	85_over_pop	Demographic	acs	all	S0101_C01_019E	\N	\N	2024	\N	Estimate!!Total!!Total population!!AGE!!85 years and over	Age and Sex
+75	median_hh_inc	Economic	acs	all	B19013_001E	\N	\N	2024	\N	Estimate!!Median household income in the past 12 months (in 2023 inflation-adjusted dollars)	Median Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+76	median_family_inc	Economic	acs	all	B19113_001E	\N	\N	2024	\N	Estimate!!Median family income in the past 12 months (in 2023 inflation-adjusted dollars)	Median Family Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+77	median_inc	Economic	acs	all	B19301_001E	\N	\N	2024	\N	Estimate!!Per capita income in the past 12 months (in 2023 inflation-adjusted dollars)	Per Capita Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+78	pov_level	Economic	acs	all	B17001_002E	\N	\N	2024	\N	Estimate!!Total:!!Income in the past 12 months below poverty level:	Poverty Status in the Past 12 Months by Sex by Age
+79	labor_force	Economic	acs	all	B23025_002E	\N	\N	2024	\N	Estimate!!Total:!!In labor force:	Employment Status for the Population 16 Years and Over
+80	male_armed_forces_16_19	Economic	acs	all	B23001_005E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!16 to 19 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+81	male_armed_forces_20_21	Economic	acs	all	B23001_012E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!20 and 21 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+82	male_armed_forces_22_24	Economic	acs	all	B23001_019E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!22 to 24 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+83	male_armed_forces_25_29	Economic	acs	all	B23001_026E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!25 to 29 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+84	male_armed_forces_30_34	Economic	acs	all	B23001_033E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!30 to 34 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+85	male_armed_forces_35_44	Economic	acs	all	B23001_040E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!35 to 44 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+86	male_armed_forces_45_54	Economic	acs	all	B23001_047E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!45 to 54 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+87	male_armed_forces_55_59	Economic	acs	all	B23001_054E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!55 to 59 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+88	male_armed_forces_60_61	Economic	acs	all	B23001_061E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!60 and 61 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+89	male_armed_forces_62_64	Economic	acs	all	B23001_068E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!62 to 64 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+90	male_employed_16_19	Economic	acs	all	B23001_007E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!16 to 19 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+91	male_employed_20_21	Economic	acs	all	B23001_014E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!20 and 21 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+92	male_employed_22_24	Economic	acs	all	B23001_021E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!22 to 24 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+93	male_employed_25_29	Economic	acs	all	B23001_028E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!25 to 29 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+94	male_employed_30_34	Economic	acs	all	B23001_035E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!30 to 34 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+95	male_employed_35_44	Economic	acs	all	B23001_042E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!35 to 44 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+96	male_employed_45_54	Economic	acs	all	B23001_049E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!45 to 54 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+97	male_employed_55_59	Economic	acs	all	B23001_056E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!55 to 59 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+98	male_employed_60_61	Economic	acs	all	B23001_063E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!60 and 61 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+99	male_employed_62_64	Economic	acs	all	B23001_070E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!62 to 64 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+100	male_employed_65_69	Economic	acs	all	B23001_075E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!65 to 69 years:!!In labor force:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+101	male_employed_70_74	Economic	acs	all	B23001_080E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!70 to 74 years:!!In labor force:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+102	male_employed_75	Economic	acs	all	B23001_085E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!75 years and over:!!In labor force:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+103	male_unemployed_16_19	Economic	acs	all	B23001_008E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!16 to 19 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+104	male_unemployed_20_21	Economic	acs	all	B23001_015E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!20 and 21 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+105	male_unemployed_22_24	Economic	acs	all	B23001_022E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!22 to 24 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+106	male_unemployed_25_29	Economic	acs	all	B23001_029E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!25 to 29 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+107	male_unemployed_30_34	Economic	acs	all	B23001_036E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!30 to 34 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+108	male_unemployed_35_44	Economic	acs	all	B23001_043E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!35 to 44 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+109	male_unemployed_45_54	Economic	acs	all	B23001_050E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!45 to 54 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+110	male_unemployed_55_59	Economic	acs	all	B23001_057E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!55 to 59 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+111	male_unemployed_60_61	Economic	acs	all	B23001_064E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!60 and 61 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+112	male_unemployed_62_64	Economic	acs	all	B23001_071E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!62 to 64 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+113	male_unemployed_65_69	Economic	acs	all	B23001_076E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!65 to 69 years:!!In labor force:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+114	male_unemployed_70_74	Economic	acs	all	B23001_081E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!70 to 74 years:!!In labor force:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+115	male_unemployed_75	Economic	acs	all	B23001_086E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!75 years and over:!!In labor force:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+116	male_not_in_labor_force_16_19	Economic	acs	all	B23001_009E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!16 to 19 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+117	male_not_in_labor_force_20_21	Economic	acs	all	B23001_016E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!20 and 21 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+118	male_not_in_labor_force_22_24	Economic	acs	all	B23001_023E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!22 to 24 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+119	male_not_in_labor_force_25_29	Economic	acs	all	B23001_030E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!25 to 29 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+120	male_not_in_labor_force_30_34	Economic	acs	all	B23001_037E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!30 to 34 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+121	male_not_in_labor_force_35_44	Economic	acs	all	B23001_044E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!35 to 44 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+122	male_not_in_labor_force_45_54	Economic	acs	all	B23001_051E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!45 to 54 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+123	male_not_in_labor_force_55_59	Economic	acs	all	B23001_058E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!55 to 59 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+124	male_not_in_labor_force_60_61	Economic	acs	all	B23001_065E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!60 and 61 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+125	male_not_in_labor_force_62_64	Economic	acs	all	B23001_072E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!62 to 64 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+126	male_not_in_labor_force_65_69	Economic	acs	all	B23001_077E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!65 to 69 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+127	male_not_in_labor_force_70_74	Economic	acs	all	B23001_082E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!70 to 74 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+128	male_not_in_labor_force_75	Economic	acs	all	B23001_087E	\N	\N	2024	\N	Estimate!!Total:!!Male:!!75 years and over:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+129	female_armed_forces_16_19	Economic	acs	all	B23001_091E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!16 to 19 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+130	female_armed_forces_20_21	Economic	acs	all	B23001_098E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!20 and 21 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+131	female_armed_forces_22_24	Economic	acs	all	B23001_105E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!22 to 24 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+132	female_armed_forces_25_29	Economic	acs	all	B23001_112E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!25 to 29 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+133	female_armed_forces_30_34	Economic	acs	all	B23001_119E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!30 to 34 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+134	female_armed_forces_35_44	Economic	acs	all	B23001_126E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!35 to 44 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+135	female_armed_forces_45_54	Economic	acs	all	B23001_133E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!45 to 54 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+136	female_armed_forces_55_59	Economic	acs	all	B23001_140E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!55 to 59 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+137	female_armed_forces_60_61	Economic	acs	all	B23001_147E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!60 and 61 years:!!In labor force:!!In Armed Forces	Sex by Age by Employment Status for the Population 16 Years and Over
+138	female_armed_forces_62_64	Economic	acs	all	B23001_153E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!62 to 64 years:!!In labor force:	Sex by Age by Employment Status for the Population 16 Years and Over
+139	female_employed_16_19	Economic	acs	all	B23001_093E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!16 to 19 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+140	female_employed_20_21	Economic	acs	all	B23001_100E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!20 and 21 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+141	female_employed_22_24	Economic	acs	all	B23001_107E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!22 to 24 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+142	female_employed_25_29	Economic	acs	all	B23001_114E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!25 to 29 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+143	female_employed_30_34	Economic	acs	all	B23001_121E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!30 to 34 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+144	female_employed_35_44	Economic	acs	all	B23001_128E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!35 to 44 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+145	female_employed_45_54	Economic	acs	all	B23001_135E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!45 to 54 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+146	female_employed_55_59	Economic	acs	all	B23001_142E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!55 to 59 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+147	female_employed_60_61	Economic	acs	all	B23001_149E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!60 and 61 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+148	female_employed_62_64	Economic	acs	all	B23001_156E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!62 to 64 years:!!In labor force:!!Civilian:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+149	female_employed_65_69	Economic	acs	all	B23001_161E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!65 to 69 years:!!In labor force:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+150	female_employed_70_74	Economic	acs	all	B23001_166E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!70 to 74 years:!!In labor force:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+151	female_employed_75	Economic	acs	all	B23001_171E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!75 years and over:!!In labor force:!!Employed	Sex by Age by Employment Status for the Population 16 Years and Over
+152	female_unemployed_16_19	Economic	acs	all	B23001_094E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!16 to 19 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+153	female_unemployed_20_21	Economic	acs	all	B23001_101E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!20 and 21 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+154	female_unemployed_22_24	Economic	acs	all	B23001_108E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!22 to 24 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+155	female_unemployed_25_29	Economic	acs	all	B23001_115E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!25 to 29 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+156	female_unemployed_30_34	Economic	acs	all	B23001_122E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!30 to 34 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+157	female_unemployed_35_44	Economic	acs	all	B23001_129E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!35 to 44 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+158	female_unemployed_45_54	Economic	acs	all	B23001_136E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!45 to 54 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+159	female_unemployed_55_59	Economic	acs	all	B23001_143E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!55 to 59 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+160	female_unemployed_60_61	Economic	acs	all	B23001_150E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!60 and 61 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+161	female_unemployed_62_64	Economic	acs	all	B23001_157E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!62 to 64 years:!!In labor force:!!Civilian:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+162	female_unemployed_65_69	Economic	acs	all	B23001_162E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!65 to 69 years:!!In labor force:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+163	female_unemployed_70_74	Economic	acs	all	B23001_167E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!70 to 74 years:!!In labor force:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+164	female_unemployed_75	Economic	acs	all	B23001_172E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!75 years and over:!!In labor force:!!Unemployed	Sex by Age by Employment Status for the Population 16 Years and Over
+165	female_not_in_labor_force_16_19	Economic	acs	all	B23001_095E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!16 to 19 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+166	female_not_in_labor_force_20_21	Economic	acs	all	B23001_102E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!20 and 21 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+167	female_not_in_labor_force_22_24	Economic	acs	all	B23001_109E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!22 to 24 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+168	female_not_in_labor_force_25_29	Economic	acs	all	B23001_116E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!25 to 29 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+169	female_not_in_labor_force_30_34	Economic	acs	all	B23001_123E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!30 to 34 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+170	female_not_in_labor_force_35_44	Economic	acs	all	B23001_130E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!35 to 44 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+171	female_not_in_labor_force_45_54	Economic	acs	all	B23001_137E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!45 to 54 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+172	female_not_in_labor_force_55_59	Economic	acs	all	B23001_144E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!55 to 59 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+173	female_not_in_labor_force_60_61	Economic	acs	all	B23001_151E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!60 and 61 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+174	female_not_in_labor_force_62_64	Economic	acs	all	B23001_158E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!62 to 64 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+175	female_not_in_labor_force_65_69	Economic	acs	all	B23001_163E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!65 to 69 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+176	female_not_in_labor_force_70_74	Economic	acs	all	B23001_168E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!70 to 74 years:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+177	female_not_in_labor_force_75	Economic	acs	all	B23001_173E	\N	\N	2024	\N	Estimate!!Total:!!Female:!!75 years and over:!!Not in labor force	Sex by Age by Employment Status for the Population 16 Years and Over
+178	hh_inc_10k	Economic	acs	all	B19001_002E	\N	\N	2024	\N	Estimate!!Total:!!Less than $10,000	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+179	hh_inc_10k_15k	Economic	acs	all	B19001_003E	\N	\N	2024	\N	Estimate!!Total:!!$10,000 to $14,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+180	hh_inc_15k_20k	Economic	acs	all	B19001_004E	\N	\N	2024	\N	Estimate!!Total:!!$15,000 to $19,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+181	hh_inc_20k_25k	Economic	acs	all	B19001_005E	\N	\N	2024	\N	Estimate!!Total:!!$20,000 to $24,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+182	hh_inc_25k_30k	Economic	acs	all	B19001_006E	\N	\N	2024	\N	Estimate!!Total:!!$25,000 to $29,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+183	hh_inc_30k_35k	Economic	acs	all	B19001_007E	\N	\N	2024	\N	Estimate!!Total:!!$30,000 to $34,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+184	hh_inc_35k_40k	Economic	acs	all	B19001_008E	\N	\N	2024	\N	Estimate!!Total:!!$35,000 to $39,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+185	hh_inc_40k_45k	Economic	acs	all	B19001_009E	\N	\N	2024	\N	Estimate!!Total:!!$40,000 to $44,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+186	hh_inc_45k_50k	Economic	acs	all	B19001_010E	\N	\N	2024	\N	Estimate!!Total:!!$45,000 to $49,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+187	hh_inc_50k_60k	Economic	acs	all	B19001_011E	\N	\N	2024	\N	Estimate!!Total:!!$50,000 to $59,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+188	hh_inc_60k_75k	Economic	acs	all	B19001_012E	\N	\N	2024	\N	Estimate!!Total:!!$60,000 to $74,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+189	hh_inc_75k_100k	Economic	acs	all	B19001_013E	\N	\N	2024	\N	Estimate!!Total:!!$75,000 to $99,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+190	hh_inc_100k_125k	Economic	acs	all	B19001_014E	\N	\N	2024	\N	Estimate!!Total:!!$100,000 to $124,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+191	hh_inc_125k_150k	Economic	acs	all	B19001_015E	\N	\N	2024	\N	Estimate!!Total:!!$125,000 to $149,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+192	hh_inc_150k_200k	Economic	acs	all	B19001_016E	\N	\N	2024	\N	Estimate!!Total:!!$150,000 to $199,999	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+193	hh_inc_200k	Economic	acs	all	B19001_017E	\N	\N	2024	\N	Estimate!!Total:!!$200,000 or more	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+194	under_18_pov_level	Economic	acs	all	S1701_C01_002E	\N	\N	2024	\N	Estimate!!Total!!Population for whom poverty status is determined!!AGE!!Under 18 years	Poverty Status in the Past 12 Months
+195	over_65_pov_level	Economic	acs	all	S1701_C01_010E	\N	\N	2024	\N	Estimate!!Total!!Population for whom poverty status is determined!!AGE!!65 years and over	Poverty Status in the Past 12 Months
+196	mean_hh_inc	Economic	acs	all	S1901_C01_013E	\N	\N	2024	\N	Estimate!!Households!!Mean income (dollars)	Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+197	mean_family_inc	Economic	acs	all	S1901_C02_013E	\N	\N	2024	\N	Estimate!!Families!!Mean income (dollars)	Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)
+198	avg_family_size	Economic	acs	all	S1101_C01_004E	\N	\N	2024	\N	Estimate!!Total!!FAMILIES!!Average family size	Households and Families
+199	total_hh	Housing	acs	all	B25003_001E	\N	\N	2024	\N	Estimate!!Total:	Tenure
+200	owner_hh	Housing	acs	all	B25003_002E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied	Tenure
+201	rent_hh	Housing	acs	all	B25003_003E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied	Tenure
+202	family_hh	Housing	acs	all	B11001_002E	\N	\N	2024	\N	Estimate!!Total:!!Family households:	Household Type (Including Living Alone)
+203	nonfamily_hh	Housing	acs	all	B11001_007E	\N	\N	2024	\N	Estimate!!Total:!!Nonfamily households:	Household Type (Including Living Alone)
+204	avg_hh_size	Housing	acs	all	B25010_001E	\N	\N	2024	\N	Estimate!!Average household size --!!Total:	Average Household Size of Occupied Housing Units by Tenure
+205	comm_drive	Transportation	acs	all	B08006_002E	\N	\N	2024	\N	Estimate!!Total:!!Car, truck, or van:	Sex of Workers by Means of Transportation to Work
+206	comm_drive_alone	Transportation	acs	all	B08006_003E	\N	\N	2024	\N	Estimate!!Total:!!Car, truck, or van:!!Drove alone	Sex of Workers by Means of Transportation to Work
+207	comm_pool	Transportation	acs	all	B08006_004E	\N	\N	2024	\N	Estimate!!Total:!!Car, truck, or van:!!Carpooled:	Sex of Workers by Means of Transportation to Work
+208	comm_trans	Transportation	acs	all	B08006_008E	\N	\N	2024	\N	Estimate!!Total:!!Public transportation (excluding taxicab):	Sex of Workers by Means of Transportation to Work
+209	comm_bus	Transportation	acs	all	B08006_009E	\N	\N	2024	\N	Estimate!!Total:!!Public transportation (excluding taxicab):!!Bus	Sex of Workers by Means of Transportation to Work
+210	comm_subway	Transportation	acs	all	B08006_010E	\N	\N	2024	\N	Estimate!!Total:!!Public transportation (excluding taxicab):!!Subway or elevated rail	Sex of Workers by Means of Transportation to Work
+211	comm_rail	Transportation	acs	all	B08006_011E	\N	\N	2024	\N	Estimate!!Total:!!Public transportation (excluding taxicab):!!Long-distance train or commuter rail	Sex of Workers by Means of Transportation to Work
+212	comm_light_rail	Transportation	acs	all	B08006_012E	\N	\N	2024	\N	Estimate!!Total:!!Public transportation (excluding taxicab):!!Light rail, streetcar or trolley (carro pÃºblico in Puerto Rico)	Sex of Workers by Means of Transportation to Work
+213	comm_ferry	Transportation	acs	all	B08006_013E	\N	\N	2024	\N	Estimate!!Total:!!Public transportation (excluding taxicab):!!Ferryboat	Sex of Workers by Means of Transportation to Work
+214	comm_walk	Transportation	acs	all	B08006_015E	\N	\N	2024	\N	Estimate!!Total:!!Walked	Sex of Workers by Means of Transportation to Work
+215	comm_bike	Transportation	acs	all	B08006_014E	\N	\N	2024	\N	Estimate!!Total:!!Bicycle	Sex of Workers by Means of Transportation to Work
+216	comm_taxi_motor_other	Transportation	acs	all	B08006_016E	\N	\N	2024	\N	Estimate!!Total:!!Taxicab, motorcycle, or other means	Sex of Workers by Means of Transportation to Work
+217	wfh	Transportation	acs	all	B08006_017E	\N	\N	2024	\N	Estimate!!Total:!!Worked from home	Sex of Workers by Means of Transportation to Work
+218	owner_no_vehicle	Transportation	acs	all	B25044_003E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied:!!No vehicle available	Tenure by Vehicles Available
+219	owner_1_vehicle	Transportation	acs	all	B25044_004E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied:!!1 vehicle available	Tenure by Vehicles Available
+220	owner_2_vehicle	Transportation	acs	all	B25044_005E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied:!!2 vehicles available	Tenure by Vehicles Available
+221	owner_3_vehicle	Transportation	acs	all	B25044_006E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied:!!3 vehicles available	Tenure by Vehicles Available
+222	owner_4_vehicle	Transportation	acs	all	B25044_007E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied:!!4 vehicles available	Tenure by Vehicles Available
+223	owner_5_vehicle	Transportation	acs	all	B25044_008E	\N	\N	2024	\N	Estimate!!Total:!!Owner occupied:!!5 or more vehicles available	Tenure by Vehicles Available
+224	renter_no_vehicle	Transportation	acs	all	B25044_010E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied:!!No vehicle available	Tenure by Vehicles Available
+225	renter_1_vehicle	Transportation	acs	all	B25044_011E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied:!!1 vehicle available	Tenure by Vehicles Available
+226	renter_2_vehicle	Transportation	acs	all	B25044_012E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied:!!2 vehicles available	Tenure by Vehicles Available
+227	renter_3_vehicle	Transportation	acs	all	B25044_013E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied:!!3 vehicles available	Tenure by Vehicles Available
+228	renter_4_vehicle	Transportation	acs	all	B25044_014E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied:!!4 vehicles available	Tenure by Vehicles Available
+229	renter_5_vehicle	Transportation	acs	all	B25044_015E	\N	\N	2024	\N	Estimate!!Total:!!Renter occupied:!!5 or more vehicles available	Tenure by Vehicles Available
+230	bridge_all_good	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of bridges in good condition	\N
+231	bridge_all_fair	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of bridges in fair condition	\N
+232	bridge_all_poor	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of bridges in poor condition	\N
+233	bridge_nhs_good	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of national highway system bridges in good condition	\N
+234	bridge_nhs_fair	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of national highway system bridges in fair condition	\N
+235	bridge_nhs_poor	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of national highway system bridges in poor condition	\N
+236	bridge_nonnhs_good	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of non national highway system bridges in good condition	\N
+237	bridge_nonnhs_fair	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of non national highway system bridges in fair condition	\N
+238	bridge_nonnhs_poor	Roadways	catalog	county,region	\N	\N	6b065499-c75d-48bd-a3c1-6c7bcf030efa	2024	Bridge conditions	Count of non national highway system bridges in poor condition	\N
+239	bev	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72497	2024	Electric Vehicle Inventory	battery-electric vehicle count	\N
+240	phev	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72498	2024	Electric Vehicle Inventory	plug-in hybrid electric vehicle count	\N
+241	total_ev	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72499	2024	Electric Vehicle Inventory	BEV + PHEV count	\N
+242	other_fuel	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72500	2024	Electric Vehicle Inventory	other fuel types including gasoline	\N
+243	total_ldv	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72501	2024	Electric Vehicle Inventory	total light-duty vehicle count	\N
+244	pct_ev_ldv	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72502	2024	Electric Vehicle Inventory	percent of light-duty vehicles that are EVs	\N
+245	change_ev	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72503	2024	Electric Vehicle Inventory	year-over-year change in EV registrations	\N
+246	pct_change_ev	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72504	2024	Electric Vehicle Inventory	percent change in EV registrations (year-over-year)	\N
+247	change_ldv	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72505	2024	Electric Vehicle Inventory	year-over-year change in light-duty vehicle registrations	\N
+248	pct_change_ldv	Transportation	catalog	all	\N	\N	97af7cbb-11b9-4f98-9d71-b2a6e5bfb994,31691dde-5bd5-4570-ab9f-79c498f72506	2024	Electric Vehicle Inventory	percent change in light-duty vehicle registrations (year-over-year)	\N
+249	road_pm2_good	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in good condition - Transportation Performance Management Performance Measure 2 (PM2)	\N
+250	road_pm2_fair	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in fair condition  - Transportation Performance Management Performance Measure 2 (PM2)	\N
+251	road_pm2_poor	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in poor condition - Transportation Performance Management Performance Measure 2 (PM2)	\N
+252	road_iri_good	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in good condition -  International Roughness Index (IRI)	\N
+253	road_iri_fair	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in fair condition -  International Roughness Index (IRI)	\N
+254	road_iri_poor	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in poor condition -  International Roughness Index (IRI)	\N
+255	road_dot_index_good	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in good condition -  Department of Transportation (DOT) Pavement Index (Surface Distress Index (SDI) for NJDOT, and Overall Pavement Index (OPI) for PennDOT)	\N
+256	road_dot_index_fair	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in fair condition -  Department of Transportation (DOT) Pavement Index (Surface Distress Index (SDI) for NJDOT, and Overall Pavement Index (OPI) for PennDOT)	\N
+257	road_dot_index_poor	Roadways	catalog	county,region	\N	\N	4e632db0-9830-4f7b-9ff3-072353ea9e6a	2023	Pavement conditions	Miles of road in poor condition -  Department of Transportation (DOT) Pavement Index (Surface Distress Index (SDI) for NJDOT, and Overall Pavement Index (OPI) for PennDOT)	\N
+258	pop15	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2015 population estimate	\N
+259	pop20	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2020 population estimate	\N
+260	pop25	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2025 population estimate	\N
+261	pop30	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2030 population estimate	\N
+262	pop35	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2035 population estimate	\N
+263	pop40	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2040 population estimate	\N
+264	pop45	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2045 population estimate	\N
+265	pop50	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2050 population estimate	\N
+266	popabs50	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	Estimated absolute population change between 2015 and 2050	\N
+267	poppct50	Demographic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	Estimated percent population change between 2015 and 2050	\N
+268	emp15	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2015 employment estimate	\N
+269	emp20	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2020 employment estimate	\N
+270	emp25	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2025 employment estimate	\N
+271	emp30	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2030 employment estimate	\N
+272	emp35	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2035 employment estimate	\N
+273	emp40	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2040 employment estimate	\N
+274	emp45	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2045 employment estimate	\N
+275	emp50	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	2050 employment estimate	\N
+276	empabs50	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	Estimated absolute employment change between 2015 and 2050	\N
+277	emppct50	Economic	gis	\N	\N	demographics.forecast_2015to2050	\N	\N	\N	Estimated percent employment change between 2015 and 2050	\N
+278	unique_freight_centers	Freight	gis	\N	\N	freight.freight_centers	\N	\N	\N	Unique frieght centers	\N
+279	freight_rail_mi	Freight	gis	\N	\N	freight.freight_rail	\N	\N	\N	Miles of freight rail	\N
+280	highway_mi	Freight	gis	\N	\N	freight.highways	\N	\N	\N	Miles of highway	\N
+281	total_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+282	agriculture_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+283	commercial_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+284	industrial_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+285	institutional_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+286	military_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+287	mining_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+288	recreation_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+289	residential_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+290	transportation_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+291	undeveloped_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+292	utility_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+293	water_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+294	wooded_acres	Planning	gis	\N	\N	planning.dvrpc_landuse_2023	\N	\N	\N	\N	\N
+295	protected_open_space_sq_mi	Planning	gis	\N	\N	planning.dvrpc_protectedopenspace	\N	\N	\N	Sq Miles of protected open space	\N
+296	existing_trail_mi	Active Transportation	gis	\N	\N	transportation.all_trails	\N	\N	\N	Miles of existing trails	\N
+297	planned_trail_mi	Active Transportation	gis	\N	\N	transportation.circuittrails	\N	\N	\N	Miles of circuit trails that are planned, in pipeline, or in progress	\N
+298	low_stress_mi	Active Transportation	gis	\N	\N	transportation.lts_network_v2	\N	\N	\N	Miles of low stress roads (lts 1 or 2)	\N
+299	high_stress_mi	Active Transportation	gis	\N	\N	transportation.lts_network_v2	\N	\N	\N	Miles of high stress roads (lts 3 or 4)	\N
+300	njt_bus_stops	Transportation	gis	\N	\N	transportation.njt_transitstops	\N	\N	\N	NJT bus stops	\N
+301	njt_bus_routes_mi	Transportation	gis	\N	\N	transportation.njtransit_transitroutes	\N	\N	\N	Miles of NJT bus routes	\N
+302	passenger_rail_mi	Transportation	gis	\N	\N	transportation.passengerrail	\N	\N	\N	Miles of passenger rail	\N
+303	passenger_rail_stations	Transportation	gis	\N	\N	transportation.passengerrailstations	\N	\N	\N	Passenger rail stations	\N
+304	septa_bus_routes_mi	Transportation	gis	\N	\N	transportation.septa_transitroutes	\N	\N	\N	Miles of SEPTA bus routes	\N
+305	septa_bus_stops	Transportation	gis	\N	\N	transportation.septa_transitstops	\N	\N	\N	Septa bus stops	\N
+306	geoid (county, municipality)	Geography	\N	\N	\N	\N	\N	\N	\N	\N	\N
+307	state (county, municipality)	Geography	\N	\N	\N	\N	\N	\N	\N	\N	\N
+308	county (county, municipality)	Geography	\N	\N	\N	\N	\N	\N	\N	\N	\N
+309	mun_name (municipality)	Geography	\N	\N	\N	\N	\N	\N	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: viz; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.viz (geo_level, file, create_date, topic_id, id, last_edited_by) FROM stdin;
@@ -2739,12 +3206,6 @@ municipality	[]	2025-12-01 16:22:53.44272	\N	173	\N
 region	[]	2025-12-02 11:42:06.670186	\N	174	\N
 county	[]	2025-12-02 11:42:06.681681	\N	175	\N
 municipality	[]	2025-12-02 11:42:06.691593	\N	176	\N
-region	[]	2025-12-08 10:49:57.865837	\N	180	\N
-county	[]	2025-12-08 10:49:57.874814	\N	181	\N
-municipality	[]	2025-12-08 10:49:57.882597	\N	182	\N
-region	[]	2025-12-08 10:50:23.35434	\N	183	\N
-county	[]	2025-12-08 10:50:23.361444	\N	184	\N
-municipality	[]	2025-12-08 10:50:23.368683	\N	185	\N
 region	[]\n	2025-10-20 15:28:43.570856	12	1	\N
 region	[]\n	2025-10-20 15:28:43.570856	18	2	\N
 region	[]\n	2025-10-20 15:28:43.570856	25	3	\N
@@ -2758,11 +3219,7 @@ municipality	[]	2025-12-01 16:09:54.594109	\N	170	\N
 region	[]	2025-12-02 11:51:21.301064	\N	177	\N
 county	[]	2025-12-02 11:51:21.311698	\N	178	\N
 municipality	[]	2025-12-02 11:51:21.321736	\N	179	\N
-region	[]	2025-12-08 15:23:50.16041	\N	186	\N
-county	[]	2025-12-08 15:23:50.170225	\N	187	\N
-municipality	[]	2025-12-08 15:23:50.179409	\N	188	\N
 county	[]	2025-12-01 16:29:34.589702	25	36	\N
-county	[{"type":"map","features":[{"sourceUrl":"https://tiles.dvrpc.org/data/transportation/circuittrails/","sourceLayer":"circuittrails","geometry":"Line","label":"Circuit Trails","colorExpression":["match",["get","circuit"],"Existing","#8EC73D","In Progress","#FDAE61","Pipeline","#B144A5","Planned","#2E9BA8","#0078AE"]}],"legendOverride":[{"label":"Existing","geometry":"Line","color":"#8EC73D"},{"label":"In Progress","geometry":"Line","color":"#FDAE61"},{"label":"Pipeline","geometry":"Line","color":"#B144A5"},{"label":"Planned","geometry":"Line","color":"#2E9BA8"}],"alt":"Map of DVRPC region circuit trails"}]	2025-12-09 14:38:19.207631	5	100	\N
 county	[]\n	2025-10-20 15:28:43.570856	6	47	\N
 county	[]\n	2025-10-20 15:28:43.570856	8	48	\N
 county	[]\n	2025-10-20 15:28:43.570856	19	49	\N
@@ -2781,7 +3238,6 @@ region	[]\n	2025-10-20 15:28:43.570856	22	32	\N
 region	[]\n	2025-10-20 15:28:43.570856	32	33	\N
 county	[]\n	2025-10-20 15:28:43.570856	12	34	\N
 county	[]\n	2025-10-20 15:28:43.570856	18	35	\N
-county	[]\n	2025-10-20 15:28:43.570856	24	37	\N
 county	[]\n	2025-10-20 15:28:43.570856	33	38	\N
 county	[]\n	2025-10-20 15:28:43.570856	13	39	\N
 county	[]\n	2025-10-20 15:28:43.570856	14	40	\N
@@ -2804,6 +3260,7 @@ municipality	[]\n	2025-10-20 15:28:43.570856	13	72	\N
 municipality	[]\n	2025-10-20 15:28:43.570856	14	73	\N
 municipality	[]\n	2025-10-20 15:28:43.570856	28	74	\N
 municipality	[]\n	2025-10-20 15:28:43.570856	34	75	\N
+county	[{"type":"map","features":[{"sourceUrl":"https://tiles.dvrpc.org/data/transportation/circuittrails/","sourceLayer":"circuittrails","geometry":"Line","label":"Circuit Trails","colorExpression":["match",["get","circuit"],"Existing","#8EC73D","In Progress","#FDAE61","Pipeline","#B144A5","Planned","#2E9BA8","#0078AE"]}],"legendOverride":[{"label":"Existing","geometry":"Line","color":"#8EC73D"},{"label":"In Progress","geometry":"Line","color":"#FDAE61"},{"label":"Pipeline","geometry":"Line","color":"#B144A5"},{"label":"Planned","geometry":"Line","color":"#2E9BA8"}]}]	2025-11-03 15:19:55.266968	5	100	\N
 region	[\n  {\n    "type": "chart",\n    "target_field": "population",\n    "schema": {\n      "$schema": "https://vega.github.io/schema/vega-lite/v6.json",\n      "description": "A line chart showing population forecasts from 2015-2050",\n      "data": {\n        "values": [\n          {\n            "year": "2015",\n            "population": "pop15"\n          },\n          {\n            "year": "2020",\n            "population": "pop20"\n          },\n          {\n            "year": "2025",\n            "population": "pop25"\n          },\n          {\n            "year": "2030",\n            "population": "pop30"\n          },\n          {\n            "year": "2035",\n            "population": "pop35"\n          },\n          {\n            "year": "2040",\n            "population": "pop40"\n          },\n          {\n            "year": "2045",\n            "population": "pop45"\n          },\n          {\n            "year": "2050",\n            "population": "pop50"\n          }\n        ]\n      },\n      "mark": "line",\n      "encoding": {\n        "x": {\n          "field": "year",\n          "type": "temporal"\n        },\n        "y": {\n          "field": "population",\n          "type": "quantitative",\n          "scale": {\n            "zero": false\n          }\n        }\n      }\n    }\n  }\n]\n	2025-10-20 15:28:43.570856	11	10	\N
 region	[]\n	2025-10-20 15:28:43.570856	10	11	\N
 region	[]\n	2025-10-20 15:28:43.570856	15	12	\N
@@ -2819,6 +3276,7 @@ region	[]\n	2025-10-20 15:28:43.570856	29	21	\N
 region	[]\n	2025-10-20 15:28:43.570856	30	22	\N
 region	[]\n	2025-10-20 15:28:43.570856	2	23	\N
 region	[]\n	2025-10-20 15:28:43.570856	21	24	\N
+county	[]	2025-12-10 15:20:29.366553	24	37	Colin Kirby
 region	[\n  {\n    "type": "map",\n    "features": [\n      {\n        "sourceUrl": "https://tiles.dvrpc.org/data/freight/highways/",\n        "sourceLayer": "highways",\n        "geometry": "Line",\n        "label": "Highway",\n        "color": "#FF73DF"\n      },\n      {\n        "sourceUrl": "https://tiles.dvrpc.org/data/freight/freight_rail/",\n        "sourceLayer": "freight_rail",\n        "geometry": "Line",\n        "label": "Freight Rail",\n        "color": "#FAA819"\n      },\n      {\n        "sourceUrl": "https://tiles.dvrpc.org/data/freight/freight_centers/",\n        "sourceLayer": "freight_centers",\n        "geometry": "Polygon",\n        "label": "Freight Centers"\n      }\n    ]\n  }\n]\n	2025-10-20 15:28:43.570856	16	25	\N
 region	[\n  {\n    "type": "map",\n\n    "features": [\n      {\n        "sourceUrl": "https://tiles.dvrpc.org/data/planning/dvrpc_protectedopenspace/",\n        "sourceLayer": "dvrpc_protectedopenspace",\n        "geometry": "Polygon",\n        "label": "Protected Open Space",\n        "color": "#B6CC89"\n      }\n    ]\n  }\n]\n	2025-10-20 15:28:43.570856	20	26	\N
 region	[]\n	2025-10-20 15:28:43.570856	17	27	\N
@@ -2855,20 +3313,25 @@ municipality	[\n  {\n    "type": "map",\n    "features": [\n      {\n        "so
 municipality	[]\n	2025-10-20 15:28:43.570856	31	96	\N
 region	[{"type":"chart","target_field":"population","schema":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","description":"A bar chart showing the population distribution of age groups","height":{"step":17},"data":{"values":[{"age":"0 to 4","population":"under_5_pop"},{"age":"5 to 9","population":"age_5_to_9_pop"},{"age":"10 to 14","population":"age_10_to_14_pop"},{"age":"15 to 19","population":"age_15_to_19_pop"},{"age":"20 to 24","population":"age_20_to_24_pop"},{"age":"25 to 29","population":"age_25_to_29_pop"},{"age":"30 to 34","population":"age_30_to_34_pop"},{"age":"35 to 39","population":"age_35_to_39_pop"},{"age":"40 to 44","population":"age_40_to_44_pop"},{"age":"45 to 49","population":"age_45_to_49_pop"},{"age":"50 to 54","population":"age_50_to_54_pop"},{"age":"55 to 59","population":"age_55_to_59_pop"},{"age":"60 to 64","population":"age_60_to_64_pop"},{"age":"65 to 69","population":"age_65_to_69_pop"},{"age":"70 to 74","population":"age_70_to_74_pop"},{"age":"75 to 79","population":"age_75_to_79_pop"},{"age":"80 to 84","population":"age_80_to_84_pop"},{"age":"85+","population":"age_85_over_pop"}]},"mark":"bar","encoding":{"y":{"field":"age","sort":null},"x":{"aggregate":"sum","field":"population","title":"population"}}}}]	2025-10-31 12:06:10.363244	1	101	\N
 county	[{"type":"chart","target_field":"population","schema":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","description":"A line chart showing population forecasts from 2015-2050","data":{"values":[{"year":"2020","population":"pop20"},{"year":"2025","population":"pop25"},{"year":"2030","population":"pop30"},{"year":"2035","population":"pop35"},{"year":"2040","population":"pop40"},{"year":"2045","population":"pop45"},{"year":"2050","population":"pop50"}]},"mark":"line","encoding":{"x":{"field":"year","type":"temporal"},"y":{"field":"population","type":"quantitative","scale":{"zero":false}}}}}]	2025-11-14 16:15:39.248086	11	43	\N
-county	[{"type":"chart","target_field":"population","schema":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","description":"A bar chart showing the population distribution of age groups","height":{"step":17},"data":{"values":[{"age":"0 to 4","population":"under_5_pop"},{"age":"5 to 9","population":"age_5_to_9_pop"},{"age":"10 to 14","population":"age_10_to_14_pop"},{"age":"15 to 19","population":"age_15_to_19_pop"},{"age":"20 to 24","population":"age_20_to_24_pop"},{"age":"25 to 29","population":"age_25_to_29_pop"},{"age":"30 to 34","population":"age_30_to_34_pop"},{"age":"35 to 39","population":"age_35_to_39_pop"},{"age":"40 to 44","population":"age_40_to_44_pop"},{"age":"45 to 49","population":"age_45_to_49_pop"},{"age":"50 to 54","population":"age_50_to_54_pop"},{"age":"55 to 59","population":"age_55_to_59_pop"},{"age":"60 to 64","population":"age_60_to_64_pop"},{"age":"65 to 69","population":"age_65_to_69_pop"},{"age":"70 to 74","population":"age_70_to_74_pop"},{"age":"75 to 79","population":"age_75_to_79_pop"},{"age":"80 to 84","population":"age_80_to_84_pop"},{"age":"85+","population":"age_85_over_pop"}]},"mark":"bar","encoding":{"y":{"field":"age","sort":null},"x":{"aggregate":"sum","field":"population","title":"population"}}}}]	2025-12-11 10:32:47.138441	1	102	Colin Kirby
+region	[]	2025-12-03 15:27:20.126306	\N	180	\N
+county	[]	2025-12-03 15:27:20.129277	\N	181	\N
+municipality	[]	2025-12-03 15:27:20.130796	\N	182	\N
+county	[{"type":"chart","target_field":"population","schema":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","description":"A bar chart showing the population distribution of age groups1","height":{"step":17},"data":{"values":[{"age":"0 to 4","population":"under_5_pop"},{"age":"5 to 9","population":"age_5_to_9_pop"},{"age":"10 to 14","population":"age_10_to_14_pop"},{"age":"15 to 19","population":"age_15_to_19_pop"},{"age":"20 to 24","population":"age_20_to_24_pop"},{"age":"25 to 29","population":"age_25_to_29_pop"},{"age":"30 to 34","population":"age_30_to_34_pop"},{"age":"35 to 39","population":"age_35_to_39_pop"},{"age":"40 to 44","population":"age_40_to_44_pop"},{"age":"45 to 49","population":"age_45_to_49_pop"},{"age":"50 to 54","population":"age_50_to_54_pop"},{"age":"55 to 59","population":"age_55_to_59_pop"},{"age":"60 to 64","population":"age_60_to_64_pop"},{"age":"65 to 69","population":"age_65_to_69_pop"},{"age":"70 to 74","population":"age_70_to_74_pop"},{"age":"75 to 79","population":"age_75_to_79_pop"},{"age":"80 to 84","population":"age_80_to_84_pop"},{"age":"85+","population":"age_85_over_pop"}]},"mark":"bar","encoding":{"y":{"field":"age","sort":null},"x":{"aggregate":"sum","field":"population","title":"population"}}}}]	2025-12-10 15:14:12.946645	1	102	Colin Kirby
 \.
 
 
 --
--- Data for Name: viz_history; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: viz_history; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.viz_history (geo_level, file, create_date, id, parent_id, topic_id, last_edited_by) FROM stdin;
+county	[]\n	2025-10-20 15:28:43.570856	56	37	24	\N
+county	[1]	2025-12-10 15:20:24.220183	57	37	24	Colin Kirby
 \.
 
 
 --
--- Data for Name: viz_source; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: viz_source; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.viz_source (viz_id, source_id) FROM stdin;
@@ -2876,56 +3339,70 @@ COPY public.viz_source (viz_id, source_id) FROM stdin;
 
 
 --
--- Name: category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.category_id_seq', 8, true);
 
 
 --
--- Name: content_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: content_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.content_history_id_seq', 14, true);
-
-
---
--- Name: content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.content_id_seq', 188, true);
+SELECT pg_catalog.setval('public.content_history_id_seq', 27, true);
 
 
 --
--- Name: source_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.source_id_seq', 8, true);
-
-
---
--- Name: subcategory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.subcategory_id_seq', 29, true);
+SELECT pg_catalog.setval('public.content_id_seq', 182, true);
 
 
 --
--- Name: topic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_id_seq', 60, true);
-
-
---
--- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.visualizations_history_id_column_name_seq', 50, true);
+SELECT pg_catalog.setval('public.links_id_seq', 1, false);
 
 
 --
--- Name: category category_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: source_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.source_id_seq', 11, true);
+
+
+--
+-- Name: subcategory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.subcategory_id_seq', 27, true);
+
+
+--
+-- Name: topic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.topic_id_seq', 58, true);
+
+
+--
+-- Name: variables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.variables_id_seq', 1, false);
+
+
+--
+-- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.visualizations_history_id_column_name_seq', 57, true);
+
+
+--
+-- Name: category category_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.category
@@ -2933,7 +3410,7 @@ ALTER TABLE ONLY public.category
 
 
 --
--- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.category
@@ -2941,7 +3418,7 @@ ALTER TABLE ONLY public.category
 
 
 --
--- Name: content_history content_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: content_history content_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content_history
@@ -2949,7 +3426,7 @@ ALTER TABLE ONLY public.content_history
 
 
 --
--- Name: content content_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: content content_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content
@@ -2957,7 +3434,7 @@ ALTER TABLE ONLY public.content
 
 
 --
--- Name: content_source content_source_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: content_source content_source_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content_source
@@ -2965,7 +3442,15 @@ ALTER TABLE ONLY public.content_source
 
 
 --
--- Name: source source_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: link links_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.link
+    ADD CONSTRAINT links_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: source source_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.source
@@ -2973,7 +3458,7 @@ ALTER TABLE ONLY public.source
 
 
 --
--- Name: subcategory subcategory_name_category_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcategory subcategory_name_category_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.subcategory
@@ -2981,7 +3466,7 @@ ALTER TABLE ONLY public.subcategory
 
 
 --
--- Name: subcategory subcategory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcategory subcategory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.subcategory
@@ -2989,7 +3474,7 @@ ALTER TABLE ONLY public.subcategory
 
 
 --
--- Name: topic topic_name_subcategory_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: topic topic_name_subcategory_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.topic
@@ -2997,7 +3482,7 @@ ALTER TABLE ONLY public.topic
 
 
 --
--- Name: topic topic_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: topic topic_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.topic
@@ -3005,7 +3490,15 @@ ALTER TABLE ONLY public.topic
 
 
 --
--- Name: viz_history visualizations_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: variable variables_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.variable
+    ADD CONSTRAINT variables_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: viz_history visualizations_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.viz_history
@@ -3013,7 +3506,7 @@ ALTER TABLE ONLY public.viz_history
 
 
 --
--- Name: content content_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: content content_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content
@@ -3021,7 +3514,7 @@ ALTER TABLE ONLY public.content
 
 
 --
--- Name: content_product content_product_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: content_product content_product_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content_product
@@ -3029,7 +3522,7 @@ ALTER TABLE ONLY public.content_product
 
 
 --
--- Name: content_source content_source_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: content_source content_source_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content_source
@@ -3037,7 +3530,7 @@ ALTER TABLE ONLY public.content_source
 
 
 --
--- Name: content_source content_source_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: content_source content_source_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content_source
@@ -3045,7 +3538,15 @@ ALTER TABLE ONLY public.content_source
 
 
 --
--- Name: content fk_content_topic; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: content_link fk_content; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.content_link
+    ADD CONSTRAINT fk_content FOREIGN KEY (content_id) REFERENCES public.content(id);
+
+
+--
+-- Name: content fk_content_topic; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.content
@@ -3053,7 +3554,15 @@ ALTER TABLE ONLY public.content
 
 
 --
--- Name: viz_source fk_source; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: content_link fk_link; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.content_link
+    ADD CONSTRAINT fk_link FOREIGN KEY (link_id) REFERENCES public.link(id);
+
+
+--
+-- Name: viz_source fk_source; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.viz_source
@@ -3061,7 +3570,7 @@ ALTER TABLE ONLY public.viz_source
 
 
 --
--- Name: viz_source fk_viz; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: viz_source fk_viz; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.viz_source
@@ -3069,7 +3578,7 @@ ALTER TABLE ONLY public.viz_source
 
 
 --
--- Name: viz_history fk_viz_history_topic; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: viz_history fk_viz_history_topic; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.viz_history
@@ -3077,7 +3586,7 @@ ALTER TABLE ONLY public.viz_history
 
 
 --
--- Name: viz fk_viz_topic; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: viz fk_viz_topic; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.viz
@@ -3085,7 +3594,7 @@ ALTER TABLE ONLY public.viz
 
 
 --
--- Name: subcategory subcategory_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcategory subcategory_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.subcategory
@@ -3093,7 +3602,7 @@ ALTER TABLE ONLY public.subcategory
 
 
 --
--- Name: topic topic_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: topic topic_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.topic
@@ -3101,7 +3610,7 @@ ALTER TABLE ONLY public.topic
 
 
 --
--- Name: viz viz_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: viz viz_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.viz
@@ -3109,8 +3618,14 @@ ALTER TABLE ONLY public.viz
 
 
 --
--- PostgreSQL database dump complete
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
 
-\unrestrict rve7meV35U30pepY4FQw6GKFADH1eKtxdH2lGDKZ5jyI74BXwHDhccWqTSyGISk
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
 
