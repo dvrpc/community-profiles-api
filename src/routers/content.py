@@ -22,10 +22,8 @@ async def get_populated_municipality_content(geoid: str):
 async def get_populated_county_content(geoid: str):
     county_profile = await profile_repo.find_county(geoid)
     region_profile = await profile_repo.find_region()
-    print('---')
-    print({f"region.{k}": v for k,v in region_profile.items()})
+
     # profile = {**county_profile, **{f"region.{k}": v for k,v in region_profile.items()}}
-    # print(profile)
     content = await content_service.build_content('county', county_profile)
     return content
 

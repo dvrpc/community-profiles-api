@@ -30,7 +30,7 @@ async def update_variable(id: int, variable: VariableRequest, admin=Depends(requ
 
 
 @router.delete("/{id}")
-async def update_variable(id: int, admin=Depends(require_admin)):
+async def delete_variable(id: int, admin=Depends(require_admin)):
     res = await variable_repo.delete(id)
     revalidate_all()
     return res

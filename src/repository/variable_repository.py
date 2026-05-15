@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 async def find_all_variables():
     log.info(f"Fetching all variables")
-    query = "SELECT name FROM variable;"
+    query = "SELECT * FROM variable;"
     return fetch_many(query)
 
 

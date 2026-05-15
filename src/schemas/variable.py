@@ -6,17 +6,17 @@ from typing import Optional
 
 
 class VariableRequest(BaseModel):
-    name: str = Field(..., description="")
-    category: str = Field(..., description="")
-    data_source : str = Field(..., description=""),
-    geo_level: str = Field(..., description=""),
-    acs_variable: str = Field(..., description=""),
-    gis_table: str = Field(..., description=""),
-    resource_ids: str = Field(..., description=""),
-    data_year: str = Field(..., description=""),
-    catalog_table: str = Field(..., description=""),
-    description: str = Field(..., description=""),
-    acs_concept: str = Field(..., description="")
+    name: Optional[str] = Field(..., description="")
+    category: Optional[str] = Field(..., description="")
+    data_source : Optional[str] = Field(..., description=""),
+    geo_level: Optional[str] = Field(..., description=""),
+    acs_variable: Optional[str] = Field(..., description=""),
+    gis_table: Optional[str] = Field(..., description=""),
+    resource_ids: Optional[str] = Field(..., description=""),
+    data_year: Optional[int] = Field(..., description=""),
+    catalog_table: Optional[str] = Field(..., description=""),
+    description: Optional[str] = Field(..., description=""),
+    acs_concept: Optional[str] = Field(..., description="")
 
 class Variable(VariableRequest):
     id: int = Field(..., description="Primary key of the variable")
