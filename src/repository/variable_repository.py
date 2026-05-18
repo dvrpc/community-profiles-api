@@ -10,6 +10,10 @@ async def find_all_variables():
     query = "SELECT * FROM variable;"
     return fetch_many(query)
 
+async def find_variables_by_data_source(data_source):
+    log.info(f"Fetching all variables")
+    query = "SELECT * FROM variable where data_source = %s;"
+    return fetch_many(query, (data_source, ))
 
 async def create(variable: VariableRequest):
     query = """
