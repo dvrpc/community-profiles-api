@@ -130,3 +130,13 @@ def fetch_acs_data(variable_map: dict[str, str], geo: str, acs_year: int = 2024)
 
     log.info("Retrieved %d variable(s) for %d %s record(s).", len(variable_map), len(data), geo)
     return data
+
+
+def get_county_data(variable_map: dict[str, str], acs_year: int = 2024) -> pd.DataFrame:
+    """Fetch ACS county data for the provided variable map."""
+    return fetch_acs_data(variable_map, "county", acs_year)
+
+
+def get_muni_data(variable_map: dict[str, str], acs_year: int = 2024) -> pd.DataFrame:
+    """Fetch ACS municipality data for the provided variable map."""
+    return fetch_acs_data(variable_map, "muni", acs_year)

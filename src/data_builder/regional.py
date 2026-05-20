@@ -2,10 +2,9 @@ import logging
 import math
 import numpy as np
 import pandas as pd
-from src.data_builder.ckan import fetch_datastore
-from src.data_builder.gis import fetch_sql
-from src.db.database import get_write_engine
-from .consts import ALL_VARIABLES_COMBINED_VALUES
+from data_builder.ckan import fetch_datastore
+from data_builder.gis import fetch_sql
+from data_builder.engine import get_write_engine
 
 log = logging.getLogger(__name__)
 
@@ -119,8 +118,8 @@ def aggregate_data(county_data: pd.DataFrame):
     add_variables(recalcute_median(
         hh_median_income_range_data, 1.5), 'median_hh_inc')
     add_variables(recalcute_median(median_age_range_data, 1), 'median_age')
-    add_variables(recalcute_median(
-        fam_median_income_range_data, 1.5), 'median_family_inc')
+    # add_variables(recalcute_median(
+    #     fam_median_income_range_data, 1.5), 'median_family_inc')
     add_variables(recalculate_mean("per_cap_inc", "total_pop",
                   "per capita income"), 'per_cap_inc')
     add_variables(recalculate_mean("mean_family_inc", "total_fam",
@@ -162,6 +161,7 @@ def aggregate_data(county_data: pd.DataFrame):
 def get_profile_data(query, desc):
     log.info(f'Getting {desc}...')
     engine = get_write_engine()
+    print(query)
     try:
         range_data = pd.read_sql(query, engine)
         log.info(f'Succesfully fetched {desc}')
