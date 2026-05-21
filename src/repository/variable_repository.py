@@ -17,9 +17,9 @@ async def find_variables_by_data_source(data_source):
 
 async def create(variable: VariableRequest):
     query = """
-        INSERT INTO variable (name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept;
+        INSERT INTO variable (name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable;
     """
     return execute_update(query, (variable.name, 
                                   variable.category,
@@ -31,7 +31,8 @@ async def create(variable: VariableRequest):
                                   variable.data_year,
                                   variable.catalog_table,
                                   variable.description,
-                                  variable.acs_concept
+                                  variable.acs_concept,
+                                  variable.aggregateable
                                   ))
 
 
@@ -39,9 +40,9 @@ async def update(id, variable: VariableRequest):
     query = """
         UPDATE variable
         SET name = %s, category = %s, data_source = %s, geo_level = %s, acs_variable = %s, gis_table = %s, 
-        resource_ids = %s, data_year = %s, catalog_table = %s, description = %s, acs_concept = %s
+        resource_ids = %s, data_year = %s, catalog_table = %s, description = %s, acs_concept = %s, aggregateable = %s
         WHERE id = %s
-        RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept;
+        RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable = %s;
     """
     return execute_update(query, (variable.name, 
                                   variable.category,
@@ -61,6 +62,6 @@ async def delete(id):
     query = """
         DELETE FROM variable
         WHERE id = %s
-        RETURNING id;
+        RETURNING name;
     """
     return execute_update(query, (id,))

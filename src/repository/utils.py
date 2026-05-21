@@ -21,6 +21,15 @@ def execute_update(query, params=None):
         db.conn.rollback()
         return None
 
+def execute_alter(query, params=None):
+    try:
+        with db.conn.cursor() as cur:
+            cur.execute(query, params)
+            db.conn.commit()
+            log.info("ALTER executed successfully.")
+    except psycopg.Error as e:
+        log.error(f"Database error executing alter:\n{query}\n{e}")
+        db.conn.rollback()
 
 def fetch_one(query, params=None):
     """Fetch a single row as a dict."""

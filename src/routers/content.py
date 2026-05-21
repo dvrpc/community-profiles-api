@@ -54,7 +54,6 @@ async def get_content_preview(geo_level: str, geoid: str = None, body: str = Bod
             profile = await profile_repo.find_county(geoid)
             region_profile = await profile_repo.find_region()
             profile['region'] = region_profile
-            print(profile)
         else:
             profile = await profile_repo.find_municipality(geoid)
 

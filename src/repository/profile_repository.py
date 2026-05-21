@@ -1,7 +1,7 @@
 from fastapi_cache.decorator import cache
 import logging
 
-from repository.utils import fetch_many, fetch_one
+from repository.utils import execute_alter, execute_update, fetch_many, fetch_one
 
 log = logging.getLogger(__name__)
 
@@ -33,4 +33,11 @@ async def find_variable_names(geo_level):
         where table_name = %s
     """
     return fetch_many(query, (geo_level,))
-    
+
+async def delete_variable(variable_name: str):
+    query = f"""
+        alter table county drop column if exists "{variable_name}";
+        alter table municipality drop column if exists "{variable_name}";
+        alter table region drop column if exists "{variable_name}";
+    """
+    execute_alter(query)

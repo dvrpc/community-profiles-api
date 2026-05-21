@@ -3,36 +3,13 @@ from repository.variable_repository import find_variables_by_data_source
 import pandas as pd
 import functools as ft
 import logging
+from db.database import db
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-
-# Build / updates single acs variable for all geo levels
-def update_acs_variables(variable_map):
-    pass
-
-# Builds all county/muni/regional for acs, ckan, and gis data
-def build_all():
-    variables = find_variables_by_data_source()
-    variable_dict = {var.acs_variable: var.name for var in variables}
-    variable_map = acs.build_variable_map(variable_dict)
-    build_all_county_data(variable_map)
-    build_all_muni_data()
-    build_all_regional_data()
-
-
-def save_data(df: pd.DataFrame, table):
-    log.info(f'Writing dataframe to {table} table')
-    engine = engine.get_write_engine()
-    try:
-        df.to_sql(table, engine, if_exists='replace', index=False)
-        log.info(f"Succesfully wrote Dataframe to {table} table")
-    except Exception as e:
-        log.error(f'Error writing Dataframe to {table} table: {e}')
-
-    engine.dispose()
-
+COUNTY_EXCLUDED = {"fips", "state", "county", "co_name", "buffer_bbox"}
+MUNI_EXCLUDED = {"geoid", "state", "county", "mun_name", "buffer_bbox"}
 
 def to_numeric(s):
     try:
@@ -40,54 +17,117 @@ def to_numeric(s):
     except ValueError:
         return s
 
+def _pandas_dtype_to_sql(dtype) -> str:
+    if pd.api.types.is_integer_dtype(dtype):
+        return "BIGINT"
+    elif pd.api.types.is_float_dtype(dtype):
+        return "DOUBLE PRECISION"
+    elif pd.api.types.is_bool_dtype(dtype):
+        return "BOOLEAN"
+    else:
+        return "TEXT"
 
-def build_all_county_data(variable_map):
-    acs_data = acs.get_county_data()
-    gis_data = gis.get_county_data()
-    ckan_data = ckan.get_county_data()
+def _save_data(df: pd.DataFrame, table: str) -> None:
+    log.info("Writing dataframe to %s table", table)
+    col_defs = ", ".join(f'"{c}" {_pandas_dtype_to_sql(df[c].dtype)}' for c in df.columns)
+    cols = ", ".join(f'"{c}"' for c in df.columns)
+    placeholders = ", ".join(["%s"] * len(df.columns))
+    rows = [tuple(row) for row in df.itertuples(index=False, name=None)]
 
-    dfs = [acs_data, gis_data, ckan_data]
-    df_merged = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='fips'), dfs)
+    try:
+        with db.conn.cursor() as cur:
+            cur.execute(f'DROP TABLE IF EXISTS "{table}"')
+            cur.execute(f'CREATE TABLE "{table}" ({col_defs})')
+            cur.executemany(f'INSERT INTO "{table}" ({cols}) VALUES ({placeholders})', rows)
+            db.conn.commit()
+        log.info("Successfully wrote dataframe to %s table", table)
+    except Exception as e:
+        log.error("Error writing dataframe to %s table: %s", table, e)
+        db.conn.rollback()
+        raise
 
-    excluded_columns = ['fips', 'state', 'county', 'co_name', 'buffer_bbox']
+
+async def _get_acs_variables() -> dict[str, str]:
+    variables = await find_variables_by_data_source('acs')
+    raw = {var['acs_variable']: var['name'] for var in variables}
+    return acs.build_variable_map(raw)
+
+def _read_table(table: str) -> pd.DataFrame:
+    try:
+        with db.conn.cursor() as cur:
+            cur.execute(f'SELECT * FROM "{table}"')
+            rows = cur.fetchall()
+            columns = [col.name for col in cur.description]
+            df = pd.DataFrame(rows, columns=columns)
+            df = df.apply(to_numeric)
+            return df
+    except Exception as e:
+        log.error(f'Error reading table {table}: {e}')
+        db.conn.rollback()
+        return pd.DataFrame()
+
+def _rebuild_regional() -> None:
+    county_data = regional.get_profile_data("SELECT * FROM county", "all county data")
+    _save_data(regional.aggregate_data(county_data), "region")
+
+    
+def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame) -> None:
+    existing = _read_table(table)
+
+    # Normalize merge keys to string
+    existing[merge_key] = existing[merge_key].astype(str)
+    fresh[merge_key] = fresh[merge_key].astype(str)
+
+    stale = [c for c in fresh.columns if c != merge_key and c in existing.columns]
+
+    updated = (
+        existing
+        .drop(columns=stale)
+        .merge(fresh, on=merge_key, how="left")
+    )
+
+    excluded_columns = ['geoid', 'state', 'county', 'co_name', 'mun_name', 'buffer_bbox']
     columns_to_update = [
-        col for col in df_merged.columns if col not in excluded_columns]
-    df_merged[columns_to_update] = df_merged[columns_to_update].apply(
-        pd.to_numeric)
-
-    df_merged = df_merged.rename(columns={'fips': 'geoid'})
-    save_data(df_merged, 'county')
+        col for col in updated.columns if col not in excluded_columns]
+    updated[columns_to_update] = updated[columns_to_update].apply(to_numeric)
+    _save_data(updated, table)
 
 
-def build_all_muni_data():
-    acs_data = acs.get_muni_data()
-    gis_data = gis.get_muni_data()
-    ckan_data = ckan.get_muni_data()
 
-    dfs = [acs_data, gis_data, ckan_data]
-    df_merged = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='geoid', how='left'), dfs)
-
-    excluded_columns = ['geoid', 'state', 'county', 'mun_name', 'buffer_bbox']
-    columns_to_update = [
-        col for col in df_merged.columns if col not in excluded_columns]
-    df_merged[columns_to_update] = df_merged[columns_to_update].apply(
-        to_numeric)
-
-    save_data(df_merged, 'municipality')
+async def build_all() -> None:
+    await build_acs()
+    build_gis()
+    build_ckan()
+    _rebuild_regional()
 
 
-def build_all_regional_data():
-    county_data = regional.get_profile_data(
-        "SELECT * FROM county", "all county data")
+async def build_acs(variable_map: dict[str, str] | None = None) -> None:
+    if variable_map is None:
+        variable_map = await _get_acs_variables()
 
-    # Aggregates summable fields and margin of error
-    regional_data = regional.aggregate_data(county_data)
-    print(regional_data)
-    save_data(regional_data, 'region')
+    county_acs = acs.fetch_acs_data(variable_map, geo="county").rename(columns={"fips": "geoid"})
+    muni_acs   = acs.fetch_acs_data(variable_map, geo="muni")
 
-    # Averages median/mean/pct fields and margin of error
-    # county_data = regional.average_data(county_data)
+    _update_columns("county",       "geoid", county_acs)
+    _update_columns("municipality", "geoid", muni_acs)
+    _rebuild_regional()
 
-    # save to db
+
+def build_gis() -> None:
+    county_gis = gis.get_county_data().rename(columns={"fips": "geoid"})
+    muni_gis   = gis.get_muni_data()
+
+    _update_columns("county",       "geoid", county_gis)
+    _update_columns("municipality", "geoid", muni_gis)
+    _rebuild_regional()
+
+
+def build_ckan() -> None:
+    county_ckan = ckan.get_county_data().rename(columns={"fips": "geoid"})
+    muni_ckan   = ckan.get_muni_data()
+
+    _update_columns("county",       "geoid", county_ckan)
+    _update_columns("municipality", "geoid", muni_ckan)
+    _rebuild_regional()
+
+
