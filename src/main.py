@@ -1,9 +1,5 @@
 from fastapi import FastAPI
-<<<<<<< HEAD
-from routers import profile, content, viz, source, tree, variable, data_builder
-=======
 from routers import profile, content, viz, source, tree, variable, data_builder, acs
->>>>>>> 8b01a47c6059787b5bb6f157b03b2308868d27a4
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
