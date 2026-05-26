@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from data_builder.ckan import fetch_datastore
 from data_builder.gis import fetch_sql
-from data_builder.engine import get_write_engine
+from db.database import db
 
 log = logging.getLogger(__name__)
 
@@ -37,8 +37,6 @@ non_aggregatable_variables = {
     "pct_change_ldv"
     "emppct50",
     "poppct50",
-
-
 }
 
 
@@ -160,17 +158,18 @@ def aggregate_data(county_data: pd.DataFrame):
 
 def get_profile_data(query, desc):
     log.info(f'Getting {desc}...')
-    engine = get_write_engine()
-    print(query)
     try:
-        range_data = pd.read_sql(query, engine)
-        log.info(f'Succesfully fetched {desc}')
-
+        with db.conn.cursor() as cur:
+            cur.execute(query)
+            rows = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+            df = pd.DataFrame(rows, columns=columns)
+        log.info(f'Successfully fetched {desc}')
+        return df
     except Exception as e:
-        log.error(f'Error fetching {desc}')
-
-    engine.dispose()
-    return range_data
+        log.error(f'Error fetching {desc}: {e}')
+        db.conn.rollback()
+        return pd.DataFrame()
 
 
 def recalcute_median(range_data, design_factor=1.5):

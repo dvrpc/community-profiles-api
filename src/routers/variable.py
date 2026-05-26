@@ -1,9 +1,13 @@
 from fastapi import APIRouter, status, Depends
 from typing import List
+
+import asyncio
 from schemas.variable import Variable, VariableRequest
 from services.auth import require_admin
 from services.revalidate import revalidate_all
 import repository.variable_repository as variable_repo
+import repository.profile_repository as profile_repo
+from services.build_state import run_build
 
 router = APIRouter(
     prefix="/variable",
@@ -23,18 +27,24 @@ async def get_variables_by_data_source(data_source: str):
 @router.post("")
 async def create_variable(variable: VariableRequest, admin=Depends(require_admin)):
     res = await variable_repo.create(variable)
+    if variable.data_source == "acs":
+        asyncio.create_task(
+            run_build("acs", {variable.acs_variable: variable.name})
+        )
     return res
-
 
 @router.put("/{id}")
 async def update_variable(id: int, variable: VariableRequest, admin=Depends(require_admin)):
     res = await variable_repo.update(id, variable)
-    revalidate_all()
+    if variable.data_source == "acs":
+        asyncio.create_task(
+            run_build("acs", {variable.acs_variable: variable.name})
+        )
     return res
-
 
 @router.delete("/{id}")
 async def delete_variable(id: int, admin=Depends(require_admin)):
     res = await variable_repo.delete(id)
+    await profile_repo.delete_variable(res[0])
     revalidate_all()
-    return res
+    return res[0]

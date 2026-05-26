@@ -17,6 +17,7 @@ class VariableRequest(BaseModel):
     catalog_table: Optional[str] = Field(..., description=""),
     description: Optional[str] = Field(..., description=""),
     acs_concept: Optional[str] = Field(..., description="")
+    aggregateable: Optional[bool] = Field(..., description="")
 
 class Variable(VariableRequest):
     id: int = Field(..., description="Primary key of the variable")
