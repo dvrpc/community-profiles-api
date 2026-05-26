@@ -5,6 +5,7 @@ import pandas as pd
 from data_builder.ckan import fetch_datastore
 from data_builder.gis import fetch_sql
 from db.database import db
+import asyncio
 
 log = logging.getLogger(__name__)
 
@@ -24,6 +25,8 @@ non_aggregatable_variables = {
     "median_hh_inc_moe",
     "median_family_inc",
     "median_family_inc_moe",
+    "median_inc",
+    "median_inc_moe",
     "per_cap_inc",
     "per_cap_inc_moe",
     "mean_family_inc",
@@ -104,34 +107,39 @@ def aggregate_moe(column):
     return np.sqrt((column**2).sum())
 
 
-def aggregate_data(county_data: pd.DataFrame):
+async def aggregate_data(county_data: pd.DataFrame):
     aggregate_data = {}
 
-    def add_variables(recalculated_data, variable):
+    async def add_variables(recalculated_data, variable):
         nonlocal aggregate_data
-
         aggregate_data[variable] = recalculated_data['estimate']
         aggregate_data[variable + '_moe'] = recalculated_data['moe']
 
-    add_variables(recalcute_median(
-        hh_median_income_range_data, 1.5), 'median_hh_inc')
-    add_variables(recalcute_median(median_age_range_data, 1), 'median_age')
-    add_variables(recalcute_median(
-        fam_median_income_range_data, 1.5), 'median_family_inc')
-    add_variables(recalculate_mean("per_cap_inc", "total_pop",
-                  "per capita income"), 'per_cap_inc')
-    add_variables(recalculate_mean("mean_family_inc", "total_fam",
-                                   "mean family income"), 'mean_family_inc')
-    add_variables(recalculate_mean("mean_family_size",
-                  "total_fam", "mean family size"), 'mean_family_size')
-    add_variables(recalculate_mean("mean_hh_size",
-                  "total_hh", "mean household size"), 'mean_hh_size')
+    # compute median and means (these call async DB helpers)
+    med_hh = await recalcute_median(hh_median_income_range_data, 1.5)
+    await add_variables(med_hh, 'median_hh_inc')
+    med_age = await recalcute_median(median_age_range_data, 1)
+    await add_variables(med_age, 'median_age')
+    med_fam = await recalcute_median(fam_median_income_range_data, 1.5)
+    await add_variables(med_fam, 'median_family_inc')
+    per_cap = await recalculate_mean("per_cap_inc", "total_pop",
+                  "per capita income")
+    await add_variables(per_cap, 'per_cap_inc')
+    mean_fam = await recalculate_mean("mean_family_inc", "total_fam",
+                                   "mean family income")
+    await add_variables(mean_fam, 'mean_family_inc')
+    mean_family_size = await recalculate_mean("mean_family_size",
+                  "total_fam", "mean family size")
+    await add_variables(mean_family_size, 'mean_family_size')
+    mean_hh_size = await recalculate_mean("mean_hh_size",
+                  "total_hh", "mean household size")
+    await add_variables(mean_hh_size, 'mean_hh_size')
 
     # this could be done directly in sql
 
-    regional_ev_data = fetch_datastore(
+    regional_ev_data = await asyncio.to_thread(fetch_datastore,
         'electric_vehicle', 'regional')
-    pop_emp_regional_data = fetch_sql(
+    pop_emp_regional_data = await asyncio.to_thread(fetch_sql,
         'pop_emp_forecasts', 'regional')
 
     for variable in list(county_data.columns):
@@ -156,23 +164,23 @@ def aggregate_data(county_data: pd.DataFrame):
     return df
 
 
-def get_profile_data(query, desc):
+async def get_profile_data(query, desc):
     log.info(f'Getting {desc}...')
     try:
-        with db.conn.cursor() as cur:
-            cur.execute(query)
-            rows = cur.fetchall()
+        async with db.conn.cursor() as cur:
+            await cur.execute(query)
+            rows = await cur.fetchall()
             columns = [desc[0] for desc in cur.description]
             df = pd.DataFrame(rows, columns=columns)
         log.info(f'Successfully fetched {desc}')
         return df
     except Exception as e:
         log.error(f'Error fetching {desc}: {e}')
-        db.conn.rollback()
+        await db.conn.rollback()
         return pd.DataFrame()
 
 
-def recalcute_median(range_data, design_factor=1.5):
+async def recalcute_median(range_data, design_factor=1.5):
     variables = [range['variable'] for range in range_data]
 
     formatted_variables = []
@@ -182,7 +190,7 @@ def recalcute_median(range_data, design_factor=1.5):
     comma_seperated_sums = ", ".join(formatted_variables)
     query = f"SELECT {comma_seperated_sums} FROM county"
 
-    result = get_profile_data(query, "median range data")
+    result = await get_profile_data(query, "median range data")
     melted = result.melt(var_name="variable", value_name="count")
     range_df = pd.DataFrame(range_data)
 
@@ -284,8 +292,8 @@ def median_from_bins(counts, lower, upper, DF=1.5):
     return {"estimate": med_est, "moe": moe90}
 
 
-def recalculate_mean(numerator_var, denominator_var, desc):
-    df = get_profile_data(
+async def recalculate_mean(numerator_var, denominator_var, desc):
+    df = await get_profile_data(
         f"SELECT {denominator_var}, {numerator_var}, {numerator_var + '_moe'} FROM county", desc)
 
     total_denom = df[denominator_var].sum()

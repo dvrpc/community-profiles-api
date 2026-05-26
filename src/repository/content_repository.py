@@ -44,7 +44,7 @@ async def find_by_geo(geo_level):
         s.sort_weight DESC,
         t.sort_weight DESC;
     """
-    return fetch_many(query, (geo_level,))
+    return await fetch_many(query, (geo_level,))
 
 
 async def find_category_content(geo_level):
@@ -56,7 +56,7 @@ async def find_category_content(geo_level):
         WHERE geo_level = %s
         ORDER by sort_weight DESC
     """
-    return fetch_many(query, (geo_level,))
+    return await fetch_many(query, (geo_level,))
 
 
 async def find_one(id: int):
@@ -82,7 +82,7 @@ async def find_one(id: int):
         ) cp ON cp.content_id = c.id
         WHERE c.id = %s;
     """
-    return fetch_one(query, (id,))
+    return await fetch_one(query, (id,))
 
 
 async def find_one_basic(id: int):
@@ -91,7 +91,7 @@ async def find_one_basic(id: int):
         SELECT * from content
         WHERE id = %s;
     """
-    return fetch_one(query, (id,))
+    return await fetch_one(query, (id,))
 
 
 async def update(id, text, user):
@@ -104,7 +104,7 @@ async def update(id, text, user):
         WHERE id = %s
         RETURNING id
     """
-    return execute_update(query, (text, now, user, id))
+    return await execute_update(query, (text, now, user, id))
 
 
 async def update_content_properties(id, values):
@@ -116,7 +116,7 @@ async def update_content_properties(id, values):
         WHERE id = {id}
         RETURNING id, geo_level
     """
-    return execute_update(query)
+    return await execute_update(query)
 
 
 async def find_tree(geo_level):
@@ -142,7 +142,7 @@ async def find_tree(geo_level):
         where c.geo_level = %s
         ORDER by s.sort_weight DESC, t.sort_weight DESC;
     """
-    return fetch_many(query, (geo_level,))
+    return await fetch_many(query, (geo_level,))
 
 
 async def find_category_tree(geo_level):
@@ -159,7 +159,7 @@ async def find_category_tree(geo_level):
             c.category_id is not null AND c.geo_level = %s
         ORDER by sort_weight DESC
     """
-    return fetch_many(query, (geo_level,))
+    return await fetch_many(query, (geo_level,))
 
 
 async def create(topic_id, geo_level, file):
@@ -171,4 +171,4 @@ async def create(topic_id, geo_level, file):
         VALUES (%s, %s, %s, %s)
         RETURNING id
     """
-    return execute_update(query, (geo_level, now, topic_id, file))
+    return await execute_update(query, (geo_level, now, topic_id, file))

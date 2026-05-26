@@ -8,12 +8,12 @@ log = logging.getLogger(__name__)
 async def find_all_variables():
     log.info(f"Fetching all variables")
     query = "SELECT * FROM variable;"
-    return fetch_many(query)
+    return await fetch_many(query)
 
 async def find_variables_by_data_source(data_source):
     log.info(f"Fetching all variables")
     query = "SELECT * FROM variable where data_source = %s;"
-    return fetch_many(query, (data_source, ))
+    return await fetch_many(query, (data_source, ))
 
 async def create(variable: VariableRequest):
     query = """
@@ -21,7 +21,7 @@ async def create(variable: VariableRequest):
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable;
     """
-    return execute_update(query, (variable.name, 
+    return await execute_update(query, (variable.name, 
                                   variable.category,
                                   variable.data_source, 
                                   variable.geo_level, 
@@ -42,9 +42,9 @@ async def update(id, variable: VariableRequest):
         SET name = %s, category = %s, data_source = %s, geo_level = %s, acs_variable = %s, gis_table = %s, 
         resource_ids = %s, data_year = %s, catalog_table = %s, description = %s, acs_concept = %s, aggregateable = %s
         WHERE id = %s
-        RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable = %s;
+        RETURNING id, name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable;
     """
-    return execute_update(query, (variable.name, 
+    return await execute_update(query, (variable.name, 
                                   variable.category,
                                   variable.data_source, 
                                   variable.geo_level, 
@@ -55,7 +55,19 @@ async def update(id, variable: VariableRequest):
                                   variable.catalog_table,
                                   variable.description,
                                   variable.acs_concept, 
+                                  variable.aggregateable,
                                   id))
+
+
+async def set_variable_update_time(names: list[str]):
+    if not names:
+        return 0
+    query = """
+        UPDATE variable
+        SET last_updated = NOW()
+        WHERE name = ANY(%s)
+    """
+    return await execute_update(query, (names,))
 
 
 async def delete(id):
@@ -64,4 +76,4 @@ async def delete(id):
         WHERE id = %s
         RETURNING name;
     """
-    return execute_update(query, (id,))
+    return await execute_update(query, (id,))

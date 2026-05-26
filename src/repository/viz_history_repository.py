@@ -15,7 +15,7 @@ async def create(dict):
     query = f"INSERT INTO viz_history ({columns}) VALUES ({placeholders}) RETURNING id"
 
     log.info(f"Inserting row into viz_history...")
-    return execute_update(query, values)
+    return await execute_update(query, values)
 
 
 async def find_by_parent_id(parent_id):
@@ -27,10 +27,10 @@ async def find_by_parent_id(parent_id):
         WHERE parent_id = %s
         ORDER BY create_date DESC
     """
-    return fetch_many(query, (parent_id,))
+    return await fetch_many(query, (parent_id,))
 
 
 async def delete(id):
     log.info(f"Deleting viz_history id {id}")
     query = "DELETE FROM viz_history WHERE id = %s RETURNING id;"
-    return execute_update(query, (id,))
+    return await execute_update(query, (id,))

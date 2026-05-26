@@ -11,6 +11,7 @@ from fastapi_cache.decorator import cache
 
 from redis import asyncio as aioredis
 import logging
+from db.database import db
 
 origins = [
     "http://localhost",
@@ -27,7 +28,11 @@ log.setLevel(logging.DEBUG)
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     redis = aioredis.from_url("redis://localhost")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    # connect to database
+    await db.connect()
     yield
+    # close DB connection on shutdown
+    await db.close()
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(profile.router)

@@ -25,15 +25,15 @@ async def run_build(category: str, variables: dict[str, str] | None = None):
     
     try:
         if category == "acs":
-            await asyncio.to_thread(data_builder.build_acs, variables or None)
+            await data_builder.build_acs(variables or None)
         elif category == "gis":
-            await asyncio.to_thread(data_builder.build_gis)
+            await data_builder.build_gis()
         elif category == "ckan":
-            await asyncio.to_thread(data_builder.build_ckan)
+            await data_builder.build_ckan()
         elif category == "all":
-            await asyncio.to_thread(data_builder.build_all)
+            await data_builder.build_all()
 
-        await asyncio.to_thread(revalidate_all)
+        revalidate_all()
     except Exception:
         raise
     finally:
