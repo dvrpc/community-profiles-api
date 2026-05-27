@@ -3,11 +3,11 @@ from sqlalchemy import create_engine
 import logging
 import os
 
-gis_host = os.getenv("GIS_HOST")
-gis_dbname = os.getenv("GIS_NAME")
-gis_user = os.getenv("GIS_USER")
-gis_password = os.getenv("GIS_PASS")
-gis_port = os.getenv("GIS_PORT")
+gis_host = os.getenv("GIS_DB_HOST")
+gis_dbname = os.getenv("GIS_DB_NAME")
+gis_user = os.getenv("GIS_DB_USER")
+gis_password = os.getenv("GIS_DB_PASSWORD")
+gis_port = os.getenv("GIS_DB_PORT")
 
 log = logging.getLogger(__name__)
 load_dotenv()

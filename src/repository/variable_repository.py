@@ -15,6 +15,11 @@ async def find_variables_by_data_source(data_source):
     query = "SELECT * FROM variable where data_source = %s;"
     return await fetch_many(query, (data_source, ))
 
+async def find_non_aggregateable_variables():
+    log.info(f"Fetching all variables")
+    query = "SELECT name FROM variable where aggregateable = False"
+    return await fetch_many(query)
+
 async def create(variable: VariableRequest):
     query = """
         INSERT INTO variable (name, category, data_source, geo_level, acs_variable, gis_table, resource_ids, data_year, catalog_table, description, acs_concept, aggregateable)
