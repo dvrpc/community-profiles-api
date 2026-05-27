@@ -10,7 +10,7 @@ async def create(viz_id, source_id):
         VALUES (%s, %s)
         RETURNING viz_id, source_id;
     """
-    return execute_update(query, (viz_id, source_id))
+    return await execute_update(query, (viz_id, source_id))
 
 
 async def delete(viz_id, source_ids):
@@ -19,10 +19,10 @@ async def delete(viz_id, source_ids):
         WHERE viz_id = %s AND source_id = ANY(%s)
         RETURNING viz_id, source_id;
     """
-    return execute_update(query, (viz_id, source_ids))
+    return await execute_update(query, (viz_id, source_ids))
 
 async def find(viz_id):
     query = """
         SELECT source_id FROM viz_source WHERE viz_id = %s
     """
-    return fetch_many(query, (viz_id,))
+    return await fetch_many(query, (viz_id,))

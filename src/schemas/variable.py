@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 
+from datetime import datetime
 
 
 
@@ -18,6 +19,7 @@ class VariableRequest(BaseModel):
     description: Optional[str] = Field(..., description=""),
     acs_concept: Optional[str] = Field(..., description="")
     aggregateable: Optional[bool] = Field(..., description="")
+    last_updated: Optional[datetime] = Field(..., description="Timestamp of the last update")
 
 class Variable(VariableRequest):
     id: int = Field(..., description="Primary key of the variable")

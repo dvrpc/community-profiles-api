@@ -6,7 +6,7 @@ async def create(subcategory_id, name, label):
         INSERT INTO topic (name, subcategory_id, label) VALUES (%s, %s, %s)
         RETURNING (id)
     """
-    return execute_update(query, (name, subcategory_id, label))
+    return await execute_update(query, (name, subcategory_id, label))
 
 async def update(id, values):
     query = f"""
@@ -15,11 +15,11 @@ async def update(id, values):
         WHERE id = {id}
         RETURNING (id)
     """
-    return execute_update(query)
+    return await execute_update(query)
 
 
 
 
 async def delete(id):
     query = "DELETE FROM topic WHERE id = %s RETURNING id;"
-    return execute_update(query, (id,))
+    return await execute_update(query, (id,))

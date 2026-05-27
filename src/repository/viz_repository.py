@@ -27,7 +27,7 @@ async def find_one(id: int):
         WHERE v.id = %s
         GROUP BY v.id, v.geo_level, v.file, v.create_date ,v.topic_id, v.last_edited_by;
     """
-    return fetch_one(query, (id,))
+    return await fetch_one(query, (id,))
 
 
 async def find_one_basic(id: int):
@@ -35,7 +35,7 @@ async def find_one_basic(id: int):
     query = """
         SELECT * FROM viz where id = %s
     """
-    return fetch_one(query, (id,))
+    return await fetch_one(query, (id,))
 
 
 async def update(id, text, user):
@@ -48,7 +48,7 @@ async def update(id, text, user):
         WHERE id = %s
         RETURNING id;
     """
-    return execute_update(query, (text, now, user, id))
+    return await execute_update(query, (text, now, user, id))
 
 
 async def create(topic_id, geo_level, file, content_id):
@@ -60,4 +60,4 @@ async def create(topic_id, geo_level, file, content_id):
         VALUES (%s, %s, %s, %s, %s)
         RETURNING id
     """
-    return execute_update(query, (geo_level, now, topic_id, file, content_id))
+    return await execute_update(query, (geo_level, now, topic_id, file, content_id))

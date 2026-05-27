@@ -7,7 +7,7 @@ async def get(id):
         FROM subcategory
         WHERE id = %s;
     """
-    return fetch_one(query, (id,))
+    return await fetch_one(query, (id,))
 
 async def update(id, values):
     query = f"""
@@ -16,7 +16,7 @@ async def update(id, values):
         WHERE id = {id}
         RETURNING (id)
     """
-    return execute_update(query)
+    return await execute_update(query)
 
 
 
@@ -27,9 +27,9 @@ async def create(category_id, name, label):
         RETURNING (id)
     """
     
-    return execute_update(query, (name, category_id, label))
+    return await execute_update(query, (name, category_id, label))
     # query = f"INSERT INTO content_history ({columns}) VALUES ({placeholders})"
 
 async def delete(id):
     query = "DELETE FROM subcategory WHERE id = %s RETURNING id;"
-    return execute_update(query, (id,))
+    return await execute_update(query, (id,))

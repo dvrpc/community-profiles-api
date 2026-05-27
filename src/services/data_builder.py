@@ -1,9 +1,10 @@
 from data_builder import acs, gis, ckan, regional, engine
-from repository.variable_repository import find_variables_by_data_source
+from repository.variable_repository import find_variables_by_data_source, set_variable_update_time
 import pandas as pd
 import functools as ft
 import logging
 from db.database import db
+import asyncio
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ def _pandas_dtype_to_sql(dtype) -> str:
     else:
         return "TEXT"
 
-def _save_data(df: pd.DataFrame, table: str) -> None:
+async def _save_data(df: pd.DataFrame, table: str) -> None:
     log.info("Writing dataframe to %s table", table)
     col_defs = ", ".join(f'"{c}" {_pandas_dtype_to_sql(df[c].dtype)}' for c in df.columns)
     cols = ", ".join(f'"{c}"' for c in df.columns)
@@ -35,15 +36,15 @@ def _save_data(df: pd.DataFrame, table: str) -> None:
     rows = [tuple(row) for row in df.itertuples(index=False, name=None)]
 
     try:
-        with db.conn.cursor() as cur:
-            cur.execute(f'DROP TABLE IF EXISTS "{table}"')
-            cur.execute(f'CREATE TABLE "{table}" ({col_defs})')
-            cur.executemany(f'INSERT INTO "{table}" ({cols}) VALUES ({placeholders})', rows)
-            db.conn.commit()
+        async with db.conn.cursor() as cur:
+            await cur.execute(f'DROP TABLE IF EXISTS "{table}"')
+            await cur.execute(f'CREATE TABLE "{table}" ({col_defs})')
+            await cur.executemany(f'INSERT INTO "{table}" ({cols}) VALUES ({placeholders})', rows)
+            await db.conn.commit()
         log.info("Successfully wrote dataframe to %s table", table)
     except Exception as e:
         log.error("Error writing dataframe to %s table: %s", table, e)
-        db.conn.rollback()
+        await db.conn.rollback()
         raise
 
 
@@ -52,27 +53,28 @@ async def _get_acs_variables() -> dict[str, str]:
     raw = {var['acs_variable']: var['name'] for var in variables}
     return acs.build_variable_map(raw)
 
-def _read_table(table: str) -> pd.DataFrame:
+async def _read_table(table: str) -> pd.DataFrame:
     try:
-        with db.conn.cursor() as cur:
-            cur.execute(f'SELECT * FROM "{table}"')
-            rows = cur.fetchall()
+        async with db.conn.cursor() as cur:
+            await cur.execute(f'SELECT * FROM "{table}"')
+            rows = await cur.fetchall()
             columns = [col.name for col in cur.description]
             df = pd.DataFrame(rows, columns=columns)
             df = df.apply(to_numeric)
             return df
     except Exception as e:
         log.error(f'Error reading table {table}: {e}')
-        db.conn.rollback()
+        await db.conn.rollback()
         return pd.DataFrame()
 
-def _rebuild_regional() -> None:
-    county_data = regional.get_profile_data("SELECT * FROM county", "all county data")
-    _save_data(regional.aggregate_data(county_data), "region")
+async def _rebuild_regional() -> None:
+    county_data = await regional.get_profile_data("SELECT * FROM county", "all county data")
+    region_df = await regional.aggregate_data(county_data)
+    await _save_data(region_df, "region")
 
     
-def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame) -> None:
-    existing = _read_table(table)
+async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame) -> None:
+    existing = await _read_table(table)
 
     # Normalize merge keys to string
     existing[merge_key] = existing[merge_key].astype(str)
@@ -90,44 +92,52 @@ def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame) -> None:
     columns_to_update = [
         col for col in updated.columns if col not in excluded_columns]
     updated[columns_to_update] = updated[columns_to_update].apply(to_numeric)
-    _save_data(updated, table)
+
+    updated_variables = [
+        col for col in fresh.columns
+        if col != merge_key and col not in excluded_columns
+    ]
+    await set_variable_update_time(updated_variables)
+    await _save_data(updated, table)
 
 
 
 async def build_all() -> None:
     await build_acs()
-    build_gis()
-    build_ckan()
-    _rebuild_regional()
+    await build_gis()
+    await build_ckan()
+    await _rebuild_regional()
 
 
 async def build_acs(variable_map: dict[str, str] | None = None) -> None:
     if variable_map is None:
         variable_map = await _get_acs_variables()
+    county_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "county")
+    county_acs = county_acs.rename(columns={"fips": "geoid"})
+    muni_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "muni")
 
-    county_acs = acs.fetch_acs_data(variable_map, geo="county").rename(columns={"fips": "geoid"})
-    muni_acs   = acs.fetch_acs_data(variable_map, geo="muni")
-
-    _update_columns("county",       "geoid", county_acs)
-    _update_columns("municipality", "geoid", muni_acs)
-    _rebuild_regional()
-
-
-def build_gis() -> None:
-    county_gis = gis.get_county_data().rename(columns={"fips": "geoid"})
-    muni_gis   = gis.get_muni_data()
-
-    _update_columns("county",       "geoid", county_gis)
-    _update_columns("municipality", "geoid", muni_gis)
-    _rebuild_regional()
+    await _update_columns("county", "geoid", county_acs)
+    await _update_columns("municipality", "geoid", muni_acs)
+    await _rebuild_regional()
 
 
-def build_ckan() -> None:
-    county_ckan = ckan.get_county_data().rename(columns={"fips": "geoid"})
-    muni_ckan   = ckan.get_muni_data()
+async def build_gis() -> None:
+    county_gis = await asyncio.to_thread(gis.get_county_data)
+    county_gis = county_gis.rename(columns={"fips": "geoid"})
+    muni_gis = await asyncio.to_thread(gis.get_muni_data)
 
-    _update_columns("county",       "geoid", county_ckan)
-    _update_columns("municipality", "geoid", muni_ckan)
-    _rebuild_regional()
+    await _update_columns("county", "geoid", county_gis)
+    await _update_columns("municipality", "geoid", muni_gis)
+    await _rebuild_regional()
+
+
+async def build_ckan() -> None:
+    county_ckan = await asyncio.to_thread(ckan.get_county_data)
+    county_ckan = county_ckan.rename(columns={"fips": "geoid"})
+    muni_ckan = await asyncio.to_thread(ckan.get_muni_data)
+
+    await _update_columns("county", "geoid", county_ckan)
+    await _update_columns("municipality", "geoid", muni_ckan)
+    await _rebuild_regional()
 
 

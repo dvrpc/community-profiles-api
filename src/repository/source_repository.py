@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 async def find_all_sources():
     log.info(f"Fetching all sources")
     query = "SELECT * FROM source;"
-    return fetch_many(query)
+    return await fetch_many(query)
 
 
 async def create(source: SourceRequest):
@@ -17,7 +17,7 @@ async def create(source: SourceRequest):
         VALUES (%s, %s, %s, %s, %s)
         RETURNING id, agency, dataset, year_from, year_to, citation;
     """
-    return execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation))
+    return await execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation))
 
 
 async def update(id, source: SourceRequest):
@@ -27,7 +27,7 @@ async def update(id, source: SourceRequest):
         WHERE id = %s
         RETURNING id, agency, dataset, year_from, year_to, citation;
     """
-    return execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation, id))
+    return await execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation, id))
 
 
 async def delete(id):
@@ -36,4 +36,4 @@ async def delete(id):
         WHERE id = %s
         RETURNING id;
     """
-    return execute_update(query, (id,))
+    return await execute_update(query, (id,))

@@ -6,28 +6,29 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class Database:
     def __init__(self):
-        self.conn = self.connect()
+        self.conn: psycopg.AsyncConnection | None = None
 
-    def connect(self):
-        """
-        Connect to database and return connection
-        """
-        log.info("Connecting to PostgreSQL Database...")
+    async def connect(self) -> None:
+        """Establish an async connection to Postgres and store it on the instance."""
+        log.info("Connecting to PostgreSQL Database (async)...")
+        load_dotenv()
         try:
-            load_dotenv()
-
-            conn = psycopg.connect(
-                host = os.getenv("DB_HOST"),
-                dbname = os.getenv("DB_NAME"),
-                user = os.getenv("DB_USER"),
-                password = os.getenv("DB_PASS"),
-                port = os.getenv("DB_PORT")
+            self.conn = await psycopg.AsyncConnection.connect(
+                host=os.getenv("DB_HOST"),
+                dbname=os.getenv("DB_NAME"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASS"),
+                port=os.getenv("DB_PORT"),
             )
         except Exception as e:
             log.error(f"Could not connect to Database: {e}")
 
-        return conn
-    
+    async def close(self) -> None:
+        if self.conn is not None:
+            await self.conn.close()
+
+
 db = Database()
