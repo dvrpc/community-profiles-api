@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from data_builder.ckan import fetch_datastore
 from data_builder.gis import fetch_sql
+from repository.variable_repository import find_non_aggregateable_variables
 from db.database import db
 import asyncio
 
@@ -17,30 +18,6 @@ excluded_variables = {
     "buffer_bbox"
 }
 
-
-non_aggregatable_variables = {
-    "median_age",
-    "median_age_moe",
-    "median_hh_inc",
-    "median_hh_inc_moe",
-    "median_family_inc",
-    "median_family_inc_moe",
-    "median_inc",
-    "median_inc_moe",
-    "per_cap_inc",
-    "per_cap_inc_moe",
-    "mean_family_inc",
-    "mean_family_inc_moe",
-    "mean_family_size",
-    "mean_family_size_moe",
-    "mean_hh_size",
-    "mean_hh_size_moe",
-    "pct_ev_ldv",
-    "pct_change_ev",
-    "pct_change_ldv"
-    "emppct50",
-    "poppct50",
-}
 
 
 hh_median_income_range_data = [
@@ -109,7 +86,7 @@ def aggregate_moe(column):
 
 async def aggregate_data(county_data: pd.DataFrame):
     aggregate_data = {}
-
+    non_agg_vars = await find_non_aggregateable_variables()
     async def add_variables(recalculated_data, variable):
         nonlocal aggregate_data
         aggregate_data[variable] = recalculated_data['estimate']
@@ -120,20 +97,20 @@ async def aggregate_data(county_data: pd.DataFrame):
     await add_variables(med_hh, 'median_hh_inc')
     med_age = await recalcute_median(median_age_range_data, 1)
     await add_variables(med_age, 'median_age')
-    med_fam = await recalcute_median(fam_median_income_range_data, 1.5)
-    await add_variables(med_fam, 'median_family_inc')
-    per_cap = await recalculate_mean("per_cap_inc", "total_pop",
-                  "per capita income")
-    await add_variables(per_cap, 'per_cap_inc')
-    mean_fam = await recalculate_mean("mean_family_inc", "total_fam",
-                                   "mean family income")
-    await add_variables(mean_fam, 'mean_family_inc')
-    mean_family_size = await recalculate_mean("mean_family_size",
-                  "total_fam", "mean family size")
-    await add_variables(mean_family_size, 'mean_family_size')
-    mean_hh_size = await recalculate_mean("mean_hh_size",
-                  "total_hh", "mean household size")
-    await add_variables(mean_hh_size, 'mean_hh_size')
+    # med_fam = await recalcute_median(fam_median_income_range_data, 1.5)
+    # await add_variables(med_fam, 'median_family_inc')
+    # per_cap = await recalculate_mean("per_cap_inc", "total_pop",
+    #               "per capita income")
+    # await add_variables(per_cap, 'per_cap_inc')
+    # mean_fam = await recalculate_mean("mean_family_inc", "total_fam",
+    #                                "mean family income")
+    # await add_variables(mean_fam, 'mean_family_inc')
+    # mean_family_size = await recalculate_mean("mean_family_size",
+    #               "total_fam", "mean family size")
+    # await add_variables(mean_family_size, 'mean_family_size')
+    # mean_hh_size = await recalculate_mean("mean_hh_size",
+    #               "total_hh", "mean household size")
+    # await add_variables(mean_hh_size, 'mean_hh_size')
 
     # this could be done directly in sql
 
@@ -145,7 +122,7 @@ async def aggregate_data(county_data: pd.DataFrame):
     for variable in list(county_data.columns):
 
         if variable not in excluded_variables:
-            if variable not in non_aggregatable_variables:
+            if variable not in non_agg_vars:
                 if "moe" in variable:
                     if (not (county_data[variable] == -555555555).any()):
                         aggregate_data[variable] = aggregate_moe(
