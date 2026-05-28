@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import profile, content, viz, source, tree
+from routers import profile, content, viz, source, tree, variable, data_builder, acs
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +11,7 @@ from fastapi_cache.decorator import cache
 
 from redis import asyncio as aioredis
 import logging
+from db.database import db
 
 origins = [
     "http://localhost",
@@ -27,7 +28,11 @@ log.setLevel(logging.DEBUG)
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     redis = aioredis.from_url("redis://localhost")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    # connect to database
+    await db.connect()
     yield
+    # close DB connection on shutdown
+    await db.close()
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(profile.router)
@@ -35,6 +40,9 @@ app.include_router(content.router)
 app.include_router(viz.router)
 app.include_router(source.router)
 app.include_router(tree.router)
+app.include_router(variable.router)
+app.include_router(data_builder.router)
+app.include_router(acs.router)
 
 app.add_middleware(
     CORSMiddleware,

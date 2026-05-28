@@ -11,14 +11,17 @@ log = logging.getLogger(__name__)
 def populate_viz(viz, profile):
     values = viz['schema']['data']['values']
     target_field = viz['target_field']
+    variables = []
 
     try:
         for index, val in enumerate(values):
+            variables.append(values[index][target_field])
             values[index][target_field] = profile[val[target_field]]
     except Exception as e:
         log.error(f"Exception occured populating viz: {e}")
 
     viz['schema']['data']['values'] = values
+    viz['variables'] = variables
     return viz
 
 

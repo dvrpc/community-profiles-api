@@ -30,7 +30,7 @@ async def update_source(id: int, source: SourceRequest, admin=Depends(require_ad
 
 
 @router.delete("/{id}")
-async def update_source(id: int, admin=Depends(require_admin)):
+async def delete_source(id: int, admin=Depends(require_admin)):
     res = await source_repo.delete(id)
     revalidate_all()
     return res

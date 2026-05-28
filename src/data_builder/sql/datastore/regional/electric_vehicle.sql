@@ -1,0 +1,1 @@
+SELECT SUM(total_ev)::float / SUM(total_ldv) as pct_ev_ldv, SUM(change_ev)::float / (SUM(total_ev) - SUM(change_ev)) as pct_change_ev, SUM(change_ldv)::float / (SUM(total_ldv) - SUM(change_ldv)) as pct_change_ldv FROM "31691dde-5bd5-4570-ab9f-79c498f72497" WHERE YEAR = (SELECT MAX(YEAR) FROM "31691dde-5bd5-4570-ab9f-79c498f72497") AND geoid IS NOT NULL

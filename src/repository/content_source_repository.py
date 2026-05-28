@@ -10,7 +10,7 @@ async def create(content_id, source_id):
         VALUES (%s, %s)
         RETURNING content_id, source_id;
     """
-    return execute_update(query, (content_id, source_id))
+    return await execute_update(query, (content_id, source_id))
 
 
 async def delete(content_id, source_ids):
@@ -19,10 +19,10 @@ async def delete(content_id, source_ids):
         WHERE content_id = %s AND source_id = ANY(%s)
         RETURNING content_id, source_id;
     """
-    return execute_update(query, (content_id, source_ids))
+    return await execute_update(query, (content_id, source_ids))
 
 async def find(content_id):
     query = """
         SELECT source_id FROM content_source WHERE content_id = %s
     """
-    return fetch_many(query, (content_id,))
+    return await fetch_many(query, (content_id,))

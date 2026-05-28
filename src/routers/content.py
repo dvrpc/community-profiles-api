@@ -20,8 +20,11 @@ async def get_populated_municipality_content(geoid: str):
 
 @router.get("/county/{geoid}")
 async def get_populated_county_content(geoid: str):
-    profile = await profile_repo.find_county(geoid)
-    content = await content_service.build_content('county', profile)
+    county_profile = await profile_repo.find_county(geoid)
+    region_profile = await profile_repo.find_region()
+
+    # profile = {**county_profile, **{f"region.{k}": v for k,v in region_profile.items()}}
+    content = await content_service.build_content('county', county_profile)
     return content
 
 
@@ -49,6 +52,8 @@ async def get_content_preview(geo_level: str, geoid: str = None, body: str = Bod
 
         if (geo_level == 'county'):
             profile = await profile_repo.find_county(geoid)
+            region_profile = await profile_repo.find_region()
+            profile['region'] = region_profile
         else:
             profile = await profile_repo.find_municipality(geoid)
 

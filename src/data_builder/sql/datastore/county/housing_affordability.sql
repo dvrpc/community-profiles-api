@@ -1,0 +1,1 @@
+SELECT county_id as fips, percent_cost_burdened from "4a3105ac-cc2f-4ba2-8b25-68ae4c1e311c" WHERE year = (SELECT MAX(year) FROM "4a3105ac-cc2f-4ba2-8b25-68ae4c1e311c")
