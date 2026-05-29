@@ -16,8 +16,13 @@ async def find_variables_by_data_source(data_source):
     return await fetch_many(query, (data_source, ))
 
 async def find_non_aggregateable_variables():
+<<<<<<< HEAD
     log.info(f"Fetching all variables")
     query = "SELECT name FROM variable where aggregateable = False"
+=======
+    log.info(f"Fetching non-aggregateable variables")
+    query = "SELECT * FROM variable where aggregateable = FALSE;"
+>>>>>>> f6ae3edcf42173202029af2aa71f7c597b7d31ad
     return await fetch_many(query)
 
 async def create(variable: VariableRequest):
