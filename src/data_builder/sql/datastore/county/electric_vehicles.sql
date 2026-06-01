@@ -1,1 +1,0 @@
-SELECT geoid as fips, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv FROM "97af7cbb-11b9-4f98-9d71-b2a6e5bfb994" WHERE YEAR = (SELECT MAX(YEAR) FROM "97af7cbb-11b9-4f98-9d71-b2a6e5bfb994")

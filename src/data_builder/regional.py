@@ -2,8 +2,6 @@ import logging
 import math
 import numpy as np
 import pandas as pd
-from data_builder.ckan import fetch_datastore
-from data_builder.gis import fetch_sql
 from repository.variable_repository import find_non_aggregateable_variables
 from db.database import db
 from repository.variable_repository import find_non_aggregateable_variables
@@ -19,11 +17,8 @@ excluded_variables = {
     "buffer_bbox"
 }
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> f6ae3edcf42173202029af2aa71f7c597b7d31ad
 hh_median_income_range_data = [
     {"range_start": 0, "range_end": 9999, "variable": "hh_inc_10k"},
     {"range_start": 10000, "range_end": 14999, "variable": "hh_inc_10k_15k"},
@@ -90,13 +85,7 @@ def aggregate_moe(column):
 
 async def aggregate_data(county_data: pd.DataFrame):
     aggregate_data = {}
-<<<<<<< HEAD
-    non_aggregateable_variables = await find_non_aggregateable_variables()
-    print(non_aggregateable_variables)
-
-=======
     non_agg_vars = await find_non_aggregateable_variables()
->>>>>>> f6ae3edcf42173202029af2aa71f7c597b7d31ad
     async def add_variables(recalculated_data, variable):
         nonlocal aggregate_data
         aggregate_data[variable] = recalculated_data['estimate']
@@ -124,19 +113,15 @@ async def aggregate_data(county_data: pd.DataFrame):
 
     # this could be done directly in sql
 
-    regional_ev_data = await asyncio.to_thread(fetch_datastore,
-        'electric_vehicle', 'regional')
-    pop_emp_regional_data = await asyncio.to_thread(fetch_sql,
-        'pop_emp_forecasts', 'regional')
+    # regional_ev_data = await asyncio.to_thread(fetch_datastore,
+    #     'electric_vehicle', 'regional')
+    # pop_emp_regional_data = await asyncio.to_thread(fetch_sql,
+    #     'pop_emp_forecasts', 'regional')
 
     for variable in list(county_data.columns):
 
         if variable not in excluded_variables:
-<<<<<<< HEAD
-            if variable not in non_aggregateable_variables:
-=======
             if variable not in non_agg_vars:
->>>>>>> f6ae3edcf42173202029af2aa71f7c597b7d31ad
                 if "moe" in variable:
                     if (not (county_data[variable] == -555555555).any()):
                         aggregate_data[variable] = aggregate_moe(
@@ -150,8 +135,8 @@ async def aggregate_data(county_data: pd.DataFrame):
                     aggregate_data[variable] = None
 
     df = pd.DataFrame([aggregate_data])
-    df.update(regional_ev_data)
-    df.update(pop_emp_regional_data)
+    # df.update(regional_ev_data)
+    # df.update(pop_emp_regional_data)
     return df
 
 

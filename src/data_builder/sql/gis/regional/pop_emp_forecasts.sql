@@ -1,1 +1,0 @@
-SELECT SUM(popabs50) / SUM(pop20) as poppct50, SUM(empabs50) / SUM(emp20) as emppct50 FROM demographics.forecast_2050_county_table_v2

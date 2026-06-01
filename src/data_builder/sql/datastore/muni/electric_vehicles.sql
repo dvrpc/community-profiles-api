@@ -1,1 +1,0 @@
-SELECT geoid, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv FROM "31691dde-5bd5-4570-ab9f-79c498f72497" WHERE YEAR = (SELECT MAX(YEAR) FROM "31691dde-5bd5-4570-ab9f-79c498f72497") AND geoid IS NOT NULL

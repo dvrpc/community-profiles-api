@@ -1,5 +1,7 @@
 from data_builder import acs, gis, ckan, regional, engine
 from repository.variable_repository import find_variables_by_data_source, set_variable_update_time
+from repository.sql_repository import find_sql_by_geo_level_and_data_source
+from repository.variable_repository import find_all_variables
 import pandas as pd
 import functools as ft
 import logging
@@ -122,22 +124,46 @@ async def build_acs(variable_map: dict[str, str] | None = None) -> None:
 
 
 async def build_gis() -> None:
-    county_gis = await asyncio.to_thread(gis.get_county_data)
-    county_gis = county_gis.rename(columns={"fips": "geoid"})
-    muni_gis = await asyncio.to_thread(gis.get_muni_data)
+    county_gis_sql = await find_sql_by_geo_level_and_data_source("county", "gis")
+    muni_gis_sql = await find_sql_by_geo_level_and_data_source("municipality", "gis")
 
+    county_gis = await asyncio.to_thread(gis.get_county_data, county_gis_sql)
+    county_gis = county_gis.rename(columns={"fips": "geoid"})
+    muni_gis = await asyncio.to_thread(gis.get_muni_data, muni_gis_sql)
+    
     await _update_columns("county", "geoid", county_gis)
     await _update_columns("municipality", "geoid", muni_gis)
     await _rebuild_regional()
 
 
 async def build_ckan() -> None:
-    county_ckan = await asyncio.to_thread(ckan.get_county_data)
+    
+    county_ckan_sql = await find_sql_by_geo_level_and_data_source("county", "ckan")
+    muni_ckan_sql = await find_sql_by_geo_level_and_data_source("municipality", "ckan")
+    
+    county_ckan = await asyncio.to_thread(ckan.get_county_data, county_ckan_sql)
     county_ckan = county_ckan.rename(columns={"fips": "geoid"})
-    muni_ckan = await asyncio.to_thread(ckan.get_muni_data)
+    muni_ckan = await asyncio.to_thread(ckan.get_muni_data, muni_ckan_sql)
 
     await _update_columns("county", "geoid", county_ckan)
     await _update_columns("municipality", "geoid", muni_ckan)
     await _rebuild_regional()
+    await recalibrate_variables()
+    
+async def recalibrate_variables() -> None:
+    county = await _read_table("county")
+    muni = await _read_table("municipality")
+    regional = await _read_table("region")
+    variables = await find_all_variables()
+    print(variables)
+    
+    for df, geo_level in [(county, "county"), (muni, "municipality")]:
+        variable_names = {var['name'] for var in variables if (var['geo_level'] == geo_level or var['geo_level'] == "all")}
+        profile_vars = [col for col in df.columns if col not in COUNTY_EXCLUDED.union(MUNI_EXCLUDED)]
+        print(variable_names)
+        for v in profile_vars:
+            if v not in variable_names:
+                print(f"Variable {v} in {geo_level} table not found in variable repository")
+
 
 

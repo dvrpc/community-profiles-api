@@ -13,6 +13,9 @@ async def find_sql(id: int):
     query = 'SELECT id, name, data_source, geo_level, body FROM "sql" WHERE id = %s'
     return await fetch_one(query, (id,))
 
+async def find_sql_by_geo_level_and_data_source(geo_level: str, data_source: str):
+    query = 'SELECT id, name, data_source, geo_level, body FROM "sql" WHERE geo_level = %s AND data_source = %s'
+    return await fetch_many(query, (geo_level, data_source))
 
 async def create_sql(sql_def):
     query = 'INSERT INTO "sql" (name, data_source, geo_level, body) VALUES (%s, %s, %s, %s) RETURNING id, name, data_source, geo_level, body;'
