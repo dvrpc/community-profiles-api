@@ -7,7 +7,9 @@ from services.auth import require_admin
 from services.revalidate import revalidate_all
 import repository.variable_repository as variable_repo
 import repository.profile_repository as profile_repo
+import services.variable as variable_service
 from services.build_state import run_build
+
 
 router = APIRouter(
     prefix="/variable",
@@ -27,7 +29,9 @@ async def get_variables_by_data_source(data_source: str):
 @router.post("")
 async def create_variable(variable: VariableRequest, admin=Depends(require_admin)):
     res = await variable_repo.create(variable)
+    print(res)
     if variable.data_source == "acs":
+        await variable_service.create_geo_variable(res[0], variable.aggregateable)
         asyncio.create_task(
             run_build("acs", {variable.acs_variable: variable.name})
         )

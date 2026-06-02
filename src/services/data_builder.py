@@ -1,7 +1,10 @@
 from data_builder import acs, gis, ckan, regional, engine
-from repository.variable_repository import find_variables_by_data_source, set_variable_update_time
-from repository.sql_repository import find_sql_by_geo_level_and_data_source
-from repository.variable_repository import find_all_variables
+
+import repository.geo_variable_repository as geo_variable_repo
+import repository.variable_repository as variable_repo
+import repository.sql_repository as sql_repo
+import repository.profile_repository as profile_repo
+from schemas.variable import VariableRequest
 import pandas as pd
 import functools as ft
 import logging
@@ -51,7 +54,7 @@ async def _save_data(df: pd.DataFrame, table: str) -> None:
 
 
 async def _get_acs_variables() -> dict[str, str]:
-    variables = await find_variables_by_data_source('acs')
+    variables = await variable_repo.find_variables_by_data_source('acs')
     raw = {var['acs_variable']: var['name'] for var in variables}
     return acs.build_variable_map(raw)
 
@@ -74,8 +77,40 @@ async def _rebuild_regional() -> None:
     region_df = await regional.aggregate_data(county_data)
     await _save_data(region_df, "region")
 
+
+async def _create_missing_variable(variable_name: str, data_source: str, geo_level: str, concept: str = None) -> None:
+
+    try:
+        existing = await variable_repo.find_variable_by_name(variable_name)
+        if existing:            
+            geo_var = await geo_variable_repo.find_by_variable_and_geo_level(existing['id'], geo_level)
+            if not geo_var:
+                await geo_variable_repo.create(existing['id'], geo_level)
+                log.info(f"Created missing geo_variable entry for {variable_name} at level {geo_level}")
+            return
+        
+        new_variable = VariableRequest(
+            name=variable_name,
+            data_source=data_source,
+            acs_variable=None,
+            data_year=None,
+            description=None,
+            concept=concept,
+            aggregateable=True
+        )
+        
+        created_var = await variable_repo.create(new_variable)
+        if created_var:
+            var_id = created_var[0]['id']
+            log.info(f"Created variable {variable_name} with id {var_id}")
+            
+            await geo_variable_repo.create(var_id, geo_level)
+            log.info(f"Created geo_variable entry for {variable_name} at level {geo_level}")
+    except Exception as e:
+        log.error(f"Error creating variable {variable_name}: {e}")
+
     
-async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame) -> None:
+async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metadata: dict = None) -> None:
     existing = await _read_table(table)
 
     # Normalize merge keys to string
@@ -99,7 +134,18 @@ async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame) -> No
         col for col in fresh.columns
         if col != merge_key and col not in excluded_columns
     ]
-    await set_variable_update_time(updated_variables)
+    await variable_repo.set_variable_update_time(updated_variables)
+    
+    for var_name in updated_variables:
+        if var_name in metadata:
+            meta = metadata[var_name]
+            await _create_missing_variable(
+                var_name,
+                meta['data_source'],
+                table,
+                concept=meta.get('concept')
+            )
+    
     await _save_data(updated, table)
 
 
@@ -124,46 +170,58 @@ async def build_acs(variable_map: dict[str, str] | None = None) -> None:
 
 
 async def build_gis() -> None:
-    county_gis_sql = await find_sql_by_geo_level_and_data_source("county", "gis")
-    muni_gis_sql = await find_sql_by_geo_level_and_data_source("municipality", "gis")
+    county_gis_sql = await sql_repo.find_sql_by_geo_level_and_data_source("county", "gis")
+    muni_gis_sql = await sql_repo.find_sql_by_geo_level_and_data_source("municipality", "gis")
 
-    county_gis = await asyncio.to_thread(gis.get_county_data, county_gis_sql)
+    county_gis, county_gis_metadata = await asyncio.to_thread(gis.get_county_data, county_gis_sql)
     county_gis = county_gis.rename(columns={"fips": "geoid"})
-    muni_gis = await asyncio.to_thread(gis.get_muni_data, muni_gis_sql)
+    muni_gis, muni_gis_metadata = await asyncio.to_thread(gis.get_muni_data, muni_gis_sql)
     
-    await _update_columns("county", "geoid", county_gis)
-    await _update_columns("municipality", "geoid", muni_gis)
+    await _update_columns("county", "geoid", county_gis, county_gis_metadata)
+    await _update_columns("municipality", "geoid", muni_gis, muni_gis_metadata)
     await _rebuild_regional()
 
 
 async def build_ckan() -> None:
     
-    county_ckan_sql = await find_sql_by_geo_level_and_data_source("county", "ckan")
-    muni_ckan_sql = await find_sql_by_geo_level_and_data_source("municipality", "ckan")
+    county_ckan_sql = await sql_repo.find_sql_by_geo_level_and_data_source("county", "ckan")
+    muni_ckan_sql = await sql_repo.find_sql_by_geo_level_and_data_source("municipality", "ckan")
     
-    county_ckan = await asyncio.to_thread(ckan.get_county_data, county_ckan_sql)
+    county_ckan, county_ckan_metadata = await asyncio.to_thread(ckan.get_county_data, county_ckan_sql)
     county_ckan = county_ckan.rename(columns={"fips": "geoid"})
-    muni_ckan = await asyncio.to_thread(ckan.get_muni_data, muni_ckan_sql)
+    muni_ckan, muni_ckan_metadata = await asyncio.to_thread(ckan.get_muni_data, muni_ckan_sql)
 
-    await _update_columns("county", "geoid", county_ckan)
-    await _update_columns("municipality", "geoid", muni_ckan)
+    await _update_columns("county", "geoid", county_ckan, county_ckan_metadata)
+    await _update_columns("municipality", "geoid", muni_ckan, muni_ckan_metadata)
     await _rebuild_regional()
     await recalibrate_variables()
     
 async def recalibrate_variables() -> None:
+    """Drop columns in profile where variable is no longer assigned to that geo level."""
     county = await _read_table("county")
     muni = await _read_table("municipality")
-    regional = await _read_table("region")
-    variables = await find_all_variables()
-    print(variables)
+    # regional = await _read_table("region")
+    county_variables = await geo_variable_repo.find_variables_by_geo_level("county")
+    muni_variables = await geo_variable_repo.find_variables_by_geo_level("municipality")
+    # regional_variables = await geo_variable_repo.find_variables_by_geo_level("region")
+    # variables = await variable_repo.find_all_variables()
+
+    print(county_variables)
+    return
+    for df, variables, table in [(county, county_variables, "county"), (muni, muni_variables, "municipality")]:
+        profile_vars = [col for col in df.columns if col not in COUNTY_EXCLUDED.union(MUNI_EXCLUDED) and not col.endswith("_moe")]
+        for p_var in profile_vars:
+            if p_var not in variables:
+                log.info(f"Variable {p_var} in {table} table not found in variable repository, deleting column")
+                # await profile_repo.delete_variable_by_table(p_var, table)
+    # print(variables)
     
-    for df, geo_level in [(county, "county"), (muni, "municipality")]:
-        variable_names = {var['name'] for var in variables if (var['geo_level'] == geo_level or var['geo_level'] == "all")}
-        profile_vars = [col for col in df.columns if col not in COUNTY_EXCLUDED.union(MUNI_EXCLUDED)]
-        print(variable_names)
-        for v in profile_vars:
-            if v not in variable_names:
-                print(f"Variable {v} in {geo_level} table not found in variable repository")
+    # for df, geo_level in [(county, "county"), (muni, "municipality")]:
+    #     variable_names = {var['name'] for var in variables if (var['geo_level'] == geo_level or var['geo_level'] == "all")}
+    #     profile_vars = [col for col in df.columns if col not in COUNTY_EXCLUDED.union(MUNI_EXCLUDED) and not col.endswith("_moe")]
+    #     for v in profile_vars:
+    #         if v not in variable_names:
+    #             print(f"Variable {v} in {geo_level} table not found in variable repository")
 
 
 

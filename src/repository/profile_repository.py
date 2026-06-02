@@ -42,3 +42,9 @@ async def delete_variable(variable_name: str):
         alter table region drop column if exists "{variable_name}";
     """
     await execute_alter(query)
+
+async def delete_variable_by_table(variable_name: str, table_name: str):
+    query = f"""
+        alter table {table_name} drop column if exists "{variable_name}";
+    """
+    await execute_alter(query)
