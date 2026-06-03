@@ -92,10 +92,10 @@ async def aggregate_data(county_data: pd.DataFrame):
         aggregate_data[variable + '_moe'] = recalculated_data['moe']
 
     # compute median and means (these call async DB helpers)
-    med_hh = await recalcute_median(hh_median_income_range_data, 1.5)
-    await add_variables(med_hh, 'median_hh_inc')
-    med_age = await recalcute_median(median_age_range_data, 1)
-    await add_variables(med_age, 'median_age')
+    # med_hh = await recalcute_median(hh_median_income_range_data, 1.5)
+    # await add_variables(med_hh, 'median_hh_inc')
+    # med_age = await recalcute_median(median_age_range_data, 1)
+    # await add_variables(med_age, 'median_age')
     # med_fam = await recalcute_median(fam_median_income_range_data, 1.5)
     # await add_variables(med_fam, 'median_family_inc')
     # per_cap = await recalculate_mean("per_cap_inc", "total_pop",

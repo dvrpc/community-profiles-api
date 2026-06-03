@@ -14,6 +14,7 @@ class VariableRequest(BaseModel):
     description: Optional[str] = Field(..., description="")
     concept: Optional[str] = Field(..., description="")
     aggregateable: Optional[bool] = Field(..., description="")
+    geo_levels: Optional[list[str]] = Field(default_factory=list, description="List of geographic levels this variable applies to")
     last_updated: Optional[datetime] = Field(default=None, description="Timestamp of the last update")
 
 class Variable(VariableRequest):

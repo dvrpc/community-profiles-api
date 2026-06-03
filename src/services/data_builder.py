@@ -136,15 +136,16 @@ async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metad
     ]
     await variable_repo.set_variable_update_time(updated_variables)
     
-    for var_name in updated_variables:
-        if var_name in metadata:
-            meta = metadata[var_name]
-            await _create_missing_variable(
-                var_name,
-                meta['data_source'],
-                table,
-                concept=meta.get('concept')
-            )
+    if metadata is not None:
+        for var_name in updated_variables:
+            if var_name in metadata:
+                meta = metadata[var_name]
+                await _create_missing_variable(
+                    var_name,
+                    meta['data_source'],
+                    table,
+                    concept=meta.get('concept')
+                )
     
     await _save_data(updated, table)
 
@@ -200,28 +201,19 @@ async def recalibrate_variables() -> None:
     """Drop columns in profile where variable is no longer assigned to that geo level."""
     county = await _read_table("county")
     muni = await _read_table("municipality")
+    regional = await _read_table("region")
     # regional = await _read_table("region")
     county_variables = await geo_variable_repo.find_variables_by_geo_level("county")
     muni_variables = await geo_variable_repo.find_variables_by_geo_level("municipality")
-    # regional_variables = await geo_variable_repo.find_variables_by_geo_level("region")
-    # variables = await variable_repo.find_all_variables()
+    county_variables = [var['name'] for var in county_variables]
+    muni_variables = [var['name'] for var in muni_variables]
+    regional_variables = await geo_variable_repo.find_variables_by_geo_level("region")
+    regional_variables = [var['name'] for var in regional_variables]
 
-    print(county_variables)
-    return
-    for df, variables, table in [(county, county_variables, "county"), (muni, muni_variables, "municipality")]:
+    for df, variables, table in [(county, county_variables, "county"), (muni, muni_variables, "municipality"), (regional, regional_variables, "region")]:
         profile_vars = [col for col in df.columns if col not in COUNTY_EXCLUDED.union(MUNI_EXCLUDED) and not col.endswith("_moe")]
         for p_var in profile_vars:
             if p_var not in variables:
                 log.info(f"Variable {p_var} in {table} table not found in variable repository, deleting column")
-                # await profile_repo.delete_variable_by_table(p_var, table)
-    # print(variables)
-    
-    # for df, geo_level in [(county, "county"), (muni, "municipality")]:
-    #     variable_names = {var['name'] for var in variables if (var['geo_level'] == geo_level or var['geo_level'] == "all")}
-    #     profile_vars = [col for col in df.columns if col not in COUNTY_EXCLUDED.union(MUNI_EXCLUDED) and not col.endswith("_moe")]
-    #     for v in profile_vars:
-    #         if v not in variable_names:
-    #             print(f"Variable {v} in {geo_level} table not found in variable repository")
-
 
 

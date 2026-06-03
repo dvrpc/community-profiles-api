@@ -13,6 +13,7 @@ async def find_all_variables():
     query = "SELECT * FROM variable;"
     return await fetch_many(query)
 
+
 async def find_variables_by_data_source(data_source):
     query = "SELECT * FROM variable where data_source = %s;"
     return await fetch_many(query, (data_source, ))
