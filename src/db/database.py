@@ -1,34 +1,33 @@
 from dotenv import load_dotenv
-
 import os
-import psycopg
 import logging
+from psycopg_pool import AsyncConnectionPool
 
 log = logging.getLogger(__name__)
 
-
 class Database:
     def __init__(self):
-        self.conn: psycopg.AsyncConnection | None = None
+        self.pool: AsyncConnectionPool | None = None
 
     async def connect(self) -> None:
-        """Establish an async connection to Postgres and store it on the instance."""
-        log.info("Connecting to PostgreSQL Database (async)...")
         load_dotenv()
+        conninfo = (
+            f"host={os.getenv('DB_HOST')} "
+            f"dbname={os.getenv('DB_NAME')} "
+            f"user={os.getenv('DB_USER')} "
+            f"password={os.getenv('DB_PASS')} "
+            f"port={os.getenv('DB_PORT')}"
+        )
         try:
-            self.conn = await psycopg.AsyncConnection.connect(
-                host=os.getenv("DB_HOST"),
-                dbname=os.getenv("DB_NAME"),
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASS"),
-                port=os.getenv("DB_PORT"),
-            )
+            self.pool = AsyncConnectionPool(conninfo=conninfo, open=False)
+            await self.pool.open()
+            log.info("Database connection pool created.")
         except Exception as e:
-            log.error(f"Could not connect to Database: {e}")
+            log.error(f"Could not create database pool: {e}")
 
     async def close(self) -> None:
-        if self.conn is not None:
-            await self.conn.close()
-
+        if self.pool is not None:
+            await self.pool.close()
+            log.info("Database connection pool closed.")
 
 db = Database()

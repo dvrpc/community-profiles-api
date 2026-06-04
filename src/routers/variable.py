@@ -35,7 +35,6 @@ async def get_variables_by_data_source(data_source: str):
 @router.post("")
 async def create_variable(variable: VariableRequest, admin=Depends(require_admin)):
     res = await variable_repo.create(variable)
-    print(res)
     if variable.data_source == "acs":
         await variable_service.create_geo_variable(res[0], variable.aggregateable)
         asyncio.create_task(
