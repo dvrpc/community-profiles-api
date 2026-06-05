@@ -8,18 +8,14 @@ from datetime import datetime
 
 class VariableRequest(BaseModel):
     name: Optional[str] = Field(..., description="")
-    category: Optional[str] = Field(..., description="")
-    data_source : Optional[str] = Field(..., description=""),
-    geo_level: Optional[str] = Field(..., description=""),
-    acs_variable: Optional[str] = Field(..., description=""),
-    gis_table: Optional[str] = Field(..., description=""),
-    resource_ids: Optional[str] = Field(..., description=""),
-    data_year: Optional[int] = Field(..., description=""),
-    catalog_table: Optional[str] = Field(..., description=""),
-    description: Optional[str] = Field(..., description=""),
-    acs_concept: Optional[str] = Field(..., description="")
+    data_source : Optional[str] = Field(..., description="")
+    acs_variable: Optional[str] = Field(..., description="")
+    data_year: Optional[int] = Field(..., description="")
+    description: Optional[str] = Field(..., description="")
+    concept: Optional[str] = Field(..., description="")
     aggregateable: Optional[bool] = Field(..., description="")
-    last_updated: Optional[datetime] = Field(..., description="Timestamp of the last update")
+    geo_levels: Optional[list[str]] = Field(default_factory=list, description="List of geographic levels this variable applies to")
+    last_updated: Optional[datetime] = Field(default=None, description="Timestamp of the last update")
 
 class Variable(VariableRequest):
     id: int = Field(..., description="Primary key of the variable")

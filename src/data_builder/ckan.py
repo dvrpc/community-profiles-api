@@ -6,17 +6,16 @@ import functools as ft
 
 from dotenv import load_dotenv
 
+from schemas.sql import SQLRequest
+
 log = logging.getLogger(__name__)
 load_dotenv()
 
 dirname = os.path.dirname(__file__)
 
 
-def fetch_datastore(file, geo):
-    file_path = os.path.join(dirname, f'sql/datastore/{geo}/{file}.sql')
-    query = open(file_path, "r").read()
-
-    url = "https://catalog.dvrpc.org/api/3/action/datastore_search_sql?sql=" + query
+def _fetch_datastore(sql):
+    url = "https://catalog.dvrpc.org/api/3/action/datastore_search_sql?sql=" + sql
     try:
         r = requests.get(url)
         r.raise_for_status()
@@ -24,34 +23,45 @@ def fetch_datastore(file, geo):
         return pd.DataFrame(data)
 
     except requests.exceptions.HTTPError as e:
-        log.error(
-            f"Failed to fetch {file} datastore for {geo}:\n {e}")
+        log.error(f"Failed to fetch ckan datastore: {e}")
+        raise
+    
+def _build_dfs(sql_queries: list[SQLRequest]):
+    dfs = []
+    column_metadata = {}
+    for sql_query in sql_queries:
+        log.info(f"Executing: {sql_query['name']} | {sql_query['data_source']} | {sql_query['geo_level']}")
+        df = _fetch_datastore(sql_query['body'])
 
+        dfs.append(df)
+        
+        # Capture metadata for each column in this query
+        for col in df.columns:
+            if col not in ['fips', 'geoid']:
+                column_metadata[col] = {
+                    'concept': sql_query['name'],
+                    'data_source': sql_query['data_source'],
+                    'geo_level': sql_query['geo_level']
+                }
+    return dfs, column_metadata
 
-def get_county_data():
+def get_county_data(sql_queries: list[SQLRequest]):
     log.info('Getting CKAN county data...')
-    pavement_conditions = fetch_datastore('pavement_conditions', 'county')
-    bridge_conditions = fetch_datastore('bridge_conditions', 'county')
-    electric_vehicles = fetch_datastore('electric_vehicles', 'county')
-    housing_affordability = fetch_datastore('housing_affordability', 'county')
+    dfs, column_metadata = _build_dfs(sql_queries)
 
-    dfs = [pavement_conditions, bridge_conditions,
-           electric_vehicles, housing_affordability]
     county_merged = ft.reduce(lambda left, right: pd.merge(
         left, right, on='fips'), dfs)
     log.info(f'Retrieved CKAN data for {len(county_merged)} counties')
-    return county_merged
+    return county_merged, column_metadata
 
 
-def get_muni_data():
+def get_muni_data(sql_queries: list[SQLRequest]):
     log.info('Getting CKAN municipality data...')
-    electric_vehicles = fetch_datastore('electric_vehicles', 'muni')
-    electric_vehicles['geoid'] = electric_vehicles['geoid'].str[:-2]
+    dfs, column_metadata = _build_dfs(sql_queries)
 
-    # dfs = [pavement_conditions, bridge_conditions, electric_vehicles, housing_affordability]
-    # muni_merged = ft.reduce(lambda left, right: pd.merge(
-    #     left, right, on='geoid'), dfs)
+    muni_merged = ft.reduce(lambda left, right: pd.merge(
+        left, right, on='geoid'), dfs)
     log.info(
-        f'Retrieved CKAN data for {len(electric_vehicles)} municipalities')
+        f'Retrieved CKAN data for {len(muni_merged)} municipalities')
 
-    return electric_vehicles
+    return muni_merged, column_metadata

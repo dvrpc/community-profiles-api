@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import profile, content, viz, source, tree, variable, data_builder, acs
+from routers import profile, content, viz, source, tree, variable, data_builder, sql, acs
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,6 +42,7 @@ app.include_router(source.router)
 app.include_router(tree.router)
 app.include_router(variable.router)
 app.include_router(data_builder.router)
+app.include_router(sql.router)
 app.include_router(acs.router)
 
 app.add_middleware(

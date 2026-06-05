@@ -2,10 +2,9 @@ import logging
 import math
 import numpy as np
 import pandas as pd
-from data_builder.ckan import fetch_datastore
-from data_builder.gis import fetch_sql
 from repository.variable_repository import find_non_aggregateable_variables
 from db.database import db
+from repository.variable_repository import find_non_aggregateable_variables
 import asyncio
 
 log = logging.getLogger(__name__)
@@ -93,10 +92,10 @@ async def aggregate_data(county_data: pd.DataFrame):
         aggregate_data[variable + '_moe'] = recalculated_data['moe']
 
     # compute median and means (these call async DB helpers)
-    med_hh = await recalcute_median(hh_median_income_range_data, 1.5)
-    await add_variables(med_hh, 'median_hh_inc')
-    med_age = await recalcute_median(median_age_range_data, 1)
-    await add_variables(med_age, 'median_age')
+    # med_hh = await recalcute_median(hh_median_income_range_data, 1.5)
+    # await add_variables(med_hh, 'median_hh_inc')
+    # med_age = await recalcute_median(median_age_range_data, 1)
+    # await add_variables(med_age, 'median_age')
     # med_fam = await recalcute_median(fam_median_income_range_data, 1.5)
     # await add_variables(med_fam, 'median_family_inc')
     # per_cap = await recalculate_mean("per_cap_inc", "total_pop",
@@ -114,10 +113,10 @@ async def aggregate_data(county_data: pd.DataFrame):
 
     # this could be done directly in sql
 
-    regional_ev_data = await asyncio.to_thread(fetch_datastore,
-        'electric_vehicle', 'regional')
-    pop_emp_regional_data = await asyncio.to_thread(fetch_sql,
-        'pop_emp_forecasts', 'regional')
+    # regional_ev_data = await asyncio.to_thread(fetch_datastore,
+    #     'electric_vehicle', 'regional')
+    # pop_emp_regional_data = await asyncio.to_thread(fetch_sql,
+    #     'pop_emp_forecasts', 'regional')
 
     for variable in list(county_data.columns):
 
@@ -136,24 +135,25 @@ async def aggregate_data(county_data: pd.DataFrame):
                     aggregate_data[variable] = None
 
     df = pd.DataFrame([aggregate_data])
-    df.update(regional_ev_data)
-    df.update(pop_emp_regional_data)
+    # df.update(regional_ev_data)
+    # df.update(pop_emp_regional_data)
     return df
 
 
 async def get_profile_data(query, desc):
     log.info(f'Getting {desc}...')
     try:
-        async with db.conn.cursor() as cur:
-            await cur.execute(query)
-            rows = await cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
-            df = pd.DataFrame(rows, columns=columns)
-        log.info(f'Successfully fetched {desc}')
-        return df
+        async with db.pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(query)
+                rows = await cur.fetchall()
+                columns = [desc[0] for desc in cur.description]
+                df = pd.DataFrame(rows, columns=columns)
+
+                log.info(f'Successfully fetched {desc}')
+                return df
     except Exception as e:
         log.error(f'Error fetching {desc}: {e}')
-        await db.conn.rollback()
         return pd.DataFrame()
 
 

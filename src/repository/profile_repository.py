@@ -5,6 +5,10 @@ from repository.utils import execute_alter, execute_update, fetch_many, fetch_on
 
 log = logging.getLogger(__name__)
 
+async def find_profile(geo_level):
+    log.info(f"Finding profile table for geo level: {geo_level}")
+    query = f"SELECT * FROM {geo_level}"
+    return await fetch_many(query)
 
 @cache(expire=60)
 async def find_county(geoid):
@@ -40,5 +44,11 @@ async def delete_variable(variable_name: str):
         alter table county drop column if exists "{variable_name}";
         alter table municipality drop column if exists "{variable_name}";
         alter table region drop column if exists "{variable_name}";
+    """
+    await execute_alter(query)
+
+async def delete_variable_by_table(variable_name: str, table_name: str):
+    query = f"""
+        alter table {table_name} drop column if exists "{variable_name}";
     """
     await execute_alter(query)
