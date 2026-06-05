@@ -33,6 +33,8 @@ async def run_build(category: str, variables: dict[str, str] | None = None):
         elif category == "all":
             await data_builder.build_all()
 
+        await data_builder.build_regional()
+        await data_builder.recalibrate_variables()
         revalidate_all()
     except Exception:
         raise

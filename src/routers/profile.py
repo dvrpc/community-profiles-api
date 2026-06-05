@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from repository.profile_repository import find_county, find_municipality, find_region
+from repository.profile_repository import find_county, find_municipality, find_region, find_profile
 
 router = APIRouter(
     prefix="/profile",

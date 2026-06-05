@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Depends
 from typing import List
 
@@ -5,6 +7,7 @@ from schemas.sql import SQL, SQLRequest
 from services.auth import require_admin
 import services.sql as sql_service
 import repository.sql_repository as sql_repo
+from services.build_state import run_build
 
 router = APIRouter(
     prefix="/sql",
@@ -26,12 +29,16 @@ async def test_sql(detailed: bool, sql: SQLRequest):
 
 @router.post("")
 async def create_sql(sql: SQLRequest, admin=Depends(require_admin)):
-    return await sql_repo.create_sql(sql)
+    res = await sql_repo.create_sql(sql)
+    asyncio.create_task(run_build(sql.data_source))
+    return res
 
 
 @router.put("/{id}")
 async def update_sql(id: int, sql: SQLRequest, admin=Depends(require_admin)):
-    return await sql_repo.update_sql(id, sql)
+    res = await sql_repo.update_sql(id, sql)
+    asyncio.create_task(run_build(sql.data_source))
+    return res
 
 
 @router.delete("/{id}")

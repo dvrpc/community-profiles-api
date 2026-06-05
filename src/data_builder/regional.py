@@ -143,16 +143,17 @@ async def aggregate_data(county_data: pd.DataFrame):
 async def get_profile_data(query, desc):
     log.info(f'Getting {desc}...')
     try:
-        async with db.conn.cursor() as cur:
-            await cur.execute(query)
-            rows = await cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
-            df = pd.DataFrame(rows, columns=columns)
-        log.info(f'Successfully fetched {desc}')
-        return df
+        async with db.pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(query)
+                rows = await cur.fetchall()
+                columns = [desc[0] for desc in cur.description]
+                df = pd.DataFrame(rows, columns=columns)
+
+                log.info(f'Successfully fetched {desc}')
+                return df
     except Exception as e:
         log.error(f'Error fetching {desc}: {e}')
-        await db.conn.rollback()
         return pd.DataFrame()
 
 
