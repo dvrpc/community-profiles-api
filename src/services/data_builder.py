@@ -10,6 +10,7 @@ from schemas.variable import VariableRequest
 import pandas as pd
 import functools as ft
 import logging
+import numpy as np
 from db.database import db
 import asyncio
 
@@ -19,11 +20,14 @@ log = logging.getLogger(__name__)
 COUNTY_EXCLUDED = {"fips", "state", "county", "co_name", "buffer_bbox"}
 MUNI_EXCLUDED = {"geoid", "state", "county", "mun_name", "buffer_bbox"}
 EXCLUDED = COUNTY_EXCLUDED | MUNI_EXCLUDED
+
+
 def to_numeric(s):
     try:
         return pd.to_numeric(s, errors='raise')
     except ValueError:
         return s
+
 
 def _pandas_dtype_to_sql(dtype) -> str:
     if pd.api.types.is_integer_dtype(dtype):
@@ -35,12 +39,29 @@ def _pandas_dtype_to_sql(dtype) -> str:
     else:
         return "TEXT"
 
+
 async def _save_data(df: pd.DataFrame, table: str) -> None:
     log.info("Writing dataframe to %s table", table)
-    col_defs = ", ".join(f'"{c}" {_pandas_dtype_to_sql(df[c].dtype)}' for c in df.columns)
+    col_defs = ", ".join(
+        f'"{c}" {_pandas_dtype_to_sql(df[c].dtype)}' for c in df.columns)
     cols = ", ".join(f'"{c}"' for c in df.columns)
     placeholders = ", ".join(["%s"] * len(df.columns))
-    rows = [tuple(row) for row in df.itertuples(index=False, name=None)]
+
+    # convert NaN / NA / inf to Python None per-value
+    def _sanitize_value(v):
+        try:
+            if pd.isna(v):
+                return None
+        except Exception:
+            pass
+        try:
+            if isinstance(v, (float, np.floating)) and np.isinf(v):
+                return None
+        except Exception:
+            pass
+        return v
+    rows = [tuple(_sanitize_value(x) for x in row)
+            for row in df.itertuples(index=False, name=None)]
 
     try:
         async with db.pool.connection() as conn:
@@ -60,6 +81,7 @@ async def _get_acs_variables() -> dict[str, str]:
     raw = {var['acs_variable']: var['name'] for var in variables}
     return acs.build_variable_map(raw)
 
+
 async def _read_table(table: str) -> pd.DataFrame:
     try:
         profile = await profile_repo.find_profile(table)
@@ -71,17 +93,19 @@ async def _read_table(table: str) -> pd.DataFrame:
 
     return df
 
+
 async def _create_missing_variable(variable_name: str, data_source: str, geo_level: str, concept: str = None) -> None:
 
     try:
         existing = await variable_repo.find_variable_by_name(variable_name)
-        if existing:            
+        if existing:
             geo_var = await geo_variable_repo.find_by_variable_and_geo_level(existing['id'], geo_level)
             if not geo_var:
                 await geo_variable_repo.create(existing['id'], geo_level)
-                log.info(f"Created missing geo_variable entry for {variable_name} at level {geo_level}")
+                log.info(
+                    f"Created missing geo_variable entry for {variable_name} at level {geo_level}")
             return
-        
+
         new_variable = VariableRequest(
             name=variable_name,
             data_source=data_source,
@@ -91,18 +115,19 @@ async def _create_missing_variable(variable_name: str, data_source: str, geo_lev
             concept=concept,
             aggregateable=True
         )
-        
+
         created_var = await variable_repo.create(new_variable)
         if created_var:
             var_id = created_var[0]
             log.info(f"Created variable {variable_name} with id {var_id}")
-            
+
             await geo_variable_repo.create(var_id, geo_level)
-            log.info(f"Created geo_variable entry for {variable_name} at level {geo_level}")
+            log.info(
+                f"Created geo_variable entry for {variable_name} at level {geo_level}")
     except Exception as e:
         log.error(f"Error creating variable {variable_name}: {e}")
 
-    
+
 async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metadata: dict = None) -> None:
     existing = await _read_table(table)
 
@@ -110,7 +135,8 @@ async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metad
     existing[merge_key] = existing[merge_key].astype(str)
     fresh[merge_key] = fresh[merge_key].astype(str)
 
-    stale = [c for c in fresh.columns if c != merge_key and c in existing.columns]
+    stale = [c for c in fresh.columns if c !=
+             merge_key and c in existing.columns]
 
     updated = (
         existing
@@ -118,7 +144,8 @@ async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metad
         .merge(fresh, on=merge_key, how="left")
     )
 
-    excluded_columns = ['geoid', 'state', 'county', 'co_name', 'mun_name', 'buffer_bbox']
+    excluded_columns = ['geoid', 'state', 'county',
+                        'co_name', 'mun_name', 'buffer_bbox']
     columns_to_update = [
         col for col in updated.columns if col not in excluded_columns]
     updated[columns_to_update] = updated[columns_to_update].apply(to_numeric)
@@ -128,7 +155,7 @@ async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metad
         if col != merge_key and col not in excluded_columns
     ]
     await variable_repo.set_variable_update_time(updated_variables)
-    
+
     if metadata is not None:
         for var_name in updated_variables:
             if var_name in metadata:
@@ -139,9 +166,8 @@ async def _update_columns(table: str, merge_key: str, fresh: pd.DataFrame, metad
                     table,
                     concept=meta.get('concept')
                 )
-    
-    await _save_data(updated, table)
 
+    await _save_data(updated, table)
 
 
 async def build_all() -> None:
@@ -160,6 +186,7 @@ async def build_acs(variable_map: dict[str, str] | None = None, rebuild_regional
     await _update_columns("county", "geoid", county_acs)
     await _update_columns("municipality", "geoid", muni_acs)
 
+
 async def build_gis() -> None:
     county_gis_sql = await sql_repo.find_sql_by_geo_level_and_data_source("county", "gis")
     muni_gis_sql = await sql_repo.find_sql_by_geo_level_and_data_source("municipality", "gis")
@@ -167,16 +194,16 @@ async def build_gis() -> None:
     county_gis, county_gis_metadata = await asyncio.to_thread(gis.get_county_data, county_gis_sql)
     county_gis = county_gis.rename(columns={"fips": "geoid"})
     muni_gis, muni_gis_metadata = await asyncio.to_thread(gis.get_muni_data, muni_gis_sql)
-    
+
     await _update_columns("county", "geoid", county_gis, county_gis_metadata)
     await _update_columns("municipality", "geoid", muni_gis, muni_gis_metadata)
 
 
 async def build_ckan() -> None:
-    
+
     county_ckan_sql = await sql_repo.find_sql_by_geo_level_and_data_source("county", "ckan")
     muni_ckan_sql = await sql_repo.find_sql_by_geo_level_and_data_source("municipality", "ckan")
-    
+
     county_ckan, county_ckan_metadata = await asyncio.to_thread(ckan.get_county_data, county_ckan_sql)
     county_ckan = county_ckan.rename(columns={"fips": "geoid"})
     muni_ckan, muni_ckan_metadata = await asyncio.to_thread(ckan.get_muni_data, muni_ckan_sql)
@@ -186,19 +213,23 @@ async def build_ckan() -> None:
 
     ckan_vars = muni_ckan_metadata.keys() | county_ckan_metadata.keys()
     await remove_obsolete_sql_variables(ckan_vars, "ckan")
-    
+
 
 async def build_regional() -> None:
     county_data = await regional.get_profile_data("SELECT * FROM county", "all county data")
     region_df = await regional.aggregate_data(county_data)
     await _save_data(region_df, "region")
 
+
 async def remove_obsolete_sql_variables(vars: list[str], data_source: str) -> None:
     source_vars = await variable_repo.find_variables_by_data_source(data_source)
     for var in source_vars:
         if var['name'] not in vars:
-            log.info(f"Variable {var['name']} no longer in {data_source} source, deleting from variable and geo_variable tables")
-            await variable_repo.delete(var['id']) # cascade deletes from geo_variable
+            log.info(
+                f"Variable {var['name']} no longer in {data_source} source, deleting from variable and geo_variable tables")
+            # cascade deletes from geo_variable
+            await variable_repo.delete(var['id'])
+
 
 async def recalibrate_variables() -> None:
     """Drop columns in profile where variable is no longer assigned to that geo level."""
@@ -214,7 +245,6 @@ async def recalibrate_variables() -> None:
 
         for p_var in profile_vars:
             if p_var not in variables:
-                log.info(f"Variable {p_var} in {geo_level} table not found in variable repository, deleting column")
+                log.info(
+                    f"Variable {p_var} in {geo_level} table not found in variable repository, deleting column")
                 await profile_repo.delete_variable_by_table(p_var, geo_level)
-
-
