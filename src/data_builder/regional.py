@@ -3,8 +3,8 @@ import math
 import numpy as np
 import pandas as pd
 from repository.variable_repository import find_non_aggregateable_variables
+from repository.geo_variable_repository import find_variables_by_geo_level
 from db.database import db
-from repository.variable_repository import find_non_aggregateable_variables
 import asyncio
 
 log = logging.getLogger(__name__)
@@ -86,10 +86,15 @@ def aggregate_moe(column):
 async def aggregate_data(county_data: pd.DataFrame):
     aggregate_data = {}
     non_agg_vars = await find_non_aggregateable_variables()
-    async def add_variables(recalculated_data, variable):
-        nonlocal aggregate_data
-        aggregate_data[variable] = recalculated_data['estimate']
-        aggregate_data[variable + '_moe'] = recalculated_data['moe']
+    non_agg_vars = {v['name'] for v in non_agg_vars}
+
+    regional_vars = await find_variables_by_geo_level('region')
+    regional_vars = {v['name'] for v in regional_vars}
+
+    # async def add_variables(recalculated_data, variable):
+    #     nonlocal aggregate_data
+    #     aggregate_data[variable] = recalculated_data['estimate']
+    #     aggregate_data[variable + '_moe'] = recalculated_data['moe']
 
     # compute median and means (these call async DB helpers)
     # med_hh = await recalcute_median(hh_median_income_range_data, 1.5)
@@ -119,20 +124,19 @@ async def aggregate_data(county_data: pd.DataFrame):
     #     'pop_emp_forecasts', 'regional')
 
     for variable in list(county_data.columns):
+        if variable not in excluded_variables | non_agg_vars:
 
-        if variable not in excluded_variables:
-            if variable not in non_agg_vars:
-                if "moe" in variable:
+            if "_moe" in variable:
+                if variable[:-4] in regional_vars:
                     if (not (county_data[variable] == -555555555).any()):
                         aggregate_data[variable] = aggregate_moe(
                             county_data[variable])
                     else:
                         aggregate_data[variable] = None
-                else:
-                    aggregate_data[variable] = county_data[variable].sum()
             else:
-                if (variable not in aggregate_data):
-                    aggregate_data[variable] = None
+                if variable in regional_vars:
+                    aggregate_data[variable] = county_data[variable].sum()
+
 
     df = pd.DataFrame([aggregate_data])
     # df.update(regional_ev_data)
