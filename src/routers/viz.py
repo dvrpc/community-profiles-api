@@ -50,7 +50,7 @@ async def get_viz(id: int):
 
 
 @router.post('/preview/{geo_level}')
-async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain")):
+async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     if (geo_level == 'region'):
         profile = await profile_repo.find_region()
     else:

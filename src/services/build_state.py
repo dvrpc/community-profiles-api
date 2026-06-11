@@ -3,7 +3,7 @@ from datetime import datetime
 import asyncio
 from fastapi import HTTPException
 
-from services import data_builder
+from services import data_builder 
 from services.revalidate import revalidate_all
 
 @dataclass
@@ -34,7 +34,7 @@ async def run_build(category: str, variables: dict[str, str] | None = None):
             await data_builder.build_all()
 
         await data_builder.build_regional()
-        await data_builder.recalibrate_variables()
+        # await data_builder.recalibrate_variables()
         revalidate_all()
     except Exception:
         raise

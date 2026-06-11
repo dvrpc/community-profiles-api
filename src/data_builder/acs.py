@@ -90,44 +90,79 @@ def _clean_muni_df(df: pd.DataFrame, is_first: bool) -> pd.DataFrame:
         df = df.drop(columns=["state", "county", "NAME", "county subdivision"])
     return df
 
+def transform_acs_data(raw_data, geo_type="county"):
+    headers = raw_data[0]
+    rows = raw_data[1:]
 
-def _fetch_chunks(variable_map: dict[str, str], geo: str, is_subject: bool, acs_year: int, merge_key: str, data: pd.DataFrame, is_first: bool) -> tuple[pd.DataFrame, bool]:
+    if geo_type == "county":
+        geo_cols = ["state", "county"]
+    elif geo_type == "municipality":
+        geo_cols = ["state", "county", "county subdivision"]
+
+
+    var_map = {}
+    for col in headers:
+        if col in geo_cols:
+            continue
+        base, suffix = col[:-1], col[-1]
+        if base not in var_map:
+            var_map[base] = {}
+        var_map[base][suffix] = headers.index(col)
+
+    geo_indices = {field: headers.index(field) for field in geo_cols}
+
+    results = []
+    for row in rows:
+        geoid = "".join(row[geo_indices[field]] for field in geo_cols)
+
+        for base, indices in var_map.items():
+            e_idx = indices.get("E")
+            m_idx = indices.get("M")
+
+            results.append({
+                "geoid":            geoid,
+                "variable_id":     base,
+                "value":            float(row[e_idx]) if e_idx is not None else None,
+                "margin_of_error":  float(row[m_idx]) if m_idx is not None else None,
+            })
+
+    return results
+
+
+
+def _fetch_chunks(variable_map: dict[str, str], geo: str, is_subject: bool, acs_year: int):
     """Fetch all chunks for a single endpoint (detail or subject) and merge into data."""
+    data = []
     for chunk in _chunk(variable_map):
         pa_raw = _fetch(chunk, PA_FIPS_FORMATTED, 42, geo, is_subject, acs_year)
         nj_raw = _fetch(chunk, NJ_FIPS_FORMATTED, 34, geo, is_subject, acs_year)
 
-        header = _map_columns(variable_map, pa_raw[0])
-        df = pd.DataFrame(pa_raw[1:] + nj_raw[1:], columns=header)
+        data.extend(transform_acs_data(pa_raw, geo, variable_map))
+        data.extend(transform_acs_data(nj_raw, geo, variable_map))
 
-        df = _clean_county_df(df, is_first) if geo == "county" else _clean_muni_df(df, is_first)
-
-        data = df if data.empty else data.merge(df, on=merge_key)
-        is_first = False
-
-    return data, is_first
+    return data
 
 
 def fetch_acs_data(variable_map: dict[str, str], geo: str, acs_year: int = 2024) -> pd.DataFrame:
     detail, subject = _split_by_endpoint(variable_map)
-    merge_key = "fips" if geo == "county" else "geoid"
 
     log.info(
         "Fetching %d ACS variable(s) (%d detail, %d subject) for %s %d...",
         len(variable_map), len(detail), len(subject), geo, acs_year,
     )
 
-    data = pd.DataFrame()
-    is_first = True
-
+    data = []
+        
     if detail:
-        data, is_first = _fetch_chunks(detail, geo, False, acs_year, merge_key, data, is_first)
+        data.extend(_fetch_chunks(detail, geo, False, acs_year))
     if subject:
-        data, is_first = _fetch_chunks(subject, geo, True, acs_year, merge_key, data, is_first)
+        data.extend(_fetch_chunks(subject, geo, True, acs_year))
 
-    lead_cols = ["fips", "state", "county"] if geo == "county" else ["geoid", "mun_name", "county", "state"]
-    data = data[lead_cols + [c for c in data.columns if c not in lead_cols]]
-
+    #TODO: map variable id
+    for row in data:
+        row['variable_id'] = variable_map[row['acs_variable']]
+        row.pop()
+    print(data)
     log.info("Retrieved %d variable(s) for %d %s record(s).", len(variable_map), len(data), geo)
     return data
 
