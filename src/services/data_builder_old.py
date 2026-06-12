@@ -14,13 +14,13 @@ import numpy as np
 from db.database import db
 import asyncio
 
-logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 COUNTY_EXCLUDED = {"fips", "state", "county", "co_name", "buffer_bbox"}
 MUNI_EXCLUDED = {"geoid", "state", "county", "mun_name", "buffer_bbox"}
 EXCLUDED = COUNTY_EXCLUDED | MUNI_EXCLUDED
 MERGE_KEY = "geoid"
+
 
 def to_numeric(s):
     try:
@@ -60,7 +60,6 @@ async def _save_data(df: pd.DataFrame, table: str, new_columns_schema: dict[str,
         return v
     rows = [tuple(_sanitize_value(x) for x in row)
             for row in df.itertuples(index=False, name=None)]
-
 
     try:
         async with db.pool.connection() as conn:
@@ -133,12 +132,16 @@ async def _create_missing_variable(variable_name: str, data_source: str, geo_lev
     except Exception as e:
         log.error(f"Error creating variable {variable_name}: {e}")
 
+
 async def get_new_columns_schema(table, fresh):
     existing = await _read_table(table)
-    new_columns = [c for c in fresh.columns if c != MERGE_KEY and c not in existing.columns]
+    new_columns = [c for c in fresh.columns if c !=
+                   MERGE_KEY and c not in existing.columns]
     new_columns_df = fresh[new_columns].apply(to_numeric)
-    new_column_schema = {col: _pandas_dtype_to_sql(dt) for col, dt in new_columns_df.dtypes.items()}
+    new_column_schema = {col: _pandas_dtype_to_sql(
+        dt) for col, dt in new_columns_df.dtypes.items()}
     return new_column_schema
+
 
 async def _update_columns(table: str, fresh: pd.DataFrame, metadata: dict = None) -> None:
     existing = await _read_table(table)
@@ -212,8 +215,8 @@ async def build_gis() -> None:
     await _update_columns("municipality", muni_gis, muni_gis_metadata)
 
     gis_vars = muni_gis_metadata.keys() | county_gis_metadata.keys()
-    print(gis_vars)
     await remove_obsolete_sql_variables(gis_vars, "gis")
+
 
 async def build_ckan() -> None:
 
@@ -260,7 +263,7 @@ async def recalibrate_variables() -> None:
         df = await _read_table(geo_level)
         profile_vars = [
             col for col in df.columns
-            if col not in EXCLUDED 
+            if col not in EXCLUDED
         ]
 
         for p_var in profile_vars:

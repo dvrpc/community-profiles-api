@@ -20,6 +20,29 @@ async def execute_update(query, params=None):
         return None
 
 
+async def execute_bulk_upsert(query, rows) -> dict | None:
+    try:
+        async with db.pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.executemany(query, rows, returning=True)
+
+                inserted_ids, updated_ids = [], []
+                while True:
+                    row = await cur.fetchone()
+                    if row:
+                        id_, was_updated = row
+                        (updated_ids if was_updated else inserted_ids).append(id_)
+                    if not cur.nextset():  # synchronous, returns False when no more sets
+                        break
+
+                log.info(
+                    f"Bulk upsert: {len(inserted_ids)} inserted, {len(updated_ids)} updated")
+                return {"inserted": inserted_ids, "updated": updated_ids}
+    except psycopg.Error as e:
+        log.error(f"Database error executing bulk upsert:\n{query}\n{e}")
+        return None
+
+
 async def execute_alter(query, params=None):
     try:
         async with db.pool.connection() as conn:

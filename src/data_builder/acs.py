@@ -1,4 +1,8 @@
+from typing import List
+
 from dotenv import load_dotenv
+
+from schemas.data import Data
 from .consts import (
     CHUNK_SIZE, PA_FIPS, PA_FIPS_FORMATTED,
     NJ_FIPS, NJ_FIPS_FORMATTED,
@@ -15,12 +19,15 @@ load_dotenv()
 API_KEY = os.getenv("CENSUS_API_KEY")
 
 
+excluded_cols = ["state", "county", "county subdivision", "NAME"]
+
+
 def build_variable_map(raw: dict[str, str]) -> dict[str, str]:
     """Expand a {code: label} dict to include MOE entries."""
     expanded: dict[str, str] = {}
-    for key, label in raw.items():
-        expanded[key] = label
-        expanded[key[:-1] + "M"] = label + "_moe"
+    for key, variable_id in raw.items():
+        expanded[key] = variable_id
+        expanded[key[:-1] + "M"] = variable_id
     return expanded
 
 
@@ -34,7 +41,6 @@ def _split_by_endpoint(variable_map: dict[str, str]) -> tuple[dict[str, str], di
 def _chunk(variable_map: dict[str, str], chunk_size: int = CHUNK_SIZE) -> list[list[str]]:
     keys = list(variable_map.keys())
     return [keys[i:i + chunk_size] for i in range(0, len(keys), chunk_size)]
-
 
 
 def _build_url(variables: list[str], county_codes: str, state_code: int, geo: str, is_subject: bool, acs_year: int) -> str:
@@ -53,7 +59,8 @@ def _build_url(variables: list[str], county_codes: str, state_code: int, geo: st
 
 
 def _fetch(variables: list[str], county_codes: str, state_code: int, geo: str, is_subject: bool, acs_year: int) -> list:
-    url = _build_url(variables, county_codes, state_code, geo, is_subject, acs_year)
+    url = _build_url(variables, county_codes, state_code,
+                     geo, is_subject, acs_year)
     try:
         r = requests.get(url)
         r.raise_for_status()
@@ -65,32 +72,8 @@ def _fetch(variables: list[str], county_codes: str, state_code: int, geo: str, i
         raise
     return r.json()
 
-def _map_columns(variable_map: dict[str, str], raw_columns: list[str]) -> list[str]:
-    return [variable_map.get(col, col) for col in raw_columns]
 
-
-def _clean_county_df(df: pd.DataFrame, is_first: bool) -> pd.DataFrame:
-    df["fips"] = df["state"] + df["county"]
-    if is_first:
-        df["state"] = df["state"].replace(STATE_FIPS)
-        df["county"] = df["county"].replace(PA_FIPS | NJ_FIPS)
-    else:
-        df = df.drop(columns=["state", "county"])
-    return df
-
-
-def _clean_muni_df(df: pd.DataFrame, is_first: bool) -> pd.DataFrame:
-    df["geoid"] = df["state"] + df["county"] + df["county subdivision"]
-    if is_first:
-        df["state"] = df["state"].replace(STATE_FIPS)
-        df["county"] = df["county"].replace(PA_FIPS | NJ_FIPS)
-        df["mun_name"] = df["NAME"].str.split(",").str[0].str.title()
-        df = df.drop(columns=["NAME", "county subdivision"])
-    else:
-        df = df.drop(columns=["state", "county", "NAME", "county subdivision"])
-    return df
-
-def transform_acs_data(raw_data, geo_type="county"):
+def transform_acs_data(raw_data,  variable_map: dict[str, str], geo_type: str):
     headers = raw_data[0]
     rows = raw_data[1:]
 
@@ -98,11 +81,12 @@ def transform_acs_data(raw_data, geo_type="county"):
         geo_cols = ["state", "county"]
     elif geo_type == "municipality":
         geo_cols = ["state", "county", "county subdivision"]
-
+    else:
+        raise Exception("unknown geo_type" + geo_type)
 
     var_map = {}
     for col in headers:
-        if col in geo_cols:
+        if col in excluded_cols:
             continue
         base, suffix = col[:-1], col[-1]
         if base not in var_map:
@@ -121,29 +105,30 @@ def transform_acs_data(raw_data, geo_type="county"):
 
             results.append({
                 "geoid":            geoid,
-                "variable_id":     base,
-                "value":            float(row[e_idx]) if e_idx is not None else None,
-                "margin_of_error":  float(row[m_idx]) if m_idx is not None else None,
+                "variable_id":     variable_map[base + 'E'],
+                "value":            row[e_idx] if e_idx is not None else None,
+                "margin_of_error":  row[m_idx] if m_idx is not None else None,
             })
 
     return results
-
 
 
 def _fetch_chunks(variable_map: dict[str, str], geo: str, is_subject: bool, acs_year: int):
     """Fetch all chunks for a single endpoint (detail or subject) and merge into data."""
     data = []
     for chunk in _chunk(variable_map):
-        pa_raw = _fetch(chunk, PA_FIPS_FORMATTED, 42, geo, is_subject, acs_year)
-        nj_raw = _fetch(chunk, NJ_FIPS_FORMATTED, 34, geo, is_subject, acs_year)
+        pa_raw = _fetch(chunk, PA_FIPS_FORMATTED, 42,
+                        geo, is_subject, acs_year)
+        nj_raw = _fetch(chunk, NJ_FIPS_FORMATTED, 34,
+                        geo, is_subject, acs_year)
 
-        data.extend(transform_acs_data(pa_raw, geo, variable_map))
-        data.extend(transform_acs_data(nj_raw, geo, variable_map))
+        data.extend(transform_acs_data(pa_raw, variable_map, geo))
+        data.extend(transform_acs_data(nj_raw, variable_map, geo))
 
     return data
 
 
-def fetch_acs_data(variable_map: dict[str, str], geo: str, acs_year: int = 2024) -> pd.DataFrame:
+def fetch_acs_data(variable_map: dict[str, str], geo: str, acs_year: int = 2024) -> List[Data]:
     detail, subject = _split_by_endpoint(variable_map)
 
     log.info(
@@ -152,26 +137,12 @@ def fetch_acs_data(variable_map: dict[str, str], geo: str, acs_year: int = 2024)
     )
 
     data = []
-        
+
     if detail:
         data.extend(_fetch_chunks(detail, geo, False, acs_year))
     if subject:
         data.extend(_fetch_chunks(subject, geo, True, acs_year))
 
-    #TODO: map variable id
-    for row in data:
-        row['variable_id'] = variable_map[row['acs_variable']]
-        row.pop()
-    print(data)
-    log.info("Retrieved %d variable(s) for %d %s record(s).", len(variable_map), len(data), geo)
+    log.info("Retrieved %d variable(s) and %d %s data rows.",
+             len(variable_map), len(data), geo)
     return data
-
-
-def get_county_data(variable_map: dict[str, str], acs_year: int = 2024) -> pd.DataFrame:
-    """Fetch ACS county data for the provided variable map."""
-    return fetch_acs_data(variable_map, "county", acs_year)
-
-
-def get_muni_data(variable_map: dict[str, str], acs_year: int = 2024) -> pd.DataFrame:
-    """Fetch ACS municipality data for the provided variable map."""
-    return fetch_acs_data(variable_map, "muni", acs_year)
