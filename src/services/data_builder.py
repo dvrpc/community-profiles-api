@@ -26,10 +26,37 @@ async def upsert_data(data: List[Data], geo_level, data_source):
     await data_repo.bulk_upsert(data)
 
 
-async def _get_acs_variables() -> dict[str, str]:
-    variables = await variable_repo.find_variables_by_data_source('acs')
-    raw = {var['acs_variable']: var['id'] for var in variables}
-    return acs.build_variable_map(raw)
+async def _get_variable_map(key: str, data_source: str) -> dict[str, str]:
+    variables = await variable_repo.find_variables_by_data_source(data_source)
+    return {var[key]: var['id'] for var in variables}
+
+
+async def build_new_sql_variable_data(variables, data_source: str):
+    data = []
+    variable_id_map = {}
+
+    for v in variables:
+        if v not in variable_id_map.keys():
+            variable_name = v['variable_name']
+            variableRequest = VariableRequest(
+                data_source,
+                name=variable_name,
+                acs_variable=None,
+                data_year=None,  # TODO?
+                description=None,
+                concept=v['sql_name'],
+                aggregateable=False
+            )
+            res = await variable_repo.create(variableRequest)
+            variable_id = res[0]
+            variable_id_map[variable_name] = variable_id
+
+        data.append({
+            "geoid":           v['geoid'],
+            "variable_id":     variable_id_map[v['variable_name']],
+            "value":           v['value'],
+            "margin_of_error": None
+        })
 
 
 async def build_all() -> None:
@@ -38,10 +65,11 @@ async def build_all() -> None:
     await build_ckan()
 
 
-async def build_acs(variable_map: dict[str, str] | None = None, rebuild_regional: bool = False) -> None:
-    # TODO: passed variable_map through routes does not include margin of error yet
+async def build_acs(variable_map: dict[str, str] | None = None) -> None:
     if variable_map is None:
-        variable_map = await _get_acs_variables()
+        raw_variable_map = await _get_variable_map('variable_id', 'acs')
+        variable_map = acs.build_variable_map(raw_variable_map)
+
     county_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "county")
     await upsert_data(county_acs, "county", "acs")
     muni_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "municipality")
@@ -50,33 +78,46 @@ async def build_acs(variable_map: dict[str, str] | None = None, rebuild_regional
 
 async def build_gis() -> None:
     county_gis_sql = await sql_repo.find_sql_by_geo_level_and_data_source("county", "gis")
+
+    variable_map = await _get_variable_map('name', 'gis')
+    county_gis_updated, county_gis_new = await asyncio.to_thread(gis.fetch_gis_data, county_gis_sql, variable_map)
+    await upsert_data(county_gis_updated, "county", "gis")
+
+    if (len(county_gis_new) > 0):
+        bulk_new_data = await build_new_sql_variable_data(county_gis_new, 'gis')
+        await upsert_data(bulk_new_data, 'county', 'gis')
+        variable_map = await _get_variable_map('name', 'gis')
+
     muni_gis_sql = await sql_repo.find_sql_by_geo_level_and_data_source("municipality", "gis")
-    county_gis, county_gis_metadata = await asyncio.to_thread(gis.get_county_data, county_gis_sql)
-    county_gis = county_gis.rename(columns={"fips": "geoid"})
-    muni_gis, muni_gis_metadata = await asyncio.to_thread(gis.get_muni_data, muni_gis_sql)
+    muni_gis_updated, muni_gis_new = await asyncio.to_thread(gis.fetch_gis_data, muni_gis_sql, variable_map)
 
-    # await _update_columns("county", county_gis, county_gis_metadata)
-    # await _update_columns("municipality", muni_gis, muni_gis_metadata)
+    await upsert_data(muni_gis_updated, "municipality", "gis")
 
-    # gis_vars = muni_gis_metadata.keys() | county_gis_metadata.keys()
-    # print(gis_vars)
-    # await remove_obsolete_sql_variables(gis_vars, "gis")
+    if (len(muni_gis_new) > 0):
+        bulk_new_data = await build_new_sql_variable_data(muni_gis_new, 'gis')
+        await upsert_data(bulk_new_data, "municipality", "gis")
 
 
 async def build_ckan() -> None:
-
+    variable_map = await _get_variable_map('name', 'ckan')
     county_ckan_sql = await sql_repo.find_sql_by_geo_level_and_data_source("county", "ckan")
+
+    county_ckan_updated, county_ckan_new = await asyncio.to_thread(ckan.fetch_ckan_data, county_ckan_sql, variable_map)
+    await upsert_data(county_ckan_updated, "county", "ckan")
+
+    if (len(county_ckan_new) > 0):
+        bulk_new_data = await build_new_sql_variable_data(county_ckan_new, 'ckan')
+        await upsert_data(bulk_new_data, 'county', 'ckan')
+        variable_map = await _get_variable_map('name', 'ckan')
+
     muni_ckan_sql = await sql_repo.find_sql_by_geo_level_and_data_source("municipality", "ckan")
+    muni_ckan_updated, muni_ckan_new = await asyncio.to_thread(ckan.fetch_ckan_data, muni_ckan_sql, variable_map)
 
-    county_ckan, county_ckan_metadata = await asyncio.to_thread(ckan.get_county_data, county_ckan_sql)
-    county_ckan = county_ckan.rename(columns={"fips": "geoid"})
-    muni_ckan, muni_ckan_metadata = await asyncio.to_thread(ckan.get_muni_data, muni_ckan_sql)
+    await upsert_data(muni_ckan_updated, "municipality", "ckan")
 
-    # await _update_columns("county", county_ckan, county_ckan_metadata)
-    # await _update_columns("municipality", muni_ckan, muni_ckan_metadata)
-
-    # ckan_vars = muni_ckan_metadata.keys() | county_ckan_metadata.keys()
-    # await remove_obsolete_sql_variables(ckan_vars, "ckan")
+    if (len(muni_ckan_new) > 0):
+        bulk_new_data = await build_new_sql_variable_data(muni_ckan_new, 'ckan')
+        await upsert_data(bulk_new_data, "municipality", "ckan")
 
 
 async def build_regional() -> None:

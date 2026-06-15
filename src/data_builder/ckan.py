@@ -25,43 +25,53 @@ def _fetch_datastore(sql):
     except requests.exceptions.HTTPError as e:
         log.error(f"Failed to fetch ckan datastore: {e}")
         raise
-    
-def _build_dfs(sql_queries: list[SQLRequest]):
-    dfs = []
-    column_metadata = {}
-    for sql_query in sql_queries:
-        log.info(f"Executing: {sql_query['name']} | {sql_query['data_source']} | {sql_query['geo_level']}")
-        df = _fetch_datastore(sql_query['body'])
-
-        dfs.append(df)
-        
-        # Capture metadata for each column in this query
-        for col in df.columns:
-            if col not in ['fips', 'geoid']:
-                column_metadata[col] = {
-                    'concept': sql_query['name'],
-                    'data_source': sql_query['data_source'],
-                    'geo_level': sql_query['geo_level']
-                }
-    return dfs, column_metadata
-
-def get_county_data(sql_queries: list[SQLRequest]):
-    log.info('Getting CKAN county data...')
-    dfs, column_metadata = _build_dfs(sql_queries)
-
-    county_merged = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='fips'), dfs)
-    log.info(f'Retrieved CKAN data for {len(county_merged)} counties')
-    return county_merged, column_metadata
 
 
-def get_muni_data(sql_queries: list[SQLRequest]):
-    log.info('Getting CKAN municipality data...')
-    dfs, column_metadata = _build_dfs(sql_queries)
+def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
+    new_data = []
+    updated_data = []
 
-    muni_merged = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='geoid'), dfs)
-    log.info(
-        f'Retrieved CKAN data for {len(muni_merged)} municipalities')
+    url = "https://catalog.dvrpc.org/api/3/action/datastore_search_sql?sql=" + \
+        sql_request['body']
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+        data = r.json()['result']['records']
 
-    return muni_merged, column_metadata
+        for row in data:
+            geoid = row.pop('geoid')
+            for key, value in row.items():
+                if key in variable_map:
+                    updated_data.append({
+                        "geoid":           geoid,
+                        "variable_id":     variable_map[key],
+                        "value":           value,
+                        "margin_of_error": None
+                    })
+                else:
+                    new_data.append({
+                        "geoid":           geoid,
+                        "variable_name":     key,
+                        "value":           value,
+                        "sql_name": sql_request.name
+                    })
+
+    except requests.exceptions.HTTPError as e:
+        log.error(f"Failed to fetch ckan datastore: {e}")
+        raise
+
+    return new_data, updated_data
+
+
+def fetch_ckan_data(sql_queries: list[SQLRequest], variable_map: dict[str, str]):
+    data = []
+    new_data = []
+    for query in sql_queries:
+        log.info(f"Fetching CKAN: {query['name']}")
+        try:
+            new_data, updated_data = _fetch_sql(query, variable_map)
+            data.extend(updated_data)
+            new_data.extend(new_data)
+        except Exception as e:
+            log.error(f"Failed to fetch '{query['name']}': {e}")
+    return data, new_data

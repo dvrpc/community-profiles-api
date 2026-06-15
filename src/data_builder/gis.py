@@ -13,56 +13,47 @@ log = logging.getLogger(__name__)
 engine = get_gis_engine()
 
 
-def _fetch_sql(body: str):
+def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
+    new_data = []
+    updated_data = []
+    try:
+        with engine.begin() as connection:
+            result = connection.execute(text(sql_request['body']))
+            headers = result.keys()
+            for row in result:
+                row_dict = dict(zip(headers, row))
+                geoid = row_dict.pop('geoid')
+                for key, value in row_dict.items():
+                    if key in variable_map:
+                        updated_data.append({
+                            "geoid":           geoid,
+                            "variable_id":     variable_map[key],
+                            "value":           value,
+                            "margin_of_error": None
+                        })
+                    else:
+                        new_data.append({
+                            "geoid":           geoid,
+                            "variable_name":     key,
+                            "value":           value,
+                            "sql_name": sql_request.name
+                        })
+
+    except (OperationalError, ProgrammingError) as e:
+        log.error(f"SQL execution error: {e}")
+
+    return new_data, updated_data
+
+
+def fetch_gis_data(sql_queries: list[SQLRequest], variable_map: dict[str, str]):
     data = []
-    with engine.begin() as connection:
-        result = connection.execute(text(body))
-        headers = result.keys()
-        for row in result:
-            row_dict = dict(zip(headers, row))
-            geoid = row_dict.pop('geoid')
-            for key, value in row_dict:
-                data.append({
-                    "geoid":            geoid,
-                    "variable_id":     variable_map[base + 'E'],
-                    "value":            row[e_idx] if e_idx is not None else None,
-                    "margin_of_error":  row[m_idx] if m_idx is not None else None,
-                })
-
-
-def _build_dfs(sql_queries: list[SQLRequest]):
-    dfs = []
-    column_metadata = {}
-    for sql_query in sql_queries:
-        log.info(
-            f"Executing: {sql_query['name']} | {sql_query['data_source']} | {sql_query['geo_level']}")
-        df = _fetch_sql(sql_query['body'])
-        dfs.append(df)
-
-        # Capture metadata for each column in this query
-        for col in df.columns:
-            if col not in ['fips', 'geoid']:
-                column_metadata[col] = {
-                    'concept': sql_query['name'],
-                    'data_source': sql_query['data_source'],
-                    'geo_level': sql_query['geo_level']
-                }
-    return dfs, column_metadata
-
-
-def get_county_data(sql_queries: list[SQLRequest]):
-    dfs, column_metadata = _build_dfs(sql_queries)
-
-    county_merged = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='fips'), dfs)
-    log.info(f'Retrieved GIS data for {len(county_merged)} counties')
-    return county_merged, column_metadata
-
-
-def get_muni_data(sql_queries: list[SQLRequest]):
-    dfs, column_metadata = _build_dfs(sql_queries)
-
-    muni_merged = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='geoid'), dfs)
-    log.info(f'Retrieved GIS data for {len(muni_merged)} municipalities')
-    return muni_merged, column_metadata
+    new_data = []
+    for query in sql_queries:
+        log.info(f"Fetching SQL: {query['name']}")
+        try:
+            new_data, updated_data = _fetch_sql(query, variable_map)
+            data.extend(updated_data)
+            new_data.extend(new_data)
+        except Exception as e:
+            log.error(f"Failed to fetch '{query['name']}': {e}")
+    return data, new_data

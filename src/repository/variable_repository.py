@@ -9,6 +9,7 @@ async def find_variable_by_name(name: str):
     query = "SELECT * FROM variable WHERE name = %s;"
     return await fetch_one(query, (name,))
 
+
 async def find_all_variables():
     query = "SELECT * FROM variable;"
     return await fetch_many(query)
@@ -18,9 +19,24 @@ async def find_variables_by_data_source(data_source):
     query = "SELECT * FROM variable where data_source = %s;"
     return await fetch_many(query, (data_source, ))
 
+
 async def find_non_aggregateable_variables():
     query = "SELECT * FROM variable where aggregateable = FALSE;"
     return await fetch_many(query)
+
+
+async def get_stale_variables():
+    query = """
+        SELECT v.id
+        FROM variable v
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM data d
+            WHERE d.variable_id = v.id
+        );
+    """
+    return await fetch_many(query)
+
 
 async def create(variable: VariableRequest):
     query = """
@@ -28,14 +44,14 @@ async def create(variable: VariableRequest):
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         RETURNING id, name, data_source, acs_variable, data_year, description, concept, aggregateable;
     """
-    return await execute_update(query, (variable.name, 
-                                  variable.data_source, 
-                                  variable.acs_variable, 
-                                  variable.data_year,
-                                  variable.description,
-                                  variable.concept,
-                                  variable.aggregateable
-                                  ))
+    return await execute_update(query, (variable.name,
+                                        variable.data_source,
+                                        variable.acs_variable,
+                                        variable.data_year,
+                                        variable.description,
+                                        variable.concept,
+                                        variable.aggregateable
+                                        ))
 
 
 async def update(id, variable: VariableRequest):
@@ -45,14 +61,14 @@ async def update(id, variable: VariableRequest):
         WHERE id = %s
         RETURNING id, name, data_source, acs_variable, data_year, description, concept, aggregateable;
     """
-    return await execute_update(query, (variable.name, 
-                                  variable.data_source, 
-                                  variable.acs_variable, 
-                                  variable.data_year,
-                                  variable.description,
-                                  variable.concept, 
-                                  variable.aggregateable,
-                                  id))
+    return await execute_update(query, (variable.name,
+                                        variable.data_source,
+                                        variable.acs_variable,
+                                        variable.data_year,
+                                        variable.description,
+                                        variable.concept,
+                                        variable.aggregateable,
+                                        id))
 
 
 async def set_variable_update_time(names: list[str]):
@@ -71,6 +87,6 @@ async def delete(id):
     query = """
         DELETE FROM variable
         WHERE id = %s
-        RETURNING name;
+        RETURNING id;
     """
     return await execute_update(query, (id,))

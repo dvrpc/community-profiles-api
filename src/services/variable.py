@@ -1,6 +1,8 @@
-import repository.geo_variable_repository as geo_variable_repo
+import repository.variable_repository as variable_repo
 
-async def create_geo_variable(variable_id: int, aggregateable: bool):
-    geo_levels = ["region", "county", "municipality"] if aggregateable else ["municipality", "region"]
-    for geo_level in geo_levels:
-        await geo_variable_repo.create(variable_id, geo_level)
+
+async def delete_stale_variables():
+    stale_vars = await variable_repo.get_stale_variables()
+    if (len(stale_vars) > 0):
+        for v in stale_vars:
+            await variable_repo.delete(v['id'])
