@@ -1,8 +1,5 @@
 from fastapi import APIRouter, Body, HTTPException, status, Depends
-# from repository.profile_repository import find_county, find_municipality, find_municipality
-# from repository.viz_repository import find_template, find_by_filters
-# from repository.viz_history_repository import find_by_filters
-import repository.profile_repository as profile_repo
+import services.profile as profile_service
 import repository.viz_repository as viz_repo
 import repository.viz_history_repository as viz_history_repo
 import services.viz as viz_service
@@ -18,7 +15,7 @@ router = APIRouter(
 
 @router.get("/{id}/county/{geoid}")
 async def get_populated_county_viz(id: int, geoid: str):
-    profile = await profile_repo.find_county(geoid)
+    profile = await profile_service.build_county_profile(geoid)
     viz = await viz_repo.find_one(id)
     viz = json.loads(viz['file'])
     populated_viz = await viz_service.build_viz(viz, profile)
@@ -27,7 +24,7 @@ async def get_populated_county_viz(id: int, geoid: str):
 
 @router.get("/{id}/municipality/{geoid}")
 async def get_populated_municipality_viz(id: int, geoid: str):
-    profile = await profile_repo.find_municipality(geoid)
+    profile = await profile_service.build_municipality_profile(geoid)
     viz = await viz_repo.find_one(id)
     viz = json.loads(viz['file'])
     populated_viz = await viz_service.build_viz(viz, profile)
@@ -36,7 +33,7 @@ async def get_populated_municipality_viz(id: int, geoid: str):
 
 @router.get("/{id}/region")
 async def get_populated_region_viz(id: int):
-    profile = await profile_repo.find_region()
+    profile = await profile_service.build_region_profile()
     viz = await viz_repo.find_one(id)
     viz = json.loads(viz['file'])
     populated_viz = await viz_service.build_viz(viz, profile)
@@ -52,16 +49,16 @@ async def get_viz(id: int):
 @router.post('/preview/{geo_level}')
 async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     if (geo_level == 'region'):
-        profile = await profile_repo.find_region()
+        profile = await profile_service.build_region_profile()
     else:
         if not geoid:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="No geoid provided")
 
         if (geo_level == 'county'):
-            profile = await profile_repo.find_county(geoid)
+            profile = await profile_service.build_county_profile(geoid)
         else:
-            profile = await profile_repo.find_municipality(geoid)
+            profile = await profile_service.build_municipality_profile(geoid)
 
     parsed_body = json.loads(body)
     template = await viz_service.build_viz(parsed_body, profile)

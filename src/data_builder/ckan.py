@@ -41,6 +41,7 @@ def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
         for row in data:
             geoid = row.pop('geoid')
             for key, value in row.items():
+
                 if key in variable_map:
                     updated_data.append({
                         "geoid":           geoid,
@@ -53,7 +54,7 @@ def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
                         "geoid":           geoid,
                         "variable_name":     key,
                         "value":           value,
-                        "sql_name": sql_request.name
+                        "sql_name": sql_request['name']
                     })
 
     except requests.exceptions.HTTPError as e:
@@ -69,9 +70,9 @@ def fetch_ckan_data(sql_queries: list[SQLRequest], variable_map: dict[str, str])
     for query in sql_queries:
         log.info(f"Fetching CKAN: {query['name']}")
         try:
-            new_data, updated_data = _fetch_sql(query, variable_map)
-            data.extend(updated_data)
-            new_data.extend(new_data)
+            new, updated = _fetch_sql(query, variable_map)
+            data.extend(updated)
+            new_data.extend(new)
         except Exception as e:
             log.error(f"Failed to fetch '{query['name']}': {e}")
     return data, new_data

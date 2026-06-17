@@ -36,7 +36,7 @@ def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
                             "geoid":           geoid,
                             "variable_name":     key,
                             "value":           value,
-                            "sql_name": sql_request.name
+                            "sql_name": sql_request['name']
                         })
 
     except (OperationalError, ProgrammingError) as e:

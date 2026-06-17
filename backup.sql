@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Xnpst7VkgMSrKOJtMsXIGNFfewWaK3F2coPzTE4gKI4a0q22a62WYX2Cy8tftdx
+\restrict jbIE2vdFBH60KBeClDlcJOJL3Q4igj8wRVVT1HpnrhjvKj2bx35L5GM6NNlKgbr
 
 -- Dumped from database version 16.11 (Ubuntu 16.11-1.pgdg22.04+1)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg22.04+2)
@@ -24,7 +24,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: category; Type: TABLE; Schema: public; Owner: postgres
+-- Name: category; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.category (
@@ -35,10 +35,8 @@ CREATE TABLE public.category (
 );
 
 
-ALTER TABLE public.category OWNER TO postgres;
-
 --
--- Name: category_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: category_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.category_id_seq
@@ -50,17 +48,15 @@ CREATE SEQUENCE public.category_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.category_id_seq OWNER TO postgres;
-
 --
--- Name: category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.category_id_seq OWNED BY public.category.id;
 
 
 --
--- Name: content; Type: TABLE; Schema: public; Owner: postgres
+-- Name: content; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.content (
@@ -78,10 +74,8 @@ CREATE TABLE public.content (
 );
 
 
-ALTER TABLE public.content OWNER TO postgres;
-
 --
--- Name: content_history; Type: TABLE; Schema: public; Owner: postgres
+-- Name: content_history; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.content_history (
@@ -97,10 +91,8 @@ CREATE TABLE public.content_history (
 );
 
 
-ALTER TABLE public.content_history OWNER TO postgres;
-
 --
--- Name: content_history_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: content_history_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 ALTER TABLE public.content_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -114,7 +106,7 @@ ALTER TABLE public.content_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENT
 
 
 --
--- Name: content_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: content_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.content_id_seq
@@ -126,17 +118,15 @@ CREATE SEQUENCE public.content_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.content_id_seq OWNER TO postgres;
-
 --
--- Name: content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.content_id_seq OWNED BY public.content.id;
 
 
 --
--- Name: content_link; Type: TABLE; Schema: public; Owner: postgres
+-- Name: content_link; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.content_link (
@@ -145,10 +135,8 @@ CREATE TABLE public.content_link (
 );
 
 
-ALTER TABLE public.content_link OWNER TO postgres;
-
 --
--- Name: content_product; Type: TABLE; Schema: public; Owner: postgres
+-- Name: content_product; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.content_product (
@@ -157,10 +145,8 @@ CREATE TABLE public.content_product (
 );
 
 
-ALTER TABLE public.content_product OWNER TO postgres;
-
 --
--- Name: content_source; Type: TABLE; Schema: public; Owner: postgres
+-- Name: content_source; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.content_source (
@@ -169,10 +155,8 @@ CREATE TABLE public.content_source (
 );
 
 
-ALTER TABLE public.content_source OWNER TO postgres;
-
 --
--- Name: county; Type: TABLE; Schema: public; Owner: postgres
+-- Name: county; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.county (
@@ -184,10 +168,8 @@ CREATE TABLE public.county (
 );
 
 
-ALTER TABLE public.county OWNER TO postgres;
-
 --
--- Name: data; Type: TABLE; Schema: public; Owner: postgres
+-- Name: data; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.data (
@@ -199,10 +181,8 @@ CREATE TABLE public.data (
 );
 
 
-ALTER TABLE public.data OWNER TO postgres;
-
 --
--- Name: data_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: data_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.data_id_seq
@@ -214,53 +194,15 @@ CREATE SEQUENCE public.data_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.data_id_seq OWNER TO postgres;
-
 --
--- Name: data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.data_id_seq OWNED BY public.data.id;
 
 
 --
--- Name: geo_variable; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.geo_variable (
-    id integer NOT NULL,
-    variable_id integer,
-    geo_level text NOT NULL,
-    CONSTRAINT geo_variable_geo_level_check CHECK ((geo_level = ANY (ARRAY['municipality'::text, 'county'::text, 'region'::text])))
-);
-
-
-ALTER TABLE public.geo_variable OWNER TO postgres;
-
---
--- Name: geo_variable_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.geo_variable_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.geo_variable_id_seq OWNER TO postgres;
-
---
--- Name: geo_variable_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.geo_variable_id_seq OWNED BY public.geo_variable.id;
-
-
---
--- Name: geography; Type: TABLE; Schema: public; Owner: postgres
+-- Name: geography; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.geography (
@@ -272,10 +214,8 @@ CREATE TABLE public.geography (
 );
 
 
-ALTER TABLE public.geography OWNER TO postgres;
-
 --
--- Name: link; Type: TABLE; Schema: public; Owner: postgres
+-- Name: link; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.link (
@@ -285,10 +225,8 @@ CREATE TABLE public.link (
 );
 
 
-ALTER TABLE public.link OWNER TO postgres;
-
 --
--- Name: links_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: links_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.links_id_seq
@@ -300,17 +238,15 @@ CREATE SEQUENCE public.links_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.links_id_seq OWNER TO postgres;
-
 --
--- Name: links_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: links_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.links_id_seq OWNED BY public.link.id;
 
 
 --
--- Name: municipality; Type: TABLE; Schema: public; Owner: postgres
+-- Name: municipality; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.municipality (
@@ -322,10 +258,8 @@ CREATE TABLE public.municipality (
 );
 
 
-ALTER TABLE public.municipality OWNER TO postgres;
-
 --
--- Name: source; Type: TABLE; Schema: public; Owner: postgres
+-- Name: source; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.source (
@@ -338,10 +272,8 @@ CREATE TABLE public.source (
 );
 
 
-ALTER TABLE public.source OWNER TO postgres;
-
 --
--- Name: source_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: source_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.source_id_seq
@@ -353,17 +285,15 @@ CREATE SEQUENCE public.source_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.source_id_seq OWNER TO postgres;
-
 --
--- Name: source_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: source_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.source_id_seq OWNED BY public.source.id;
 
 
 --
--- Name: sql; Type: TABLE; Schema: public; Owner: postgres
+-- Name: sql; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.sql (
@@ -377,10 +307,8 @@ CREATE TABLE public.sql (
 );
 
 
-ALTER TABLE public.sql OWNER TO postgres;
-
 --
--- Name: sql_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: sql_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.sql_id_seq
@@ -392,17 +320,15 @@ CREATE SEQUENCE public.sql_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.sql_id_seq OWNER TO postgres;
-
 --
--- Name: sql_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: sql_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.sql_id_seq OWNED BY public.sql.id;
 
 
 --
--- Name: subcategory; Type: TABLE; Schema: public; Owner: postgres
+-- Name: subcategory; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.subcategory (
@@ -414,10 +340,8 @@ CREATE TABLE public.subcategory (
 );
 
 
-ALTER TABLE public.subcategory OWNER TO postgres;
-
 --
--- Name: subcategory_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: subcategory_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.subcategory_id_seq
@@ -429,17 +353,15 @@ CREATE SEQUENCE public.subcategory_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.subcategory_id_seq OWNER TO postgres;
-
 --
--- Name: subcategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: subcategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.subcategory_id_seq OWNED BY public.subcategory.id;
 
 
 --
--- Name: topic; Type: TABLE; Schema: public; Owner: postgres
+-- Name: topic; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.topic (
@@ -451,10 +373,8 @@ CREATE TABLE public.topic (
 );
 
 
-ALTER TABLE public.topic OWNER TO postgres;
-
 --
--- Name: topic_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: topic_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.topic_id_seq
@@ -466,17 +386,15 @@ CREATE SEQUENCE public.topic_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.topic_id_seq OWNER TO postgres;
-
 --
--- Name: topic_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: topic_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.topic_id_seq OWNED BY public.topic.id;
 
 
 --
--- Name: variable; Type: TABLE; Schema: public; Owner: postgres
+-- Name: variable; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.variable (
@@ -492,10 +410,8 @@ CREATE TABLE public.variable (
 );
 
 
-ALTER TABLE public.variable OWNER TO postgres;
-
 --
--- Name: variables_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: variables_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 ALTER TABLE public.variable ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -509,7 +425,7 @@ ALTER TABLE public.variable ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: viz_history; Type: TABLE; Schema: public; Owner: postgres
+-- Name: viz_history; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.viz_history (
@@ -523,10 +439,8 @@ CREATE TABLE public.viz_history (
 );
 
 
-ALTER TABLE public.viz_history OWNER TO postgres;
-
 --
--- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 ALTER TABLE public.viz_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -540,7 +454,7 @@ ALTER TABLE public.viz_history ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY 
 
 
 --
--- Name: viz; Type: TABLE; Schema: public; Owner: postgres
+-- Name: viz; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.viz (
@@ -553,10 +467,8 @@ CREATE TABLE public.viz (
 );
 
 
-ALTER TABLE public.viz OWNER TO postgres;
-
 --
--- Name: viz_source; Type: TABLE; Schema: public; Owner: postgres
+-- Name: viz_source; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.viz_source (
@@ -565,73 +477,64 @@ CREATE TABLE public.viz_source (
 );
 
 
-ALTER TABLE public.viz_source OWNER TO postgres;
-
 --
--- Name: category id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: category id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.category ALTER COLUMN id SET DEFAULT nextval('public.category_id_seq'::regclass);
 
 
 --
--- Name: content id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: content id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content ALTER COLUMN id SET DEFAULT nextval('public.content_id_seq'::regclass);
 
 
 --
--- Name: data id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: data id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data ALTER COLUMN id SET DEFAULT nextval('public.data_id_seq'::regclass);
 
 
 --
--- Name: geo_variable id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.geo_variable ALTER COLUMN id SET DEFAULT nextval('public.geo_variable_id_seq'::regclass);
-
-
---
--- Name: link id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: link id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.link ALTER COLUMN id SET DEFAULT nextval('public.links_id_seq'::regclass);
 
 
 --
--- Name: source id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: source id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.source ALTER COLUMN id SET DEFAULT nextval('public.source_id_seq'::regclass);
 
 
 --
--- Name: sql id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: sql id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sql ALTER COLUMN id SET DEFAULT nextval('public.sql_id_seq'::regclass);
 
 
 --
--- Name: subcategory id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: subcategory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subcategory ALTER COLUMN id SET DEFAULT nextval('public.subcategory_id_seq'::regclass);
 
 
 --
--- Name: topic id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: topic id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.topic ALTER COLUMN id SET DEFAULT nextval('public.topic_id_seq'::regclass);
 
 
 --
--- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.category (id, name, label, sort_weight) FROM stdin;
@@ -647,25 +550,24 @@ COPY public.category (id, name, label, sort_weight) FROM stdin;
 
 
 --
--- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.content (geo_level, file, create_date, id, topic_id, category_id, is_visible, last_edited_by, catalog_link, census_link, other_link) FROM stdin;
 municipality	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward.\n	2025-10-20 15:28:41.091245	82	5	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}\n\nThe Circuit is Greater Philadelphia’s multi–use trail network connecting people to jobs, communities, parks, and waterways. Governments, non-profits, and foundations have collaborated to complete over 390 miles of the envisioned 800-mile regional network.\n\n- **Existing** -- These trails are open for use so get out there and explore them.\n- **In Progress** -- These trails are currently being designed or built.\n- **Pipeline** -- DVRPC, local governments, and non-profit organizations are actively working to move these trails forward by conducting studies, acquiring rights-of-way, engaging local communities, and laying the groundwork to obtain funding for future design and construction.\n- **Planned** -- These trails are documented in local, county or regional plans. They represent excellent opportunities for regional-scale, multi-use trails. Studies or plans may have been prepared for these trails, but a sponsor is not actively working to move them forward.\n	2025-10-20 15:28:41.091245	16	5	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div>\n	2025-10-20 15:28:41.091245	67	12	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. hello 12\n\n{{display_variable(total_pop, 'Population')}}\n	2025-11-04 11:16:02.468487	70	24	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050', county + ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2025-10-20 15:28:41.091245	69	25	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc region\n	2025-11-25 11:58:39.719926	11	10	\N	t	\N	\N	\N	\N
-municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 123\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n</div>\n	2025-12-02 09:50:28.26238	66	1	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc\n	2025-12-02 11:02:31.827238	68	18	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123456\n \n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050', county + ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu. 4\n	2025-12-01 16:28:57.198896	36	25	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 12345677\n	2025-12-02 12:45:33.179071	38	33	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	71	33	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	2	18	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234567\n\n{{display_variable(total_pop, 'Population')}}\n	2025-11-04 11:09:19.048915	4	24	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50, 'Projected Population Growth: 2015-2050')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2025-10-20 15:28:41.091245	3	25	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123\n	2025-11-12 12:04:31.533394	39	13	\N	t	\N	\N	\N	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. hello 12\n\n{{display_variable(total_pop.value, 'Population', geography.name)}}\n	2026-06-17 15:07:32.80881	70	24	\N	t	Colin Kirby	\N	\N	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n{{display_variable(popabs50.value, 'Projected Population Growth: 2015-2050', geography.name)}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu.\n	2026-06-17 15:07:49.131886	69	25	\N	t	Colin Kirby	\N	\N	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 123\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age.value, 'Median Age', moe=median_age.moe)}}\n{{display_variable(under_18_pop.value, 'Under 18', moe=under_18_pop.moe)}}\n</div>\n	2026-06-17 15:08:10.216849	66	1	\N	t	Colin Kirby	\N	\N	\N
+municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop.value, 'Male Population', moe=male_pop.moe)}}\n{{display_variable(female_pop.value, 'Female Population', moe=female_pop.moe)}}\n</div>\n	2026-06-17 15:08:30.132245	67	12	\N	t	Colin Kirby	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	41	28	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc\n	2025-11-03 14:30:26.672563	42	34	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n	2025-10-20 15:28:41.091245	72	13	\N	t	\N	\N	\N	\N
@@ -783,30 +685,31 @@ region	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus 
 municipality	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.	2025-11-25 10:57:59.497087	160	\N	8	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123 county\n	2025-11-25 11:47:45.593111	45	15	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n county	2025-11-25 11:48:28.397472	44	10	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop, 'Male Population', moe=male_pop_moe)}}\n{{display_variable(female_pop, 'Female Population', moe=female_pop_moe)}}\n</div> 123\n	2025-11-17 10:54:44.441259	34	12	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.295494	177	\N	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.306822	178	\N	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:51:21.316488	179	\N	\N	t	\N	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.66402	174	\N	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.676426	175	\N	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-02 11:42:06.68664	176	\N	\N	t	\N	\N	\N	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(male_pop.value, 'Male Population', moe=male_pop.moe)}}\n{{display_variable(female_pop.value, 'Female Population', moe=female_pop.moe)}}\n</div> 123\n	2026-06-17 15:07:05.60442	34	12	\N	t	Colin Kirby	\N	\N	\N
 county	Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. abc	2025-12-10 15:20:58.624234	143	\N	3	t	Colin Kirby	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}	2025-12-03 15:27:20.124375	180	\N	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}	2025-12-03 15:27:20.128381	181	\N	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}	2025-12-03 15:27:20.130042	182	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 1234\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age, 'Median Age', moe=median_age_moe)}}\n{{display_variable(under_18_pop, 'Under 18', moe=under_18_pop_moe)}}\n{{display_variable(over_65_pop, '65 and Over', moe=over_65_pop_moe)}}\n</div>\n\n1234567	2025-12-10 15:18:12.614678	102	1	\N	t	Colin Kirby	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. abc12345\n	2025-12-04 13:32:02.395481	35	18	\N	t	\N	\N	\N	\N
 county	county ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. 1234	2025-12-10 13:28:30.343772	137	\N	1	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}\n\nIn data_year, the typical household in Greater Philadelphia would have had to pay approximately [median_home_value / median_regional_hh_income] times their annual income to purchase the median home in county_name. \n\nHouseholds needed to earn approximately [hh_income_for_median_apt] to affordably rent the median cost rental home in [county_name] in [data_year]. In [current_year], [per_rent_burdened] percent of renters in {{county}} were cost burdened, [diff_from_region] than the regional threshold of [regional_per_rent_burdened] percent. \n\n{{county}}’s housing stock is [age_vs_region] compared to the region. [per_pre_1940] percent of the county’s homes were built prior to 1940 while over [per_post_1980] percent has been built after 1980. \n	2026-05-13 15:53:20.328438	40	14	\N	t	Colin Kirby	\N	\N	\N
 region	{% from 'display_variable.jinja' import display_variable %}	2026-05-21 10:26:16.034151	183	\N	\N	t	\N	\N	\N	\N
 county	{% from 'display_variable.jinja' import display_variable %}	2026-05-21 10:26:16.041328	184	\N	\N	t	\N	\N	\N	\N
 municipality	{% from 'display_variable.jinja' import display_variable %}	2026-05-21 10:26:16.043507	185	\N	\N	t	\N	\N	\N	\N
-county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123 \n\npopulation\n\n{{test_var}}\n{{display_variable(total_pop, 'Population', county + ' County')}}\n	2026-05-21 10:41:11.496241	37	24	\N	t	Colin Kirby	\N	\N	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. 1234\n\n<div style="display: flex; flex-wrap: wrap; gap: 3rem;">\n{{display_variable(median_age.value, 'Median Age', moe=median_age.moe)}}\n{{display_variable(under_18_pop.value, 'Under 18', moe=under_18_pop.moe)}}\n\n</div>\n\n1234567	2026-06-17 15:04:46.033671	102	1	\N	t	Colin Kirby	\N	\N	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123 \n\n{{display_variable(total_pop.value, 'Population', geography.name + ' County')}}\n\n{{total_pop.value}}\n\n	2026-06-17 15:02:33.864254	37	24	\N	t	Colin Kirby	\N	\N	\N
+county	{% from 'display_variable.jinja' import display_variable %}\n\nhello Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 123456\n \n{{display_variable(popabs50.value, 'Projected Population Growth: 2015-2050', geography.name+ ' County')}}\n\nVenenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu. 4\n	2026-06-17 15:03:24.001657	36	25	\N	t	Colin Kirby	\N	\N	\N
 \.
 
 
 --
--- Data for Name: content_history; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: content_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.content_history (geo_level, file, create_date, topic_id, category_id, is_visible, parent_id, id, last_edited_by) FROM stdin;
@@ -822,7 +725,7 @@ county	{% from 'display_variable.jinja' import display_variable %}\n\nLorem ipsu
 
 
 --
--- Data for Name: content_link; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: content_link; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.content_link (content_id, link_id) FROM stdin;
@@ -830,7 +733,7 @@ COPY public.content_link (content_id, link_id) FROM stdin;
 
 
 --
--- Data for Name: content_product; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: content_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.content_product (content_id, product_id) FROM stdin;
@@ -844,7 +747,7 @@ COPY public.content_product (content_id, product_id) FROM stdin;
 
 
 --
--- Data for Name: content_source; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: content_source; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.content_source (content_id, source_id) FROM stdin;
@@ -854,7 +757,7 @@ COPY public.content_source (content_id, source_id) FROM stdin;
 
 
 --
--- Data for Name: county; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: county; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.county (geoid, co_name, buffer_bbox, state, county) FROM stdin;
@@ -871,7 +774,7 @@ COPY public.county (geoid, co_name, buffer_bbox, state, county) FROM stdin;
 
 
 --
--- Data for Name: data; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: data; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
@@ -44373,8 +44276,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 54548	142	3400520050	308	162
 54549	184	3400520050	46	41
 54550	160	3400520050	0	20
-30771	104	4201704976	\N	17
-30796	104	4201705616	\N	50
 54551	114	3400520050	0	20
 54552	219	3400520050	1235	277
 54553	220	3400520050	859	249
@@ -84816,9 +84717,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 707300	395	4202927376	49.25	\N
 707301	396	4202927376	2320.86	\N
 707302	383	4202934448	10995	\N
-11124	199	42017	\N	727
-11149	199	42029	\N	936
-11174	199	42045	\N	987
 707303	384	4202934448	7944.21	\N
 707304	385	4202934448	4.83	\N
 707305	386	4202934448	6.96	\N
@@ -84837,12 +84735,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 707318	385	4202935528	21.33	\N
 707319	386	4202935528	2.25	\N
 707320	387	4202935528	13.32	\N
-11649	104	42091	\N	223
-11674	104	42101	\N	615
-11699	104	34005	\N	185
-11724	104	34007	\N	262
-11749	104	34015	\N	158
-11774	104	34021	\N	112
 707321	388	4202935528	0	\N
 707322	389	4202935528	0	\N
 707323	390	4202935528	3.77	\N
@@ -84852,15 +84744,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 707327	394	4202935528	1.01	\N
 707328	395	4202935528	0.5	\N
 707329	396	4202935528	0	\N
-12024	138	42017	\N	681
-12049	138	42029	\N	473
-12074	138	42045	\N	501
-12099	138	42091	\N	640
-12124	138	42101	\N	1102
-12149	138	34005	\N	487
-12174	138	34007	\N	560
-12199	138	34015	\N	339
-12224	138	34021	\N	420
 707330	383	4202935536	16132.15	\N
 707331	384	4202935536	8444.94	\N
 707332	385	4202935536	107.31	\N
@@ -84870,15 +84753,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 707336	389	4202935536	85.84	\N
 707337	390	4202935536	240.26	\N
 707338	391	4202935536	2170.06	\N
-12474	89	42017	\N	28
-12499	89	42029	\N	28
-12524	89	42045	\N	28
-12549	89	42091	\N	28
-12574	89	42101	\N	28
-12599	89	34005	\N	33
-12624	89	34007	\N	33
-12649	89	34015	\N	33
-12674	89	34021	\N	33
 707339	392	4202935536	241.23	\N
 707340	393	4202935536	577.1	\N
 707341	394	4202935536	137.36	\N
@@ -84975,8 +84849,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 707432	387	4202946792	65.45	\N
 707433	388	4202946792	0	\N
 707434	389	4202946792	0	\N
-11599	104	42029	\N	215
-11624	104	42045	\N	194
 707435	390	4202946792	77.41	\N
 707436	391	4202946792	291.98	\N
 707437	392	4202946792	55.81	\N
@@ -85125,24 +84997,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 707580	395	4202960120	115.61	\N
 707581	396	4202960120	399	\N
 707582	383	4202961800	5329.59	\N
-48321	138	4201704976	\N	29
-48346	138	4201705616	\N	226
-48371	138	4201708592	\N	11
-48396	138	4201708760	\N	54
-48421	138	4201708768	\N	283
-48446	138	4201709816	\N	87
-48471	138	4201712504	\N	47
-48496	138	4201719784	\N	42
-48521	138	4201719792	\N	106
-48546	138	4201720104	\N	35
-48571	138	4201720480	\N	19
-48596	138	4201721760	\N	82
-48621	138	4201725112	\N	184
-48646	138	4201733224	\N	65
-48671	138	4201734952	\N	96
-48696	138	4201736192	\N	8
-48721	138	4201737304	\N	9
-48746	138	4201741392	\N	6
 707583	384	4202961800	1750.25	\N
 707584	385	4202961800	25.12	\N
 707585	386	4202961800	20.43	\N
@@ -85759,12 +85613,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 708194	393	4204518160	22.82	\N
 708195	394	4204518160	61.68	\N
 708196	395	4204518160	22	\N
-65871	89	4201704976	\N	17
-65896	89	4201705616	\N	28
-65921	89	4201708592	\N	12
-65946	89	4201708760	\N	17
-65971	89	4201708768	\N	28
-65996	89	4201709816	\N	22
 708197	396	4204518160	35.21	\N
 708198	383	4204521384	131.33	\N
 708199	384	4204521384	0	\N
@@ -86141,14 +85989,8 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 708570	391	4204575648	517.28	\N
 708571	392	4204575648	75.34	\N
 708572	393	4204575648	6.28	\N
-11199	199	42091	\N	932
-11224	199	42101	\N	2660
-11249	199	34005	\N	741
-11274	199	34007	\N	891
-11299	199	34015	\N	623
-11324	199	34021	\N	834
+13271	199	4201708592	\N	86
 708573	394	4204575648	0.63	\N
-11574	104	42017	\N	138
 708574	395	4204575648	5.73	\N
 708575	396	4204575648	84.92	\N
 708576	383	4204576576	5910.81	\N
@@ -86232,7 +86074,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 708654	391	4204579000	2710.45	\N
 708655	392	4204579000	700.27	\N
 708656	393	4204579000	54.36	\N
-13271	199	4201708592	\N	86
 708657	394	4204579000	52.35	\N
 708658	395	4204579000	29.06	\N
 708659	396	4204579000	343.71	\N
@@ -87135,36 +86976,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 709554	395	4209186496	39.64	\N
 709555	396	4209186496	1932.34	\N
 709556	383	4210160101	5493.37	\N
-31071	104	4201725112	\N	63
-31096	104	4201733224	\N	12
-31121	104	4201734952	\N	19
-31146	104	4201736192	\N	12
-31171	104	4201737304	\N	12
-31196	104	4201741392	\N	12
-31221	104	4201741416	\N	12
-31246	104	4201744968	\N	59
-31271	104	4201745112	\N	42
-31296	104	4201749120	\N	59
-31321	104	4201749384	\N	19
-31346	104	4201751144	\N	17
-31371	104	4201753296	\N	12
-31396	104	4201753304	\N	19
-31421	104	4201753712	\N	12
-31446	104	4201754184	\N	12
-31471	104	4201754192	\N	52
-31496	104	4201754576	\N	12
-31521	104	4201754688	\N	25
-31546	104	4201758936	\N	12
-30821	104	4201708592	\N	12
-30846	104	4201708760	\N	19
-30871	104	4201708768	\N	47
-30896	104	4201709816	\N	27
-30921	104	4201712504	\N	12
-30946	104	4201719784	\N	17
-30971	104	4201719792	\N	19
-30996	104	4201720104	\N	12
-31021	104	4201720480	\N	12
-31046	104	4201721760	\N	17
 709557	384	4210160101	3.67	\N
 709558	385	4210160101	569.28	\N
 709559	386	4210160101	603.26	\N
@@ -87625,11 +87436,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 710000	423	3400518790	1890	\N
 710001	424	3400518790	1904	\N
 710002	425	3400518790	1128	\N
-39421	104	3402157600	\N	14
-39446	104	3402160900	\N	48
-39471	104	3402163850	\N	22
-39496	104	3402174000	\N	82
-39521	104	3402180240	\N	40
 710003	426	3400518790	18.22	\N
 710004	427	3400518790	83	\N
 710005	428	3400518790	4.56	\N
@@ -87739,44 +87545,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 710109	424	3400542060	7878	\N
 710110	425	3400542060	1176	\N
 710111	426	3400542060	9.19	\N
-48771	138	4201741416	\N	9
-48796	138	4201744968	\N	143
-48821	138	4201745112	\N	218
-48846	138	4201749120	\N	139
-48871	138	4201749384	\N	135
-48896	138	4201751144	\N	106
-48921	138	4201753296	\N	15
-48946	138	4201753304	\N	67
-48971	138	4201753712	\N	90
-48996	138	4201754184	\N	17
-49021	138	4201754192	\N	108
-49046	138	4201754576	\N	48
-49071	138	4201754688	\N	135
-49096	138	4201758936	\N	29
-49121	138	4201759384	\N	66
-49146	138	4201761616	\N	174
-49171	138	4201763048	\N	39
-49196	138	4201764536	\N	97
-49221	138	4201764584	\N	26
-49246	138	4201764856	\N	7
-49271	138	4201769248	\N	38
-49296	138	4201770744	\N	6
-49321	138	4201771752	\N	84
-49346	138	4201773016	\N	78
-49371	138	4201776304	\N	25
-49396	138	4201776784	\N	26
-49421	138	4201777704	\N	46
-49446	138	4201777744	\N	25
-49471	138	4201779128	\N	160
-49496	138	4201779296	\N	64
-49521	138	4201780952	\N	115
-49546	138	4201781048	\N	124
-49571	138	4201781144	\N	135
-49596	138	4201783960	\N	82
-49621	138	4201786624	\N	31
-49646	138	4201786920	\N	36
-49671	138	4202903384	\N	15
-49696	138	4202903656	\N	2
 677213	383	34007	145551.44	\N
 677214	384	34007	8277.19	\N
 677215	385	34007	6605	\N
@@ -88978,50 +88746,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 711258	421	3401524840	7205	\N
 711259	422	3401524840	7323	\N
 711260	423	3401524840	7203	\N
-13221	199	4201704976	\N	188
-13246	199	4201705616	\N	610
-13296	199	4201708760	\N	262
-13321	199	4201708768	\N	596
-13346	199	4201709816	\N	335
-13371	199	4201712504	\N	87
-13396	199	4201719784	\N	207
-13421	199	4201719792	\N	312
-13446	199	4201720104	\N	194
-13471	199	4201720480	\N	60
-13496	199	4201721760	\N	214
-13521	199	4201725112	\N	469
-13546	199	4201733224	\N	88
-13571	199	4201734952	\N	242
-13596	199	4201736192	\N	67
-13621	199	4201737304	\N	55
-13646	199	4201741392	\N	72
-13671	199	4201741416	\N	36
-13696	199	4201744968	\N	350
-13721	199	4201745112	\N	375
-13746	199	4201749120	\N	466
-13771	199	4201749384	\N	282
-13796	199	4201751144	\N	352
-13821	199	4201753296	\N	79
-13846	199	4201753304	\N	188
-13871	199	4201753712	\N	142
-13896	199	4201754184	\N	83
-13921	199	4201754192	\N	327
-13946	199	4201754576	\N	102
-13971	199	4201754688	\N	369
-13996	199	4201758936	\N	97
-14021	199	4201759384	\N	225
-14046	199	4201761616	\N	219
-14071	199	4201763048	\N	278
-14096	199	4201764536	\N	252
-14121	199	4201764584	\N	77
-14146	199	4201764856	\N	47
-14171	199	4201769248	\N	124
-14196	199	4201770744	\N	117
-14221	199	4201771752	\N	192
-14246	199	4201773016	\N	208
-14271	199	4201776304	\N	117
-14296	199	4201776784	\N	132
-14321	199	4201777704	\N	88
 711261	424	3401524840	7342	\N
 711262	425	3401524840	661	\N
 711263	426	3401524840	4.04	\N
@@ -89636,14 +89360,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 711871	422	4201708592	413	\N
 711872	423	4201708592	511	\N
 711873	424	4201708592	517	\N
-31571	104	4201759384	\N	17
-31596	104	4201761616	\N	19
-31621	104	4201763048	\N	17
-31646	104	4201764536	\N	46
-31671	104	4201764584	\N	12
-31696	104	4201764856	\N	12
-31721	104	4201769248	\N	23
-31746	104	4201770744	\N	12
 678977	383	42029	485467.6	\N
 678978	384	42029	152619.7	\N
 678979	385	42029	9609.43	\N
@@ -90249,22 +89965,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 712451	426	4201763048	0.62	\N
 712452	427	4201763048	127	\N
 712453	428	4201763048	2.45	\N
-49971	138	4202921192	\N	83
-49996	138	4202921480	\N	96
-50021	138	4202921576	\N	11
-50046	138	4202921624	\N	63
-50071	138	4202921696	\N	64
-50096	138	4202921928	\N	72
-50121	138	4202922000	\N	37
-50146	138	4202922056	\N	68
-50171	138	4202923032	\N	28
-50196	138	4202923440	\N	21
-50221	138	4202927376	\N	40
-50246	138	4202934448	\N	12
-50271	138	4202935528	\N	7
-50296	138	4202935536	\N	86
-50321	138	4202939344	\N	91
-50346	138	4202939352	\N	57
 712454	411	4201764536	13837	\N
 712455	412	4201764536	14193	\N
 712456	413	4201764536	14423	\N
@@ -90541,33 +90241,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 712727	414	4201781144	15355	\N
 712728	415	4201781144	15368	\N
 712729	416	4201781144	15299	\N
-56121	138	3400777630	\N	85
-56146	138	3400781740	\N	126
-56171	138	3400782450	\N	44
-56196	138	3401513360	\N	99
-56221	138	3401517710	\N	115
-55571	138	3400714260	\N	66
-55596	138	3400726070	\N	18
-55621	138	3400726760	\N	193
-55646	138	3400726820	\N	41
-55671	138	3400728740	\N	186
-55696	138	3400728770	\N	54
-55721	138	3400728800	\N	45
-55746	138	3400732220	\N	10
-55771	138	3400739210	\N	16
-55796	138	3400739420	\N	37
-55821	138	3400740440	\N	99
-55846	138	3400742630	\N	17
-55871	138	3400745510	\N	41
-55896	138	3400748750	\N	26
-55921	138	3400753880	\N	42
-55946	138	3400757660	\N	121
-55971	138	3400758770	\N	114
-55996	138	3400765160	\N	56
-56021	138	3400768340	\N	72
-56046	138	3400771220	\N	87
-56071	138	3400772240	\N	14
-56096	138	3400776220	\N	121
 680685	383	42091	311635.7	\N
 680686	384	42091	35197.34	\N
 680687	385	42091	13961.09	\N
@@ -90852,26 +90525,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 712985	420	4202921008	2210	\N
 712986	421	4202921008	2186	\N
 712987	422	4202921008	2256	\N
-66021	89	4201712504	\N	12
-66046	89	4201719784	\N	17
-66071	89	4201719792	\N	19
-66096	89	4201720104	\N	12
-66121	89	4201720480	\N	12
-66146	89	4201721760	\N	17
-66171	89	4201725112	\N	25
-66196	89	4201733224	\N	12
-66221	89	4201734952	\N	19
-66246	89	4201736192	\N	12
-66271	89	4201737304	\N	12
-66296	89	4201741392	\N	12
-66321	89	4201741416	\N	12
-66346	89	4201744968	\N	25
-66371	89	4201745112	\N	22
-66396	89	4201749120	\N	25
-66421	89	4201749384	\N	19
-66446	89	4201751144	\N	17
-66471	89	4201753296	\N	12
-66496	89	4201753304	\N	19
 712988	423	4202921008	2256	\N
 712989	424	4202921008	2274	\N
 712990	425	4202921008	2005	\N
@@ -93534,11 +93187,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 715647	418	4209163808	672	\N
 715648	419	4209163808	808	\N
 715649	420	4209163808	804	\N
-21871	199	3402157600	\N	54
-21896	199	3402160900	\N	378
-21921	199	3402163850	\N	246
-21946	199	3402174000	\N	1028
-21971	199	3402180240	\N	471
 715650	421	4209163808	797	\N
 715651	422	4209163808	804	\N
 715652	423	4209163808	753	\N
@@ -93682,16 +93330,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 715790	417	4209176304	2858	\N
 715791	418	4209176304	770	\N
 715792	419	4209176304	880	\N
-31771	104	4201771752	\N	17
-31796	104	4201773016	\N	17
-31821	104	4201776304	\N	12
-31846	104	4201776784	\N	12
-31871	104	4201777704	\N	12
-31896	104	4201777744	\N	12
-31921	104	4201779128	\N	17
-31946	104	4201779296	\N	19
-31971	104	4201780952	\N	25
-31996	104	4201781048	\N	15
 715793	420	4209176304	871	\N
 715794	421	4209176304	859	\N
 715795	422	4209176304	892	\N
@@ -94139,24 +93777,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 716237	414	4210160108	55284	\N
 716238	415	4210160108	55401	\N
 716239	416	4210160108	55495	\N
-49721	138	4202906544	\N	35
-49746	138	4202910824	\N	122
-49771	138	4202912744	\N	56
-49796	138	4202914712	\N	70
-49821	138	4202919752	\N	91
-49846	138	4202920824	\N	92
-49871	138	4202920864	\N	88
-49896	138	4202920920	\N	55
-49921	138	4202921008	\N	24
-49946	138	4202921104	\N	70
-50371	138	4202944440	\N	32
-50396	138	4202944456	\N	19
-50421	138	4202944480	\N	61
-50446	138	4202945040	\N	17
-50471	138	4202946792	\N	40
-50496	138	4202950232	\N	11
-50521	138	4202953608	\N	59
-50546	138	4202953784	\N	5
 716240	417	4210160108	55635	\N
 716241	418	4210160108	26801	\N
 716242	419	4210160108	27734	\N
@@ -94394,7 +94014,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 716474	381	3400512670	1.8841467	\N
 716475	382	3400512670	0	\N
 716476	381	4204513208	4.820631	\N
-716477	382	4204513208	3.7205555	\N
 716478	381	4201764536	9.2848835	\N
 716479	382	4201764536	1.2875911	\N
 716480	381	4209109696	4.97996	\N
@@ -95253,8 +94872,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 717333	398	4204514264	0	\N
 717334	399	4204514264	0	\N
 717335	397	4209183696	0.47993955	\N
-14346	199	4201777744	\N	95
-14371	199	4201779128	\N	157
 717336	398	4209183696	0.6788054	\N
 717337	399	4209183696	0	\N
 717338	397	3400728770	0	\N
@@ -95825,55 +95442,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 717903	398	3400712280	16.53043	\N
 717904	399	3400712280	2	\N
 717905	397	4204513232	0	\N
-32021	104	4201781144	\N	19
-32046	104	4201783960	\N	17
-32071	104	4201786624	\N	12
-32096	104	4201786920	\N	12
-32121	104	4202903384	\N	12
-32146	104	4202903656	\N	12
-32171	104	4202906544	\N	12
-32196	104	4202910824	\N	19
-32221	104	4202912744	\N	18
-32246	104	4202914712	\N	66
-32271	104	4202919752	\N	42
-32296	104	4202920824	\N	29
-32321	104	4202920864	\N	19
-32346	104	4202920920	\N	17
-32371	104	4202921008	\N	17
-32396	104	4202921104	\N	17
-32421	104	4202921192	\N	19
-32446	104	4202921480	\N	17
-32471	104	4202921576	\N	12
-32496	104	4202921624	\N	17
-32521	104	4202921696	\N	58
-32546	104	4202921928	\N	124
-32571	104	4202922000	\N	17
-32596	104	4202922056	\N	22
-32621	104	4202923032	\N	12
-32646	104	4202923440	\N	12
-32671	104	4202927376	\N	12
-32696	104	4202934448	\N	12
-32721	104	4202935528	\N	12
-32746	104	4202935536	\N	17
-32771	104	4202939344	\N	17
-32796	104	4202939352	\N	17
-32821	104	4202944440	\N	12
-32846	104	4202944456	\N	12
-32871	104	4202944480	\N	17
-32896	104	4202945040	\N	45
-32921	104	4202946792	\N	12
-32946	104	4202950232	\N	12
-32971	104	4202953608	\N	19
-32996	104	4202953784	\N	12
-33021	104	4202953816	\N	17
-33046	104	4202954936	\N	27
-33071	104	4202957480	\N	17
-33096	104	4202958032	\N	16
-33121	104	4202958808	\N	17
-33146	104	4202959136	\N	12
-33171	104	4202960120	\N	45
-33196	104	4202961800	\N	12
-33221	104	4202967080	\N	12
 717906	398	4204513232	0	\N
 717907	399	4204513232	0	\N
 717908	397	3401521060	0	\N
@@ -96314,29 +95882,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 718343	402	4209168328	0	\N
 718344	403	4209168328	0	\N
 718345	404	4209168328	0	\N
-50571	138	4202953816	\N	51
-50596	138	4202954936	\N	53
-50621	138	4202957480	\N	19
-50646	138	4202958032	\N	92
-50671	138	4202958808	\N	33
-50696	138	4202959136	\N	32
-50721	138	4202960120	\N	125
-50746	138	4202961800	\N	23
-50771	138	4202967080	\N	49
-50796	138	4202968288	\N	52
-50821	138	4202972072	\N	12
-50846	138	4202972088	\N	15
-50871	138	4202972920	\N	28
-50896	138	4202976568	\N	50
-50921	138	4202977344	\N	100
-50946	138	4202979208	\N	22
-50971	138	4202979352	\N	66
-50996	138	4202979480	\N	99
-51021	138	4202979544	\N	89
-51046	138	4202980616	\N	34
-51071	138	4202981160	\N	20
-51096	138	4202982544	\N	46
-51121	138	4202982576	\N	48
 718346	405	4209168328	0	\N
 718347	402	4202983464	0	\N
 718348	403	4202983464	0	\N
@@ -96634,20 +96179,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 718640	403	4204518152	0	\N
 718641	404	4204518152	3	\N
 718642	405	4204518152	0	\N
-56746	138	3401582180	\N	24
-56771	138	3401582840	\N	53
-56796	138	3402119780	\N	195
-56821	138	3402122185	\N	173
-56846	138	3402129310	\N	260
-56871	138	3402131620	\N	65
-56896	138	3402133150	\N	36
-56921	138	3402133180	\N	112
-56946	138	3402139510	\N	108
-56971	138	3402157600	\N	46
-56996	138	3402160900	\N	58
-57021	138	3402163850	\N	52
-57046	138	3402174000	\N	156
-57071	138	3402180240	\N	154
 718643	402	3401551390	0	\N
 718644	403	3401551390	0	\N
 718645	404	3401551390	0	\N
@@ -97430,305 +96961,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 719422	405	4209138000	0	\N
 719423	402	4201749384	1	\N
 719424	403	4201749384	0	\N
-14396	199	4201779296	\N	250
-14421	199	4201780952	\N	404
-14446	199	4201781048	\N	364
-14471	199	4201781144	\N	229
-14496	199	4201783960	\N	180
-14521	199	4201786624	\N	93
-14546	199	4201786920	\N	95
-14571	199	4202903384	\N	66
-14596	199	4202903656	\N	128
-14621	199	4202906544	\N	83
-14646	199	4202910824	\N	401
-14671	199	4202912744	\N	169
-14696	199	4202914712	\N	334
-14721	199	4202919752	\N	225
-14746	199	4202920824	\N	208
-14771	199	4202920864	\N	225
-14796	199	4202920920	\N	155
-14821	199	4202921008	\N	207
-14846	199	4202921104	\N	162
-14871	199	4202921192	\N	326
-14896	199	4202921480	\N	124
-14921	199	4202921576	\N	65
-14946	199	4202921624	\N	178
-14971	199	4202921696	\N	180
-14996	199	4202921928	\N	215
-15021	199	4202922000	\N	147
-15046	199	4202922056	\N	226
-15071	199	4202923032	\N	59
-15096	199	4202923440	\N	66
-15121	199	4202927376	\N	98
-15146	199	4202934448	\N	54
-15171	199	4202935528	\N	105
-15196	199	4202935536	\N	234
-15221	199	4202939344	\N	231
-15246	199	4202939352	\N	172
-15271	199	4202944440	\N	108
-15296	199	4202944456	\N	100
-15321	199	4202944480	\N	170
-15346	199	4202945040	\N	95
-15371	199	4202946792	\N	142
-15396	199	4202950232	\N	50
-15421	199	4202953608	\N	221
-15446	199	4202953784	\N	65
-15471	199	4202953816	\N	102
-15496	199	4202954936	\N	174
-15521	199	4202957480	\N	298
-15546	199	4202958032	\N	123
-15571	199	4202958808	\N	165
-15596	199	4202959136	\N	118
-15621	199	4202960120	\N	435
-15646	199	4202961800	\N	85
-15671	199	4202967080	\N	125
-15696	199	4202968288	\N	164
-15721	199	4202972072	\N	105
-15746	199	4202972088	\N	70
-15771	199	4202972920	\N	204
-15796	199	4202976568	\N	111
-15821	199	4202977344	\N	373
-15846	199	4202979208	\N	78
-15871	199	4202979352	\N	229
-15896	199	4202979480	\N	303
-15921	199	4202979544	\N	289
-15946	199	4202980616	\N	83
-15971	199	4202981160	\N	60
-15996	199	4202982544	\N	200
-16021	199	4202982576	\N	222
-16046	199	4202982664	\N	207
-16071	199	4202982704	\N	415
-16096	199	4202982936	\N	108
-16121	199	4202983080	\N	332
-16146	199	4202983104	\N	74
-16171	199	4202983464	\N	64
-16196	199	4202983664	\N	76
-16221	199	4202983712	\N	136
-16246	199	4202983832	\N	70
-16271	199	4202983968	\N	108
-16296	199	4202984104	\N	225
-16321	199	4202984160	\N	165
-16346	199	4202984192	\N	342
-16371	199	4202985352	\N	187
-16396	199	4204500676	\N	169
-16421	199	4204503336	\N	309
-16446	199	4204506024	\N	190
-16471	199	4204509080	\N	260
-16496	199	4204512442	\N	114
-16521	199	4204513208	\N	631
-16546	199	4204513212	\N	165
-16571	199	4204513232	\N	120
-16596	199	4204514264	\N	244
-16621	199	4204515232	\N	342
-16646	199	4204515432	\N	123
-16671	199	4204515488	\N	326
-16696	199	4204518152	\N	411
-16721	199	4204518160	\N	286
-16746	199	4204521384	\N	190
-16771	199	4204522296	\N	145
-16796	199	4204522584	\N	146
-16821	199	4204526408	\N	252
-16846	199	4204529720	\N	280
-16871	199	4204533144	\N	390
-16896	199	4204541440	\N	339
-16921	199	4204544888	\N	136
-16946	199	4204547344	\N	171
-16971	199	4204547616	\N	307
-16996	199	4204548480	\N	162
-17021	199	4204549136	\N	287
-17046	199	4204549504	\N	160
-17071	199	4204551176	\N	101
-17096	199	4204553104	\N	218
-17121	199	4204554224	\N	333
-17146	199	4204555664	\N	164
-17171	199	4204558176	\N	142
-17196	199	4204562792	\N	310
-17221	199	4204563264	\N	373
-17246	199	4204564800	\N	498
-17271	199	4204564832	\N	175
-17296	199	4204566192	\N	83
-17321	199	4204566928	\N	64
-17346	199	4204569752	\N	191
-17371	199	4204573032	\N	275
-17396	199	4204575648	\N	162
-17421	199	4204576576	\N	279
-17446	199	4204576792	\N	140
-17471	199	4204577288	\N	293
-17496	199	4204578712	\N	140
-17521	199	4204578776	\N	438
-17546	199	4204579000	\N	880
-17571	199	4204579248	\N	172
-17596	199	4204586968	\N	553
-17621	199	4209100156	\N	591
-17646	199	4209102264	\N	170
-17671	199	4209108568	\N	317
-17696	199	4209109696	\N	51
-17721	199	4209112968	\N	474
-17746	199	4209115192	\N	172
-17771	199	4209115848	\N	312
-17796	199	4209119672	\N	200
-17821	199	4209121200	\N	100
-17846	199	4209121600	\N	324
-17871	199	4209127280	\N	341
-17896	199	4209131088	\N	49
-17921	199	4209133088	\N	216
-17946	199	4209133112	\N	152
-17971	199	4209133120	\N	280
-17996	199	4209135808	\N	393
-18021	199	4209138000	\N	167
-18046	199	4209141432	\N	275
-18071	199	4209143312	\N	408
-18096	199	4209144912	\N	156
-18121	199	4209144920	\N	225
-18146	199	4209144976	\N	592
-18171	199	4209145008	\N	180
-18196	199	4209145072	\N	190
-18221	199	4209145080	\N	376
-18246	199	4209145096	\N	267
-18271	199	4209147592	\N	78
-18296	199	4209150640	\N	358
-18321	199	4209152664	\N	159
-18346	199	4209153664	\N	231
-18371	199	4209154656	\N	590
-18396	199	4209155512	\N	135
-18421	199	4209159120	\N	90
-18446	199	4209159392	\N	153
-18471	199	4209161664	\N	247
-18496	199	4209162416	\N	560
-18521	199	4209163808	\N	78
-18546	199	4209165568	\N	73
-18571	199	4209166576	\N	163
-18596	199	4209167528	\N	76
-18621	199	4209168328	\N	72
-18646	199	4209171016	\N	237
-18671	199	4209171856	\N	181
-18696	199	4209173088	\N	308
-18721	199	4209176304	\N	108
-18746	199	4209177152	\N	323
-18771	199	4209177304	\N	145
-18796	199	4209179008	\N	309
-18821	199	4209179040	\N	119
-18846	199	4209179056	\N	331
-18871	199	4209179064	\N	178
-18896	199	4209179136	\N	464
-18921	199	4209179176	\N	343
-18946	199	4209179240	\N	216
-18971	199	4209179256	\N	334
-18996	199	4209179280	\N	85
-19021	199	4209182736	\N	94
-19046	199	4209183696	\N	428
-19071	199	4209183912	\N	120
-19096	199	4209184624	\N	328
-19121	199	4209184888	\N	313
-19146	199	4209186496	\N	251
-19171	199	4210160000	\N	2660
-19196	199	3400503370	\N	58
-19221	199	3400505740	\N	98
-19246	199	3400506670	\N	211
-19271	199	3400506700	\N	303
-19296	199	3400508920	\N	254
-19321	199	3400508950	\N	409
-19346	199	3400512670	\N	192
-19371	199	3400512940	\N	207
-19396	199	3400517080	\N	247
-19421	199	3400517440	\N	401
-19446	199	3400518790	\N	194
-19471	199	3400520050	\N	284
-19496	199	3400522110	\N	490
-19521	199	3400523250	\N	51
-19546	199	3400523850	\N	420
-19571	199	3400529010	\N	206
-19596	199	3400542060	\N	253
-19621	199	3400543290	\N	202
-19646	199	3400543740	\N	378
-19671	199	3400545120	\N	281
-19696	199	3400545210	\N	78
-19721	199	3400547880	\N	315
-19746	199	3400548900	\N	179
-19771	199	3400549020	\N	525
-19796	199	3400551510	\N	81
-19821	199	3400553070	\N	188
-19846	199	3400555800	\N	183
-19871	199	3400557480	\N	81
-19896	199	3400557510	\N	417
-19921	199	3400563510	\N	208
-19946	199	3400563660	\N	68
-19971	199	3400566810	\N	270
-19996	199	3400568610	\N	204
-20021	199	3400569990	\N	96
-20046	199	3400572060	\N	236
-20071	199	3400577150	\N	43
-20096	199	3400578200	\N	222
-20121	199	3400581440	\N	388
-20146	199	3400582420	\N	146
-20171	199	3400582960	\N	56
-20196	199	3400702200	\N	216
-20221	199	3400702230	\N	137
-20246	199	3400703250	\N	265
-20271	199	3400704750	\N	190
-20296	199	3400705440	\N	278
-20321	199	3400705470	\N	286
-20346	199	3400708170	\N	196
-20371	199	3400710000	\N	755
-20396	199	3400712280	\N	632
-20421	199	3400712550	\N	54
-20446	199	3400713420	\N	248
-20471	199	3400714260	\N	264
-20496	199	3400726070	\N	98
-20521	199	3400726760	\N	602
-20546	199	3400726820	\N	296
-20571	199	3400728740	\N	321
-20596	199	3400728770	\N	155
-20621	199	3400728800	\N	121
-20646	199	3400732220	\N	100
-20671	199	3400739210	\N	65
-20696	199	3400739420	\N	125
-20721	199	3400740440	\N	614
-20746	199	3400742630	\N	200
-20771	199	3400745510	\N	198
-20796	199	3400748750	\N	228
-20821	199	3400753880	\N	137
-20846	199	3400757660	\N	490
-20871	199	3400758770	\N	249
-20896	199	3400765160	\N	209
-20921	199	3400768340	\N	180
-20946	199	3400771220	\N	189
-20971	199	3400772240	\N	3
-20996	199	3400776220	\N	441
-21021	199	3400777630	\N	197
-21046	199	3400781740	\N	490
-21071	199	3400782450	\N	88
-21096	199	3401513360	\N	235
-21121	199	3401517710	\N	372
-21146	199	3401519180	\N	222
-21171	199	3401521060	\N	115
-21196	199	3401524840	\N	232
-21221	199	3401526340	\N	356
-21246	199	3401528185	\N	151
-21271	199	3401530180	\N	234
-21296	199	3401541160	\N	315
-21321	199	3401543440	\N	243
-21346	199	3401547250	\N	586
-21371	199	3401549680	\N	91
-21396	199	3401551390	\N	75
-21421	199	3401557150	\N	313
-21446	199	3401559070	\N	153
-21471	199	3401569030	\N	85
-21496	199	3401571850	\N	98
-21521	199	3401577180	\N	519
-21546	199	3401578110	\N	70
-21571	199	3401578800	\N	549
-21596	199	3401580120	\N	135
-21621	199	3401582120	\N	257
-21646	199	3401582180	\N	59
-21671	199	3401582840	\N	206
-21696	199	3402119780	\N	538
-21721	199	3402122185	\N	649
-21746	199	3402129310	\N	970
-21771	199	3402131620	\N	192
-21796	199	3402133150	\N	88
-21821	199	3402133180	\N	331
-21846	199	3402139510	\N	563
 719425	404	4201749384	6	\N
 719426	405	4201749384	0	\N
 719427	402	4204573032	3	\N
@@ -97915,253 +97147,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 719608	407	4202984160	0	\N
 719609	406	4209166576	13	\N
 719610	407	4209166576	1.272925	\N
-33246	104	4202968288	\N	7
-33271	104	4202972072	\N	12
-33296	104	4202972088	\N	12
-33321	104	4202972920	\N	12
-33346	104	4202976568	\N	12
-33371	104	4202977344	\N	25
-33396	104	4202979208	\N	12
-33421	104	4202979352	\N	27
-33446	104	4202979480	\N	19
-33471	104	4202979544	\N	71
-33496	104	4202980616	\N	12
-33521	104	4202981160	\N	12
-33546	104	4202982544	\N	19
-33571	104	4202982576	\N	23
-33596	104	4202982664	\N	17
-33621	104	4202982704	\N	47
-33646	104	4202982936	\N	15
-33671	104	4202983080	\N	22
-33696	104	4202983104	\N	12
-33721	104	4202983464	\N	12
-33746	104	4202983664	\N	12
-33771	104	4202983712	\N	12
-33796	104	4202983832	\N	12
-33821	104	4202983968	\N	12
-33846	104	4202984104	\N	57
-33871	104	4202984160	\N	17
-33896	104	4202984192	\N	22
-33921	104	4202985352	\N	19
-33946	104	4204500676	\N	12
-33971	104	4204503336	\N	48
-33996	104	4204506024	\N	17
-34021	104	4204509080	\N	17
-34046	104	4204512442	\N	12
-34071	104	4204513208	\N	72
-34096	104	4204513212	\N	12
-34121	104	4204513232	\N	12
-34146	104	4204514264	\N	17
-34171	104	4204515232	\N	8
-34196	104	4204515432	\N	12
-34221	104	4204515488	\N	19
-34246	104	4204518152	\N	32
-34271	104	4204518160	\N	17
-34296	104	4204521384	\N	12
-34321	104	4204522296	\N	12
-34346	104	4204522584	\N	12
-34371	104	4204526408	\N	17
-34396	104	4204529720	\N	59
-34421	104	4204533144	\N	35
-34446	104	4204541440	\N	19
-34471	104	4204544888	\N	12
-34496	104	4204547344	\N	12
-34521	104	4204547616	\N	15
-34546	104	4204548480	\N	17
-34571	104	4204549136	\N	33
-34596	104	4204549504	\N	12
-34621	104	4204551176	\N	12
-34646	104	4204553104	\N	19
-34671	104	4204554224	\N	19
-34696	104	4204555664	\N	17
-34721	104	4204558176	\N	12
-34746	104	4204562792	\N	17
-34771	104	4204563264	\N	48
-34796	104	4204564800	\N	25
-34821	104	4204564832	\N	17
-34846	104	4204566192	\N	12
-34871	104	4204566928	\N	12
-34896	104	4204569752	\N	77
-34921	104	4204573032	\N	15
-34946	104	4204575648	\N	40
-34971	104	4204576576	\N	17
-34996	104	4204576792	\N	10
-35021	104	4204577288	\N	12
-35046	104	4204578712	\N	12
-35071	104	4204578776	\N	74
-35096	104	4204579000	\N	55
-35121	104	4204579248	\N	19
-35146	104	4204586968	\N	19
-35171	104	4209100156	\N	33
-35196	104	4209102264	\N	17
-35221	104	4209108568	\N	17
-35246	104	4209109696	\N	12
-35271	104	4209112968	\N	56
-35296	104	4209115192	\N	17
-35321	104	4209115848	\N	17
-35346	104	4209119672	\N	23
-35371	104	4209121200	\N	12
-35396	104	4209121600	\N	19
-35421	104	4209127280	\N	30
-35446	104	4209131088	\N	12
-35471	104	4209133088	\N	17
-35496	104	4209133112	\N	13
-35521	104	4209133120	\N	84
-35546	104	4209135808	\N	24
-35571	104	4209138000	\N	12
-35596	104	4209141432	\N	22
-35621	104	4209143312	\N	22
-35646	104	4209144912	\N	12
-35671	104	4209144920	\N	19
-35696	104	4209144976	\N	104
-35721	104	4209145008	\N	19
-35746	104	4209145072	\N	19
-35771	104	4209145080	\N	45
-35796	104	4209145096	\N	19
-35821	104	4209147592	\N	12
-35846	104	4209150640	\N	45
-35871	104	4209152664	\N	12
-35896	104	4209153664	\N	19
-35921	104	4209154656	\N	57
-35946	104	4209155512	\N	12
-35971	104	4209159120	\N	12
-35996	104	4209159392	\N	17
-36021	104	4209161664	\N	55
-36046	104	4209162416	\N	22
-36071	104	4209163808	\N	12
-36096	104	4209165568	\N	12
-36121	104	4209166576	\N	12
-36146	104	4209167528	\N	12
-36171	104	4209168328	\N	12
-36196	104	4209171016	\N	19
-36221	104	4209171856	\N	17
-36246	104	4209173088	\N	14
-36271	104	4209176304	\N	12
-36296	104	4209177152	\N	19
-36321	104	4209177304	\N	12
-36346	104	4209179008	\N	22
-36371	104	4209179040	\N	12
-36396	104	4209179056	\N	19
-36421	104	4209179064	\N	30
-36446	104	4209179136	\N	96
-36471	104	4209179176	\N	28
-36496	104	4209179240	\N	17
-36521	104	4209179256	\N	22
-36546	104	4209179280	\N	12
-36571	104	4209182736	\N	12
-36596	104	4209183696	\N	19
-36621	104	4209183912	\N	20
-36646	104	4209184624	\N	19
-36671	104	4209184888	\N	30
-36696	104	4209186496	\N	19
-36721	104	4210160000	\N	615
-36746	104	3400503370	\N	14
-36771	104	3400505740	\N	14
-36796	104	3400506670	\N	14
-36821	104	3400506700	\N	22
-36846	104	3400508920	\N	31
-36871	104	3400508950	\N	32
-36896	104	3400512670	\N	33
-36921	104	3400512940	\N	28
-36946	104	3400517080	\N	14
-36971	104	3400517440	\N	24
-36996	104	3400518790	\N	20
-37021	104	3400520050	\N	20
-37046	104	3400522110	\N	30
-37071	104	3400523250	\N	14
-37096	104	3400523850	\N	27
-37121	104	3400529010	\N	20
-37146	104	3400542060	\N	8
-37171	104	3400543290	\N	20
-37196	104	3400543740	\N	15
-37221	104	3400545120	\N	26
-37246	104	3400545210	\N	14
-37271	104	3400547880	\N	26
-37296	104	3400548900	\N	22
-37321	104	3400549020	\N	70
-37346	104	3400551510	\N	20
-37371	104	3400553070	\N	20
-37396	104	3400555800	\N	28
-37421	104	3400557480	\N	14
-37446	104	3400557510	\N	26
-37471	104	3400563510	\N	20
-37496	104	3400563660	\N	6
-37521	104	3400566810	\N	20
-37546	104	3400568610	\N	114
-37571	104	3400569990	\N	14
-37596	104	3400572060	\N	20
-37621	104	3400577150	\N	17
-37646	104	3400578200	\N	54
-37671	104	3400581440	\N	57
-37696	104	3400582420	\N	14
-37721	104	3400582960	\N	14
-37746	104	3400702200	\N	62
-37771	104	3400702230	\N	14
-37796	104	3400703250	\N	20
-37821	104	3400704750	\N	22
-37846	104	3400705440	\N	20
-37871	104	3400705470	\N	20
-37896	104	3400708170	\N	5
-37921	104	3400710000	\N	114
-37946	104	3400712280	\N	51
-37971	104	3400712550	\N	6
-37996	104	3400713420	\N	20
-38021	104	3400714260	\N	22
-38046	104	3400726070	\N	14
-38071	104	3400726760	\N	118
-38096	104	3400726820	\N	22
-38121	104	3400728740	\N	22
-38146	104	3400728770	\N	22
-38171	104	3400728800	\N	70
-38196	104	3400732220	\N	14
-38221	104	3400739210	\N	14
-38246	104	3400739420	\N	14
-38271	104	3400740440	\N	26
-38296	104	3400742630	\N	14
-38321	104	3400745510	\N	3
-38346	104	3400748750	\N	14
-38371	104	3400753880	\N	14
-38396	104	3400757660	\N	87
-38421	104	3400758770	\N	35
-38446	104	3400765160	\N	20
-38471	104	3400768340	\N	20
-38496	104	3400771220	\N	20
-38521	104	3400772240	\N	14
-38546	104	3400776220	\N	15
-38571	104	3400777630	\N	39
-38596	104	3400781740	\N	145
-38621	104	3400782450	\N	14
-38646	104	3401513360	\N	22
-38671	104	3401517710	\N	70
-38696	104	3401519180	\N	22
-38721	104	3401521060	\N	14
-38746	104	3401524840	\N	59
-38771	104	3401526340	\N	78
-38796	104	3401528185	\N	14
-38821	104	3401530180	\N	22
-38846	104	3401541160	\N	20
-38871	104	3401543440	\N	22
-38896	104	3401547250	\N	76
-38921	104	3401549680	\N	32
-38946	104	3401551390	\N	14
-38971	104	3401557150	\N	20
-38996	104	3401559070	\N	33
-39021	104	3401569030	\N	14
-39046	104	3401571850	\N	14
-39071	104	3401577180	\N	25
-39096	104	3401578110	\N	14
-39121	104	3401578800	\N	61
-39146	104	3401580120	\N	14
-39171	104	3401582120	\N	22
-39196	104	3401582180	\N	11
-39221	104	3401582840	\N	3
-39246	104	3402119780	\N	30
-39271	104	3402122185	\N	24
-39296	104	3402129310	\N	31
-39321	104	3402131620	\N	20
-39346	104	3402133150	\N	14
-39371	104	3402133180	\N	25
-39396	104	3402139510	\N	12
 719611	406	4202921576	0	\N
 719612	407	4202921576	0	\N
 719613	406	3401557150	0	\N
@@ -98319,203 +97304,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 719765	406	4202981160	0	\N
 719766	407	4202981160	0	\N
 719767	406	4209121200	0	\N
-51146	138	4202982664	\N	80
-51171	138	4202982704	\N	34
-51196	138	4202982936	\N	14
-51221	138	4202983080	\N	143
-51246	138	4202983104	\N	25
-51271	138	4202983464	\N	12
-51296	138	4202983664	\N	23
-51321	138	4202983712	\N	13
-51346	138	4202983832	\N	31
-51371	138	4202983968	\N	22
-51396	138	4202984104	\N	106
-51421	138	4202984160	\N	169
-51446	138	4202984192	\N	103
-51471	138	4202985352	\N	60
-51496	138	4204500676	\N	40
-51521	138	4204503336	\N	68
-51546	138	4204506024	\N	47
-51571	138	4204509080	\N	71
-51596	138	4204512442	\N	46
-51621	138	4204513208	\N	191
-51646	138	4204513212	\N	41
-51671	138	4204513232	\N	33
-51696	138	4204514264	\N	89
-51721	138	4204515232	\N	68
-51746	138	4204515432	\N	25
-51771	138	4204515488	\N	101
-51796	138	4204518152	\N	61
-51821	138	4204518160	\N	100
-51846	138	4204521384	\N	18
-51871	138	4204522296	\N	16
-51896	138	4204522584	\N	32
-51921	138	4204526408	\N	39
-51946	138	4204529720	\N	71
-51971	138	4204533144	\N	193
-51996	138	4204541440	\N	95
-52021	138	4204544888	\N	45
-52046	138	4204547344	\N	14
-52071	138	4204547616	\N	91
-52096	138	4204548480	\N	26
-52121	138	4204549136	\N	90
-52146	138	4204549504	\N	17
-52171	138	4204551176	\N	36
-52196	138	4204553104	\N	82
-52221	138	4204554224	\N	178
-52246	138	4204555664	\N	87
-52271	138	4204558176	\N	14
-52296	138	4204562792	\N	41
-52321	138	4204563264	\N	84
-52346	138	4204564800	\N	138
-52371	138	4204564832	\N	46
-52396	138	4204566192	\N	9
-52421	138	4204566928	\N	26
-52446	138	4204569752	\N	40
-52471	138	4204573032	\N	119
-52496	138	4204575648	\N	34
-52521	138	4204576576	\N	90
-52546	138	4204576792	\N	11
-52571	138	4204577288	\N	6
-52596	138	4204578712	\N	34
-52621	138	4204578776	\N	88
-52646	138	4204579000	\N	219
-52671	138	4204579248	\N	81
-52696	138	4204586968	\N	82
-52721	138	4209100156	\N	168
-52746	138	4209102264	\N	149
-52771	138	4209108568	\N	47
-52796	138	4209109696	\N	7
-52821	138	4209112968	\N	189
-52846	138	4209115192	\N	66
-52871	138	4209115848	\N	70
-52896	138	4209119672	\N	74
-52921	138	4209121200	\N	67
-52946	138	4209121600	\N	120
-52971	138	4209127280	\N	113
-52996	138	4209131088	\N	7
-53021	138	4209133088	\N	62
-53046	138	4209133112	\N	35
-53071	138	4209133120	\N	77
-53096	138	4209135808	\N	113
-53121	138	4209138000	\N	81
-53146	138	4209141432	\N	82
-53171	138	4209143312	\N	69
-53196	138	4209144912	\N	82
-53221	138	4209144920	\N	83
-53246	138	4209144976	\N	199
-53271	138	4209145008	\N	59
-53296	138	4209145072	\N	63
-53321	138	4209145080	\N	78
-53346	138	4209145096	\N	165
-53371	138	4209147592	\N	43
-53396	138	4209150640	\N	126
-53421	138	4209152664	\N	34
-53446	138	4209153664	\N	72
-53471	138	4209154656	\N	154
-53496	138	4209155512	\N	18
-53521	138	4209159120	\N	32
-53546	138	4209159392	\N	45
-53571	138	4209161664	\N	79
-53596	138	4209162416	\N	126
-53621	138	4209163808	\N	17
-53646	138	4209165568	\N	20
-53671	138	4209166576	\N	23
-53696	138	4209167528	\N	23
-53721	138	4209168328	\N	8
-53746	138	4209171016	\N	40
-53771	138	4209171856	\N	96
-53796	138	4209173088	\N	68
-53821	138	4209176304	\N	9
-53846	138	4209177152	\N	63
-53871	138	4209177304	\N	39
-53896	138	4209179008	\N	149
-53921	138	4209179040	\N	51
-53946	138	4209179056	\N	137
-53971	138	4209179064	\N	40
-53996	138	4209179136	\N	202
-54021	138	4209179176	\N	152
-54046	138	4209179240	\N	135
-54071	138	4209179256	\N	115
-54096	138	4209179280	\N	56
-54121	138	4209182736	\N	8
-54146	138	4209183696	\N	84
-54171	138	4209183912	\N	33
-54196	138	4209184624	\N	186
-54221	138	4209184888	\N	86
-54246	138	4209186496	\N	92
-54271	138	4210160000	\N	1102
-54296	138	3400503370	\N	15
-54321	138	3400505740	\N	9
-54346	138	3400506670	\N	36
-54371	138	3400506700	\N	76
-54396	138	3400508920	\N	99
-54421	138	3400508950	\N	176
-54446	138	3400512670	\N	47
-54471	138	3400512940	\N	93
-54496	138	3400517080	\N	41
-54521	138	3400517440	\N	109
-54546	138	3400518790	\N	60
-54571	138	3400520050	\N	91
-54596	138	3400522110	\N	144
-54621	138	3400523250	\N	6
-54646	138	3400523850	\N	112
-54671	138	3400529010	\N	45
-54696	138	3400542060	\N	58
-54721	138	3400543290	\N	90
-54746	138	3400543740	\N	88
-54771	138	3400545120	\N	133
-54796	138	3400545210	\N	33
-54821	138	3400547880	\N	96
-54846	138	3400548900	\N	35
-54871	138	3400549020	\N	167
-54896	138	3400551510	\N	20
-54921	138	3400553070	\N	74
-54946	138	3400555800	\N	117
-54971	138	3400557480	\N	7
-54996	138	3400557510	\N	179
-55021	138	3400563510	\N	30
-55046	138	3400563660	\N	50
-55071	138	3400566810	\N	70
-55096	138	3400568610	\N	59
-55121	138	3400569990	\N	32
-55146	138	3400572060	\N	105
-55171	138	3400577150	\N	5
-55196	138	3400578200	\N	52
-55221	138	3400581440	\N	120
-55246	138	3400582420	\N	80
-55271	138	3400582960	\N	14
-55296	138	3400702200	\N	70
-55321	138	3400702230	\N	10
-55346	138	3400703250	\N	53
-55371	138	3400704750	\N	74
-55396	138	3400705440	\N	69
-55421	138	3400705470	\N	84
-55446	138	3400708170	\N	22
-55471	138	3400710000	\N	198
-55496	138	3400712280	\N	238
-55521	138	3400712550	\N	21
-55546	138	3400713420	\N	36
-56246	138	3401519180	\N	43
-56271	138	3401521060	\N	37
-56296	138	3401524840	\N	40
-56321	138	3401526340	\N	73
-56346	138	3401528185	\N	30
-56371	138	3401530180	\N	94
-56396	138	3401541160	\N	36
-56421	138	3401543440	\N	86
-56446	138	3401547250	\N	166
-56471	138	3401549680	\N	31
-56496	138	3401551390	\N	16
-56521	138	3401557150	\N	38
-56546	138	3401559070	\N	43
-56571	138	3401569030	\N	21
-56596	138	3401571850	\N	28
-56621	138	3401577180	\N	174
-56646	138	3401578110	\N	19
-56671	138	3401578800	\N	129
-56696	138	3401580120	\N	42
-56721	138	3401582120	\N	104
 719768	407	4209121200	0	\N
 719769	406	4209144912	0	\N
 719770	407	4209144912	0	\N
@@ -98828,331 +97616,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 720077	406	4202972072	0	\N
 720078	407	4202972072	0	\N
 720079	406	3400578200	0	\N
-66521	89	4201753712	\N	12
-66546	89	4201754184	\N	12
-66571	89	4201754192	\N	19
-66596	89	4201754576	\N	12
-66621	89	4201754688	\N	25
-66646	89	4201758936	\N	12
-66671	89	4201759384	\N	17
-66696	89	4201761616	\N	19
-66721	89	4201763048	\N	17
-66746	89	4201764536	\N	19
-66771	89	4201764584	\N	12
-66796	89	4201764856	\N	12
-66821	89	4201769248	\N	12
-66846	89	4201770744	\N	12
-66871	89	4201771752	\N	17
-66896	89	4201773016	\N	17
-66921	89	4201776304	\N	12
-66946	89	4201776784	\N	12
-66971	89	4201777704	\N	12
-66996	89	4201777744	\N	12
-67021	89	4201779128	\N	17
-67046	89	4201779296	\N	19
-67071	89	4201780952	\N	25
-67096	89	4201781048	\N	22
-67121	89	4201781144	\N	19
-67146	89	4201783960	\N	17
-67171	89	4201786624	\N	12
-67196	89	4201786920	\N	12
-67221	89	4202903384	\N	12
-67246	89	4202903656	\N	12
-67271	89	4202906544	\N	12
-67296	89	4202910824	\N	19
-67321	89	4202912744	\N	17
-67346	89	4202914712	\N	19
-67371	89	4202919752	\N	17
-67396	89	4202920824	\N	19
-67421	89	4202920864	\N	19
-67446	89	4202920920	\N	17
-67471	89	4202921008	\N	17
-67496	89	4202921104	\N	17
-67521	89	4202921192	\N	19
-67546	89	4202921480	\N	17
-67571	89	4202921576	\N	12
-67596	89	4202921624	\N	17
-67621	89	4202921696	\N	17
-67646	89	4202921928	\N	19
-67671	89	4202922000	\N	17
-67696	89	4202922056	\N	19
-67721	89	4202923032	\N	12
-67746	89	4202923440	\N	12
-67771	89	4202927376	\N	12
-67796	89	4202934448	\N	12
-67821	89	4202935528	\N	12
-67846	89	4202935536	\N	17
-67871	89	4202939344	\N	17
-67896	89	4202939352	\N	17
-67921	89	4202944440	\N	12
-67946	89	4202944456	\N	12
-67971	89	4202944480	\N	17
-67996	89	4202945040	\N	17
-68021	89	4202946792	\N	12
-68046	89	4202950232	\N	12
-68071	89	4202953608	\N	19
-68096	89	4202953784	\N	12
-68121	89	4202953816	\N	17
-68146	89	4202954936	\N	17
-68171	89	4202957480	\N	17
-68196	89	4202958032	\N	12
-68221	89	4202958808	\N	17
-68246	89	4202959136	\N	12
-68271	89	4202960120	\N	19
-68296	89	4202961800	\N	12
-68321	89	4202967080	\N	12
-68346	89	4202968288	\N	17
-68371	89	4202972072	\N	12
-68396	89	4202972088	\N	12
-68421	89	4202972920	\N	12
-68446	89	4202976568	\N	12
-68471	89	4202977344	\N	25
-68496	89	4202979208	\N	12
-68521	89	4202979352	\N	19
-68546	89	4202979480	\N	19
-68571	89	4202979544	\N	17
-68596	89	4202980616	\N	12
-68621	89	4202981160	\N	12
-68646	89	4202982544	\N	19
-68671	89	4202982576	\N	17
-68696	89	4202982664	\N	17
-68721	89	4202982704	\N	22
-68746	89	4202982936	\N	12
-68771	89	4202983080	\N	22
-68796	89	4202983104	\N	12
-68821	89	4202983464	\N	12
-68846	89	4202983664	\N	12
-68871	89	4202983712	\N	12
-68896	89	4202983832	\N	12
-68921	89	4202983968	\N	12
-68946	89	4202984104	\N	19
-68971	89	4202984160	\N	17
-68996	89	4202984192	\N	22
-69021	89	4202985352	\N	19
-69046	89	4204500676	\N	12
-69071	89	4204503336	\N	19
-69096	89	4204506024	\N	17
-69121	89	4204509080	\N	17
-69146	89	4204512442	\N	12
-69171	89	4204513208	\N	25
-69196	89	4204513212	\N	12
-69221	89	4204513232	\N	12
-69246	89	4204514264	\N	17
-69271	89	4204515232	\N	17
-69296	89	4204515432	\N	12
-69321	89	4204515488	\N	19
-69346	89	4204518152	\N	19
-69371	89	4204518160	\N	17
-69396	89	4204521384	\N	12
-69421	89	4204522296	\N	12
-69446	89	4204522584	\N	12
-69471	89	4204526408	\N	17
-69496	89	4204529720	\N	17
-69521	89	4204533144	\N	28
-69546	89	4204541440	\N	19
-69571	89	4204544888	\N	12
-69596	89	4204547344	\N	12
-69621	89	4204547616	\N	22
-69646	89	4204548480	\N	17
-69671	89	4204549136	\N	19
-69696	89	4204549504	\N	12
-69721	89	4204551176	\N	12
-69746	89	4204553104	\N	19
-69771	89	4204554224	\N	19
-69796	89	4204555664	\N	17
-69821	89	4204558176	\N	12
-69846	89	4204562792	\N	17
-69871	89	4204563264	\N	25
-69896	89	4204564800	\N	25
-69921	89	4204564832	\N	17
-69946	89	4204566192	\N	12
-69971	89	4204566928	\N	12
-69996	89	4204569752	\N	17
-70021	89	4204573032	\N	22
-70046	89	4204575648	\N	17
-70071	89	4204576576	\N	17
-70096	89	4204576792	\N	12
-70121	89	4204577288	\N	12
-70146	89	4204578712	\N	12
-70171	89	4204578776	\N	19
-70196	89	4204579000	\N	28
-70221	89	4204579248	\N	19
-70246	89	4204586968	\N	19
-70271	89	4209100156	\N	28
-70296	89	4209102264	\N	17
-70321	89	4209108568	\N	17
-70346	89	4209109696	\N	12
-70371	89	4209112968	\N	25
-70396	89	4209115192	\N	17
-70421	89	4209115848	\N	17
-70446	89	4209119672	\N	19
-70471	89	4209121200	\N	12
-70496	89	4209121600	\N	19
-70521	89	4209127280	\N	19
-70546	89	4209131088	\N	12
-70571	89	4209133088	\N	17
-70596	89	4209133112	\N	12
-70621	89	4209133120	\N	19
-70646	89	4209135808	\N	22
-70671	89	4209138000	\N	12
-70696	89	4209141432	\N	19
-70721	89	4209143312	\N	22
-70746	89	4209144912	\N	12
-70771	89	4209144920	\N	19
-70796	89	4209144976	\N	28
-70821	89	4209145008	\N	19
-70846	89	4209145072	\N	19
-70871	89	4209145080	\N	22
-70896	89	4209145096	\N	19
-70921	89	4209147592	\N	12
-70946	89	4209150640	\N	22
-70971	89	4209152664	\N	12
-70996	89	4209153664	\N	19
-71021	89	4209154656	\N	25
-71046	89	4209155512	\N	12
-71071	89	4209159120	\N	12
-71096	89	4209159392	\N	17
-71121	89	4209161664	\N	19
-71146	89	4209162416	\N	22
-71171	89	4209163808	\N	12
-71196	89	4209165568	\N	12
-71221	89	4209166576	\N	12
-71246	89	4209167528	\N	12
-71271	89	4209168328	\N	12
-71296	89	4209171016	\N	19
-71321	89	4209171856	\N	17
-71346	89	4209173088	\N	22
-71371	89	4209176304	\N	12
-71396	89	4209177152	\N	19
-71421	89	4209177304	\N	12
-71446	89	4209179008	\N	22
-71471	89	4209179040	\N	12
-71496	89	4209179056	\N	19
-71521	89	4209179064	\N	17
-71546	89	4209179136	\N	25
-71571	89	4209179176	\N	22
-71596	89	4209179240	\N	17
-71621	89	4209179256	\N	22
-71646	89	4209179280	\N	12
-71671	89	4209182736	\N	12
-71696	89	4209183696	\N	19
-71721	89	4209183912	\N	12
-71746	89	4209184624	\N	19
-71771	89	4209184888	\N	22
-71796	89	4209186496	\N	19
-71821	89	4210160000	\N	28
-71846	89	3400503370	\N	14
-71871	89	3400505740	\N	14
-71896	89	3400506670	\N	14
-71921	89	3400506700	\N	22
-71946	89	3400508920	\N	20
-71971	89	3400508950	\N	26
-71996	89	3400512670	\N	20
-72021	89	3400512940	\N	22
-72046	89	3400517080	\N	14
-72071	89	3400517440	\N	22
-72096	89	3400518790	\N	20
-72121	89	3400520050	\N	20
-72146	89	3400522110	\N	30
-72171	89	3400523250	\N	14
-72196	89	3400523850	\N	22
-72221	89	3400529010	\N	20
-72246	89	3400542060	\N	22
-72271	89	3400543290	\N	20
-72296	89	3400543740	\N	26
-72321	89	3400545120	\N	26
-72346	89	3400545210	\N	14
-72371	89	3400547880	\N	26
-72396	89	3400548900	\N	22
-72421	89	3400549020	\N	30
-72446	89	3400551510	\N	20
-72471	89	3400553070	\N	20
-72496	89	3400555800	\N	20
-72521	89	3400557480	\N	14
-72546	89	3400557510	\N	26
-72571	89	3400563510	\N	20
-72596	89	3400563660	\N	14
-72621	89	3400566810	\N	20
-72646	89	3400568610	\N	22
-72671	89	3400569990	\N	14
-72696	89	3400572060	\N	20
-72721	89	3400577150	\N	14
-72746	89	3400578200	\N	20
-72771	89	3400581440	\N	30
-72796	89	3400582420	\N	14
-72821	89	3400582960	\N	14
-72846	89	3400702200	\N	20
-72871	89	3400702230	\N	14
-72896	89	3400703250	\N	20
-72921	89	3400704750	\N	22
-72946	89	3400705440	\N	20
-72971	89	3400705470	\N	20
-72996	89	3400708170	\N	14
-73021	89	3400710000	\N	33
-73046	89	3400712280	\N	33
-73071	89	3400712550	\N	14
-73096	89	3400713420	\N	20
-73121	89	3400714260	\N	22
-73146	89	3400726070	\N	14
-73171	89	3400726760	\N	33
-73196	89	3400726820	\N	22
-73221	89	3400728740	\N	22
-73246	89	3400728770	\N	22
-73271	89	3400728800	\N	20
-73296	89	3400732220	\N	14
-73321	89	3400739210	\N	14
-73346	89	3400739420	\N	14
-73371	89	3400740440	\N	26
-73396	89	3400742630	\N	14
-73421	89	3400745510	\N	14
-73446	89	3400748750	\N	14
-73471	89	3400753880	\N	14
-73496	89	3400757660	\N	30
-73521	89	3400758770	\N	22
-73546	89	3400765160	\N	20
-73571	89	3400768340	\N	20
-73596	89	3400771220	\N	20
-73621	89	3400772240	\N	14
-73646	89	3400776220	\N	30
-73671	89	3400777630	\N	22
-73696	89	3400781740	\N	30
-73721	89	3400782450	\N	14
-73746	89	3401513360	\N	20
-73771	89	3401517710	\N	30
-73796	89	3401519180	\N	22
-73821	89	3401521060	\N	14
-73846	89	3401524840	\N	22
-73871	89	3401526340	\N	26
-73896	89	3401528185	\N	14
-73921	89	3401530180	\N	22
-73946	89	3401541160	\N	20
-73971	89	3401543440	\N	22
-73996	89	3401547250	\N	30
-74021	89	3401549680	\N	14
-74046	89	3401551390	\N	14
-74071	89	3401557150	\N	20
-74096	89	3401559070	\N	20
-74121	89	3401569030	\N	14
-74146	89	3401571850	\N	14
-74171	89	3401577180	\N	30
-74196	89	3401578110	\N	14
-74221	89	3401578800	\N	26
-74246	89	3401580120	\N	14
-74271	89	3401582120	\N	22
-74296	89	3401582180	\N	14
-74321	89	3401582840	\N	22
-74346	89	3402119780	\N	30
-74371	89	3402122185	\N	30
-74396	89	3402129310	\N	33
-74421	89	3402131620	\N	20
-74446	89	3402133150	\N	14
-74471	89	3402133180	\N	22
-74496	89	3402139510	\N	30
-74521	89	3402157600	\N	14
-74546	89	3402160900	\N	30
-74571	89	3402163850	\N	22
-74596	89	3402174000	\N	33
-74621	89	3402180240	\N	30
 720080	407	3400578200	0	\N
 720081	406	3400551510	0	\N
 720082	407	3400551510	0	\N
@@ -101121,7 +99584,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722045	410	4202921008	2141.3232	\N
 722046	410	3400758770	1013.86945	\N
 722047	410	4202921624	8319.975	\N
-722048	466	34005	94	\N
 722049	467	34005	226	\N
 722050	468	34005	36	\N
 722051	469	34005	35	\N
@@ -101130,7 +99592,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722054	472	34005	59	\N
 722055	473	34005	136	\N
 722056	474	34005	24	\N
-722057	466	34007	54	\N
 722058	467	34007	190	\N
 722059	468	34007	17	\N
 722060	469	34007	32	\N
@@ -101139,7 +99600,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722063	472	34007	22	\N
 722064	473	34007	78	\N
 722065	474	34007	10	\N
-722066	466	34015	76	\N
 722067	467	34015	161	\N
 722068	468	34015	6	\N
 722069	469	34015	18	\N
@@ -101148,7 +99608,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722072	472	34015	58	\N
 722073	473	34015	91	\N
 722074	474	34015	3	\N
-722075	466	34021	167	\N
 722076	467	34021	209	\N
 722077	468	34021	38	\N
 722078	469	34021	90	\N
@@ -101157,7 +99616,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722081	472	34021	77	\N
 722082	473	34021	102	\N
 722083	474	34021	29	\N
-722084	466	42017	170	\N
 722085	467	42017	421	\N
 722086	468	42017	108	\N
 722087	469	42017	57	\N
@@ -101166,7 +99624,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722090	472	42017	113	\N
 722091	473	42017	276	\N
 722092	474	42017	83	\N
-722093	466	42029	170	\N
 722094	467	42029	417	\N
 722095	468	42029	93	\N
 722096	469	42029	32	\N
@@ -101175,7 +99632,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722099	472	42029	138	\N
 722100	473	42029	299	\N
 722101	474	42029	83	\N
-722102	466	42045	95	\N
 722103	467	42045	246	\N
 722104	468	42045	46	\N
 722105	469	42045	45	\N
@@ -101184,7 +99640,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722108	472	42045	50	\N
 722109	473	42045	132	\N
 722110	474	42045	34	\N
-722111	466	42091	265	\N
 722112	467	42091	468	\N
 722113	468	42091	95	\N
 722114	469	42091	103	\N
@@ -101193,7 +99648,6 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 722117	472	42091	162	\N
 722118	473	42091	269	\N
 722119	474	42091	74	\N
-722120	466	42101	133	\N
 722121	467	42101	375	\N
 722122	468	42101	77	\N
 722123	469	42101	76	\N
@@ -105022,835 +103476,1776 @@ COPY public.data (id, variable_id, geoid, value, margin_of_error) FROM stdin;
 725946	482	4210160118	0.56284153	\N
 725947	483	4210160118	624	\N
 725948	484	4210160118	0.014528183	\N
+839116	497	34005	94	\N
+839117	497	34007	54	\N
+839118	497	34015	76	\N
+839119	497	34021	167	\N
+839120	497	42017	170	\N
+839121	497	42029	170	\N
+839122	497	42045	95	\N
+839123	497	42091	265	\N
+839124	497	42101	133	\N
+885676	384	\N	409719.62	\N
+885677	184	\N	65370	2411.3394
+885678	116	\N	99399	2048.3896
+885679	87	\N	253	319.1238
+885680	477	\N	69731	\N
+885681	394	\N	31903.973	\N
+885682	51	\N	27643	2879.759
+885683	70	\N	334721	3446.7837
+885684	190	\N	231927	3986.6804
+885685	386	\N	41564.312	\N
+885686	426	\N	68.350006	\N
+885687	424	\N	3.902846e+06	\N
+885688	406	\N	23128	\N
+885689	491	\N	1513.3	\N
+885690	169	\N	32847	1558.9718
+885691	176	\N	116951	2294.1936
+885692	92	\N	77664	1984.7861
+885693	180	\N	60655	2667.1958
+885694	22	\N	249350	5004.191
+885695	156	\N	10392	1153.6278
+885696	135	\N	202	132.92104
+885697	417	\N	6.351894e+06	\N
+885698	475	\N	50693	\N
+885699	493	\N	1371.9	\N
+885700	470	\N	1200	\N
+885701	482	\N	2.7707782	\N
+885702	227	\N	28188	1600.0056
+885703	478	\N	3.451505e+06	\N
+885704	390	\N	74193.17	\N
+885705	149	\N	59629	1826.0096
+885706	173	\N	28088	1436.4711
+885707	73	\N	118469	2203.5747
+885708	103	\N	10599	937.02454
+885709	42	\N	31045	2136.4521
+885710	189	\N	267505	4564.6763
+885711	121	\N	37922	1877.3112
+885712	117	\N	24767	1451.4382
+885713	161	\N	2675	417.82773
+885714	88	\N	46	106.47065
+885715	420	\N	3.821496e+06	\N
+885716	188	\N	189168	3881.0984
+885717	40	\N	36424	2035.7645
+885718	113	\N	3368	452.04202
+885719	125	\N	39866	1499.7593
+885720	43	\N	11857	1078.8855
+885721	120	\N	22906	1500.6082
+885722	15	\N	326447	6004.9126
+885723	210	\N	43719	2297.9636
+885724	226	\N	157080	3689.068
+885725	48	\N	75334	3305.287
+885726	187	\N	128254	3133.7
+885727	57	\N	323940	5.555556e+08
+885728	61	\N	368747	332.75818
+885729	81	\N	483	191.07852
+885730	19	\N	753839	7035.102
+885731	160	\N	2136	411.87982
+885732	468	\N	516	\N
+885733	204	\N	22.88	0.03
+885734	104	\N	\N	819.2899
+885735	5	\N	1.262396e+06	7.8567424e+08
+885736	171	\N	71908	2266.265
+885737	397	\N	700.29504	\N
+885738	91	\N	39231	1638.9841
+885739	427	\N	356551	\N
+885740	29	\N	4121	691.4998
+885741	179	\N	76362	2675.5408
+885742	54	\N	50331	3416.3
+885743	181	\N	68856	2524.6409
+885744	96	\N	294516	2034.8627
+885745	201	\N	786573	6530.7217
+885746	10	\N	3234	422.66772
+885747	105	\N	10124	921.31104
+885748	35	\N	51134	2537.8599
+885749	402	\N	185	\N
+885750	472	\N	736	\N
+885751	107	\N	11620	1112.4032
+885752	220	\N	643178	5522.423
+885753	86	\N	659	203.56818
+885754	400	\N	331	\N
+885755	89	\N	\N	90.97253
+885756	93	\N	159462	1643.7345
+885757	219	\N	455344	5090.946
+885758	175	\N	115353	2263.4878
+885759	31	\N	36173	2130.3547
+885760	467	\N	2713	\N
+885761	50	\N	27994	1936.9641
+885762	14	\N	682868	1.6666668e+09
+885763	66	\N	346727	141.43196
+885764	109	\N	13359	1135.3083
+885765	155	\N	10554	1081.956
+885766	13	\N	38229	3755.2495
+885767	391	\N	647067.56	\N
+885768	133	\N	241	140.73024
+885769	416	\N	6.329861e+06	\N
+885770	487	\N	3771.9998	\N
+885771	414	\N	6.241518e+06	\N
+885772	195	\N	984223	522.4443
+885773	2	\N	2.872446e+06	193.73952
+885774	199	\N	\N	3570.6672
+885775	128	\N	146637	967.153
+885776	166	\N	23776	1426.4806
+885777	142	\N	157693	1906.9116
+885778	410	\N	1.5913162e+06	\N
+885779	152	\N	10000	904.8784
+885780	428	\N	96.68	\N
+885781	383	\N	2.439422e+06	\N
+885782	7	\N	5.226814e+06	1.6666668e+09
+885783	222	\N	79732	2152.0796
+885784	38	\N	12946	1183.3229
+885785	193	\N	412113	4346.7964
+885786	164	\N	757	268.97025
+885787	78	\N	666632	13832.614
+885788	217	\N	559442	6341.872
+885789	159	\N	6490	772.716
+885790	186	\N	67406	2485.546
+885791	47	\N	5739	867.45953
+885792	20	\N	4.542429e+06	10502.554
+885793	177	\N	234208	970.86816
+885794	182	\N	63670	2308.0215
+885795	1	\N	5.909682e+06	1.6666668e+09
+885796	106	\N	11792	1059.066
+885797	18	\N	1.020632e+06	7598.2065
+885798	110	\N	6796	875.9435
+885799	178	\N	119140	3623.9888
+885800	145	\N	282025	2364.9658
+885801	129	\N	41	89.994446
+885802	27	\N	22511	1826.5018
+885803	143	\N	172375	1850.2576
+885804	203	\N	862045	6411.035
+885805	58	\N	344051	3981.6997
+885806	228	\N	6493	733.53394
+885807	8	\N	3.398407e+06	3775.1775
+885808	485	\N	2.8869998	\N
+885809	71	\N	262162	3449.4907
+885810	68	\N	389352	3986.2292
+885811	229	\N	2619	465.12042
+885812	481	\N	16588	\N
+885813	146	\N	139739	2574.6711
+885814	80	\N	242	112.60107
+885815	52	\N	18349	2112.9624
+885816	396	\N	804198.6	\N
+885817	162	\N	2421	414.6806
+885818	132	\N	308	194.14943
+885819	483	\N	-28943	\N
+885820	405	\N	125	\N
+885821	84	\N	1299	391.63885
+885822	389	\N	4692.34	\N
+885823	170	\N	71872	2455.8462
+885824	192	\N	252720	4105.117
+885825	101	\N	29057	1264.1709
+885826	473	\N	1513	\N
+885827	69	\N	389299	3982.7957
+885828	114	\N	1540	285.28232
+885829	115	\N	1052	253.66513
+885830	60	\N	386002	306.8599
+885831	415	\N	6.296866e+06	\N
+885832	97	\N	145581	2406.516
+885833	399	\N	81	\N
+885834	112	\N	3499	583.1466
+885835	108	\N	17638	1276.5265
+885836	408	\N	3685	\N
+885837	59	\N	368539	3988.6626
+885838	65	\N	383645	4550.6494
+885839	127	\N	87599	1878.8635
+885840	124	\N	18305	1135.3894
+885841	98	\N	54494	1915.5693
+885842	200	\N	1.535688e+06	6268.6797
+885843	44	\N	19188	1597.6486
+885844	11	\N	415886	2377.5051
+885845	401	\N	358.43576	\N
+885846	490	\N	1903.7	\N
+885847	82	\N	1030	260.7048
+885848	119	\N	23891	1400.6334
+885849	153	\N	5036	742.7045
+885850	147	\N	51625	1804.0541
+885851	480	\N	0.1859291	\N
+885852	214	\N	94887	2871.4373
+885853	9	\N	1.130594e+06	5237.276
+885854	202	\N	1.460216e+06	6237.1616
+885855	419	\N	3.875293e+06	\N
+885856	412	\N	6.043279e+06	\N
+885857	79	\N	3.156793e+06	8671.187
+885858	26	\N	16157	1659.6533
+885859	85	\N	1845	332.81976
+885860	72	\N	177426	2628.1392
+885861	95	\N	329970	2174.6814
+885862	172	\N	54700	1981.6597
+885863	409	\N	1574.4595	\N
+885864	30	\N	70375	3532.5222
+885865	21	\N	436773	5931.768
+885866	131	\N	95	98.57992
+885867	3	\N	3.037236e+06	193.73952
+885868	198	\N	28.300001	0.089442715
+885869	17	\N	931623	8210.633
+885870	37	\N	11481	1037.5043
+885871	28	\N	18390	1572.0468
+885872	212	\N	7828	746.2024
+885873	404	\N	496	\N
+885874	398	\N	1008.629	\N
+885875	489	\N	2459.1	\N
+885876	388	\N	7180.01	\N
+885877	165	\N	89600	2007.4366
+885878	56	\N	14455	1368.0223
+885879	151	\N	14522	948.65326
+885880	209	\N	97194	3546.8625
+885881	74	\N	119837	2428.9082
+885882	138	\N	\N	1845.1517
+885883	225	\N	382896	5618.0845
+885884	34	\N	106748	3384.002
+885885	418	\N	3.546295e+06	\N
+885886	205	\N	1.990316e+06	9698.599
+885887	67	\N	371831	174.96857
+885888	83	\N	1229	348.93265
+885889	407	\N	2846.71	\N
+885890	63	\N	427025	189.65231
+885891	90	\N	45206	1520.9185
+885892	395	\N	66554.82	\N
+885893	174	\N	55569	1990.8729
+885894	216	\N	47082	2450.5957
+885895	45	\N	18771	1524.8328
+885896	387	\N	52403.15	\N
+885897	484	\N	-0.21561669	\N
+885898	213	\N	95	91.15372
+885899	134	\N	322	154.69002
+885900	144	\N	311218	2597.927
+885901	39	\N	81923	3334.1086
+885902	168	\N	31082	1682.4102
+885903	163	\N	1799	449.9822
+885904	471	\N	122	\N
+885905	223	\N	30833	1388.4297
+885906	36	\N	24427	1751.7334
+885907	393	\N	107139.44	\N
+885908	221	\N	234416	3504.2705
+885909	102	\N	18556	953.6808
+885910	167	\N	22768	1505.098
+885911	158	\N	12400	1110.1788
+885912	494	\N	1039.7	\N
+885913	469	\N	488	\N
+885914	118	\N	23283	1375.6039
+885915	111	\N	2538	444.71677
+885916	16	\N	1.085862e+06	8851.622
+885917	207	\N	204271	4726.9106
+885918	488	\N	240.3	\N
+885919	62	\N	396011	190.96335
+885920	123	\N	35793	1570.8625
+885921	126	\N	85737	1975.4222
+885922	194	\N	1.246101e+06	1543.5504
+885923	385	\N	71482.69	\N
+885924	476	\N	19038	\N
+885925	99	\N	68067	1828.0527
+885926	492	\N	3395.2	\N
+885927	41	\N	45499	2416.5562
+885928	46	\N	13032	1141.3641
+885929	206	\N	1.786045e+06	9601.014
+885930	224	\N	209297	4385.497
+885931	157	\N	14756	1168.0497
+885932	32	\N	34202	2568.8835
+885933	53	\N	9294	1258.1848
+885934	413	\N	6.160132e+06	\N
+885935	423	\N	3.875582e+06	\N
+885936	183	\N	71619	2455.9126
+885937	100	\N	68213	1772.1222
+885938	136	\N	0	90.97253
+885939	150	\N	25216	1133.3556
+885940	140	\N	43240	1709.3411
+885941	139	\N	52872	1649.777
+885942	12	\N	1081	287.46826
+885943	479	\N	3.521236e+06	\N
+885944	421	\N	3.779426e+06	\N
+885945	137	\N	0	90.97253
+885946	208	\N	187724	4602.9756
+885947	411	\N	5.89311e+06	\N
+885948	392	\N	121322.19	\N
+885949	24	\N	46298	3157.1033
+885950	191	\N	180897	3439.3176
+885951	425	\N	458784	\N
+885952	25	\N	30141	2235.0542
+885953	122	\N	43489	1813.4843
+885954	141	\N	80840	1996.4564
+885955	94	\N	175345	1702.2174
+885956	218	\N	92185	2829.33
+885957	154	\N	8943	976.8715
+885958	49	\N	47340	2293.701
+885959	211	\N	38888	1748.032
+885960	474	\N	394	\N
+885961	403	\N	69	\N
+885962	33	\N	157882	4571.143
+885963	422	\N	3.820229e+06	\N
+885964	64	\N	401898	4549.361
+885965	185	\N	66599	2412.6855
+885966	215	\N	18175	1235.9348
+885967	55	\N	35876	2909.449
+885968	148	\N	62391	1792.7264
+885969	130	\N	364	239.68521
+885970	23	\N	187423	5204.9697
+885971	486	\N	1652.5999	\N
+885972	435	\N	1.259533e+06	363.2561
+11124	199	42017	\N	727
+11149	199	42029	\N	936
+11174	199	42045	\N	987
+11199	199	42091	\N	932
+11224	199	42101	\N	2660
+11249	199	34005	\N	741
+11274	199	34007	\N	891
+11299	199	34015	\N	623
+11324	199	34021	\N	834
+11574	104	42017	\N	138
+11599	104	42029	\N	215
+11624	104	42045	\N	194
+11649	104	42091	\N	223
+11674	104	42101	\N	615
+11699	104	34005	\N	185
+11724	104	34007	\N	262
+11749	104	34015	\N	158
+11774	104	34021	\N	112
+12024	138	42017	\N	681
+12049	138	42029	\N	473
+12074	138	42045	\N	501
+12099	138	42091	\N	640
+12124	138	42101	\N	1102
+12149	138	34005	\N	487
+12174	138	34007	\N	560
+12199	138	34015	\N	339
+12224	138	34021	\N	420
+12474	89	42017	\N	28
+12499	89	42029	\N	28
+12524	89	42045	\N	28
+12549	89	42091	\N	28
+12574	89	42101	\N	28
+12599	89	34005	\N	33
+13221	199	4201704976	\N	188
+13246	199	4201705616	\N	610
+13296	199	4201708760	\N	262
+13321	199	4201708768	\N	596
+13346	199	4201709816	\N	335
+13371	199	4201712504	\N	87
+13396	199	4201719784	\N	207
+13421	199	4201719792	\N	312
+13446	199	4201720104	\N	194
+13471	199	4201720480	\N	60
+13496	199	4201721760	\N	214
+13521	199	4201725112	\N	469
+13546	199	4201733224	\N	88
+13571	199	4201734952	\N	242
+13596	199	4201736192	\N	67
+13621	199	4201737304	\N	55
+13646	199	4201741392	\N	72
+13671	199	4201741416	\N	36
+13696	199	4201744968	\N	350
+13721	199	4201745112	\N	375
+13746	199	4201749120	\N	466
+13771	199	4201749384	\N	282
+13796	199	4201751144	\N	352
+13821	199	4201753296	\N	79
+13846	199	4201753304	\N	188
+13871	199	4201753712	\N	142
+13896	199	4201754184	\N	83
+13921	199	4201754192	\N	327
+13946	199	4201754576	\N	102
+13971	199	4201754688	\N	369
+13996	199	4201758936	\N	97
+14021	199	4201759384	\N	225
+14046	199	4201761616	\N	219
+14071	199	4201763048	\N	278
+14096	199	4201764536	\N	252
+14121	199	4201764584	\N	77
+14146	199	4201764856	\N	47
+14171	199	4201769248	\N	124
+14196	199	4201770744	\N	117
+14221	199	4201771752	\N	192
+14246	199	4201773016	\N	208
+14271	199	4201776304	\N	117
+14296	199	4201776784	\N	132
+14321	199	4201777704	\N	88
+14346	199	4201777744	\N	95
+14371	199	4201779128	\N	157
+14396	199	4201779296	\N	250
+14421	199	4201780952	\N	404
+14446	199	4201781048	\N	364
+14471	199	4201781144	\N	229
+14496	199	4201783960	\N	180
+14521	199	4201786624	\N	93
+14546	199	4201786920	\N	95
+14571	199	4202903384	\N	66
+14596	199	4202903656	\N	128
+14621	199	4202906544	\N	83
+14646	199	4202910824	\N	401
+14671	199	4202912744	\N	169
+14696	199	4202914712	\N	334
+14721	199	4202919752	\N	225
+14746	199	4202920824	\N	208
+14771	199	4202920864	\N	225
+14796	199	4202920920	\N	155
+14821	199	4202921008	\N	207
+14846	199	4202921104	\N	162
+14871	199	4202921192	\N	326
+14896	199	4202921480	\N	124
+14921	199	4202921576	\N	65
+14946	199	4202921624	\N	178
+14971	199	4202921696	\N	180
+14996	199	4202921928	\N	215
+15021	199	4202922000	\N	147
+15046	199	4202922056	\N	226
+38621	104	3400782450	\N	14
+38646	104	3401513360	\N	22
+38671	104	3401517710	\N	70
+38696	104	3401519180	\N	22
+38721	104	3401521060	\N	14
+38746	104	3401524840	\N	59
+38771	104	3401526340	\N	78
+38796	104	3401528185	\N	14
+38821	104	3401530180	\N	22
+38846	104	3401541160	\N	20
+38871	104	3401543440	\N	22
+38896	104	3401547250	\N	76
+38921	104	3401549680	\N	32
+38946	104	3401551390	\N	14
+38971	104	3401557150	\N	20
+38996	104	3401559070	\N	33
+39021	104	3401569030	\N	14
+39046	104	3401571850	\N	14
+39071	104	3401577180	\N	25
+39096	104	3401578110	\N	14
+39121	104	3401578800	\N	61
+39146	104	3401580120	\N	14
+39171	104	3401582120	\N	22
+39196	104	3401582180	\N	11
+39221	104	3401582840	\N	3
+39246	104	3402119780	\N	30
+39271	104	3402122185	\N	24
+39296	104	3402129310	\N	31
+39321	104	3402131620	\N	20
+39346	104	3402133150	\N	14
+39371	104	3402133180	\N	25
+39396	104	3402139510	\N	12
+39421	104	3402157600	\N	14
+39446	104	3402160900	\N	48
+39471	104	3402163850	\N	22
+39496	104	3402174000	\N	82
+39521	104	3402180240	\N	40
+65871	89	4201704976	\N	17
+65896	89	4201705616	\N	28
+65921	89	4201708592	\N	12
+65946	89	4201708760	\N	17
+65971	89	4201708768	\N	28
+65996	89	4201709816	\N	22
+66021	89	4201712504	\N	12
+66046	89	4201719784	\N	17
+66071	89	4201719792	\N	19
+12624	89	34007	\N	33
+12649	89	34015	\N	33
+12674	89	34021	\N	33
+15071	199	4202923032	\N	59
+15096	199	4202923440	\N	66
+15121	199	4202927376	\N	98
+15146	199	4202934448	\N	54
+15171	199	4202935528	\N	105
+15196	199	4202935536	\N	234
+15221	199	4202939344	\N	231
+15246	199	4202939352	\N	172
+15271	199	4202944440	\N	108
+15296	199	4202944456	\N	100
+15321	199	4202944480	\N	170
+15346	199	4202945040	\N	95
+15371	199	4202946792	\N	142
+15396	199	4202950232	\N	50
+15421	199	4202953608	\N	221
+15446	199	4202953784	\N	65
+15471	199	4202953816	\N	102
+15496	199	4202954936	\N	174
+15521	199	4202957480	\N	298
+15546	199	4202958032	\N	123
+15571	199	4202958808	\N	165
+15596	199	4202959136	\N	118
+15621	199	4202960120	\N	435
+15646	199	4202961800	\N	85
+15671	199	4202967080	\N	125
+15696	199	4202968288	\N	164
+15721	199	4202972072	\N	105
+15746	199	4202972088	\N	70
+15771	199	4202972920	\N	204
+15796	199	4202976568	\N	111
+15821	199	4202977344	\N	373
+15846	199	4202979208	\N	78
+15871	199	4202979352	\N	229
+15896	199	4202979480	\N	303
+15921	199	4202979544	\N	289
+15946	199	4202980616	\N	83
+15971	199	4202981160	\N	60
+15996	199	4202982544	\N	200
+16021	199	4202982576	\N	222
+16046	199	4202982664	\N	207
+55996	138	3400765160	\N	56
+56021	138	3400768340	\N	72
+56046	138	3400771220	\N	87
+56071	138	3400772240	\N	14
+56096	138	3400776220	\N	121
+56121	138	3400777630	\N	85
+56146	138	3400781740	\N	126
+56171	138	3400782450	\N	44
+56196	138	3401513360	\N	99
+56221	138	3401517710	\N	115
+56246	138	3401519180	\N	43
+56271	138	3401521060	\N	37
+56296	138	3401524840	\N	40
+56321	138	3401526340	\N	73
+56346	138	3401528185	\N	30
+56371	138	3401530180	\N	94
+56396	138	3401541160	\N	36
+56421	138	3401543440	\N	86
+56446	138	3401547250	\N	166
+56471	138	3401549680	\N	31
+56496	138	3401551390	\N	16
+56521	138	3401557150	\N	38
+56546	138	3401559070	\N	43
+56571	138	3401569030	\N	21
+56596	138	3401571850	\N	28
+56621	138	3401577180	\N	174
+56646	138	3401578110	\N	19
+56671	138	3401578800	\N	129
+56696	138	3401580120	\N	42
+56721	138	3401582120	\N	104
+56746	138	3401582180	\N	24
+56771	138	3401582840	\N	53
+56796	138	3402119780	\N	195
+56821	138	3402122185	\N	173
+56846	138	3402129310	\N	260
+56871	138	3402131620	\N	65
+56896	138	3402133150	\N	36
+56921	138	3402133180	\N	112
+56946	138	3402139510	\N	108
+56971	138	3402157600	\N	46
+56996	138	3402160900	\N	58
+57021	138	3402163850	\N	52
+57046	138	3402174000	\N	156
+57071	138	3402180240	\N	154
+716477	382	4204513208	3.7504916	\N
+16071	199	4202982704	\N	415
+16096	199	4202982936	\N	108
+16121	199	4202983080	\N	332
+16146	199	4202983104	\N	74
+16171	199	4202983464	\N	64
+16196	199	4202983664	\N	76
+16221	199	4202983712	\N	136
+16246	199	4202983832	\N	70
+16271	199	4202983968	\N	108
+16296	199	4202984104	\N	225
+16321	199	4202984160	\N	165
+16346	199	4202984192	\N	342
+16371	199	4202985352	\N	187
+16396	199	4204500676	\N	169
+16421	199	4204503336	\N	309
+16446	199	4204506024	\N	190
+16471	199	4204509080	\N	260
+16496	199	4204512442	\N	114
+16521	199	4204513208	\N	631
+16546	199	4204513212	\N	165
+16571	199	4204513232	\N	120
+16596	199	4204514264	\N	244
+16621	199	4204515232	\N	342
+16646	199	4204515432	\N	123
+16671	199	4204515488	\N	326
+16696	199	4204518152	\N	411
+16721	199	4204518160	\N	286
+16746	199	4204521384	\N	190
+16771	199	4204522296	\N	145
+16796	199	4204522584	\N	146
+16821	199	4204526408	\N	252
+16846	199	4204529720	\N	280
+16871	199	4204533144	\N	390
+16896	199	4204541440	\N	339
+16921	199	4204544888	\N	136
+16946	199	4204547344	\N	171
+16971	199	4204547616	\N	307
+16996	199	4204548480	\N	162
+17021	199	4204549136	\N	287
+17046	199	4204549504	\N	160
+17071	199	4204551176	\N	101
+17096	199	4204553104	\N	218
+17121	199	4204554224	\N	333
+17146	199	4204555664	\N	164
+17171	199	4204558176	\N	142
+17196	199	4204562792	\N	310
+17221	199	4204563264	\N	373
+17246	199	4204564800	\N	498
+17271	199	4204564832	\N	175
+17296	199	4204566192	\N	83
+17321	199	4204566928	\N	64
+17346	199	4204569752	\N	191
+17371	199	4204573032	\N	275
+17396	199	4204575648	\N	162
+17421	199	4204576576	\N	279
+17446	199	4204576792	\N	140
+17471	199	4204577288	\N	293
+17496	199	4204578712	\N	140
+17521	199	4204578776	\N	438
+17546	199	4204579000	\N	880
+17571	199	4204579248	\N	172
+17596	199	4204586968	\N	553
+17621	199	4209100156	\N	591
+17646	199	4209102264	\N	170
+17671	199	4209108568	\N	317
+17696	199	4209109696	\N	51
+17721	199	4209112968	\N	474
+17746	199	4209115192	\N	172
+17771	199	4209115848	\N	312
+17796	199	4209119672	\N	200
+17821	199	4209121200	\N	100
+17846	199	4209121600	\N	324
+17871	199	4209127280	\N	341
+17896	199	4209131088	\N	49
+17921	199	4209133088	\N	216
+17946	199	4209133112	\N	152
+17971	199	4209133120	\N	280
+17996	199	4209135808	\N	393
+18021	199	4209138000	\N	167
+18046	199	4209141432	\N	275
+18071	199	4209143312	\N	408
+18096	199	4209144912	\N	156
+18121	199	4209144920	\N	225
+18146	199	4209144976	\N	592
+18171	199	4209145008	\N	180
+18196	199	4209145072	\N	190
+18221	199	4209145080	\N	376
+18246	199	4209145096	\N	267
+18271	199	4209147592	\N	78
+18296	199	4209150640	\N	358
+18321	199	4209152664	\N	159
+18346	199	4209153664	\N	231
+18371	199	4209154656	\N	590
+18396	199	4209155512	\N	135
+18421	199	4209159120	\N	90
+18446	199	4209159392	\N	153
+18471	199	4209161664	\N	247
+18496	199	4209162416	\N	560
+18521	199	4209163808	\N	78
+18546	199	4209165568	\N	73
+18571	199	4209166576	\N	163
+18596	199	4209167528	\N	76
+18621	199	4209168328	\N	72
+18646	199	4209171016	\N	237
+18671	199	4209171856	\N	181
+18696	199	4209173088	\N	308
+18721	199	4209176304	\N	108
+18746	199	4209177152	\N	323
+18771	199	4209177304	\N	145
+18796	199	4209179008	\N	309
+18821	199	4209179040	\N	119
+18846	199	4209179056	\N	331
+18871	199	4209179064	\N	178
+18896	199	4209179136	\N	464
+18921	199	4209179176	\N	343
+18946	199	4209179240	\N	216
+18971	199	4209179256	\N	334
+18996	199	4209179280	\N	85
+19021	199	4209182736	\N	94
+19046	199	4209183696	\N	428
+19071	199	4209183912	\N	120
+19096	199	4209184624	\N	328
+19121	199	4209184888	\N	313
+19146	199	4209186496	\N	251
+19171	199	4210160000	\N	2660
+19196	199	3400503370	\N	58
+19221	199	3400505740	\N	98
+19246	199	3400506670	\N	211
+19271	199	3400506700	\N	303
+19296	199	3400508920	\N	254
+19321	199	3400508950	\N	409
+19346	199	3400512670	\N	192
+19371	199	3400512940	\N	207
+19396	199	3400517080	\N	247
+19421	199	3400517440	\N	401
+19446	199	3400518790	\N	194
+19471	199	3400520050	\N	284
+19496	199	3400522110	\N	490
+19521	199	3400523250	\N	51
+19546	199	3400523850	\N	420
+19571	199	3400529010	\N	206
+19596	199	3400542060	\N	253
+19621	199	3400543290	\N	202
+19646	199	3400543740	\N	378
+19671	199	3400545120	\N	281
+19696	199	3400545210	\N	78
+19721	199	3400547880	\N	315
+19746	199	3400548900	\N	179
+19771	199	3400549020	\N	525
+19796	199	3400551510	\N	81
+19821	199	3400553070	\N	188
+19846	199	3400555800	\N	183
+19871	199	3400557480	\N	81
+19896	199	3400557510	\N	417
+19921	199	3400563510	\N	208
+19946	199	3400563660	\N	68
+19971	199	3400566810	\N	270
+19996	199	3400568610	\N	204
+20021	199	3400569990	\N	96
+20046	199	3400572060	\N	236
+20071	199	3400577150	\N	43
+20096	199	3400578200	\N	222
+20121	199	3400581440	\N	388
+20146	199	3400582420	\N	146
+20171	199	3400582960	\N	56
+20196	199	3400702200	\N	216
+20221	199	3400702230	\N	137
+20246	199	3400703250	\N	265
+20271	199	3400704750	\N	190
+20296	199	3400705440	\N	278
+20321	199	3400705470	\N	286
+20346	199	3400708170	\N	196
+20371	199	3400710000	\N	755
+20396	199	3400712280	\N	632
+20421	199	3400712550	\N	54
+20446	199	3400713420	\N	248
+20471	199	3400714260	\N	264
+20496	199	3400726070	\N	98
+20521	199	3400726760	\N	602
+20546	199	3400726820	\N	296
+20571	199	3400728740	\N	321
+20596	199	3400728770	\N	155
+20621	199	3400728800	\N	121
+20646	199	3400732220	\N	100
+20671	199	3400739210	\N	65
+20696	199	3400739420	\N	125
+20721	199	3400740440	\N	614
+20746	199	3400742630	\N	200
+20771	199	3400745510	\N	198
+20796	199	3400748750	\N	228
+20821	199	3400753880	\N	137
+20846	199	3400757660	\N	490
+20871	199	3400758770	\N	249
+20896	199	3400765160	\N	209
+20921	199	3400768340	\N	180
+20946	199	3400771220	\N	189
+20971	199	3400772240	\N	3
+20996	199	3400776220	\N	441
+21021	199	3400777630	\N	197
+21046	199	3400781740	\N	490
+21071	199	3400782450	\N	88
+21096	199	3401513360	\N	235
+21121	199	3401517710	\N	372
+21146	199	3401519180	\N	222
+21171	199	3401521060	\N	115
+21196	199	3401524840	\N	232
+21221	199	3401526340	\N	356
+21246	199	3401528185	\N	151
+21271	199	3401530180	\N	234
+21296	199	3401541160	\N	315
+21321	199	3401543440	\N	243
+21346	199	3401547250	\N	586
+21371	199	3401549680	\N	91
+21396	199	3401551390	\N	75
+21421	199	3401557150	\N	313
+21446	199	3401559070	\N	153
+21471	199	3401569030	\N	85
+21496	199	3401571850	\N	98
+21521	199	3401577180	\N	519
+21546	199	3401578110	\N	70
+21571	199	3401578800	\N	549
+21596	199	3401580120	\N	135
+21621	199	3401582120	\N	257
+21646	199	3401582180	\N	59
+21671	199	3401582840	\N	206
+21696	199	3402119780	\N	538
+21721	199	3402122185	\N	649
+21746	199	3402129310	\N	970
+21771	199	3402131620	\N	192
+21796	199	3402133150	\N	88
+21821	199	3402133180	\N	331
+21846	199	3402139510	\N	563
+21871	199	3402157600	\N	54
+21896	199	3402160900	\N	378
+21921	199	3402163850	\N	246
+21946	199	3402174000	\N	1028
+21971	199	3402180240	\N	471
+30771	104	4201704976	\N	17
+30796	104	4201705616	\N	50
+30821	104	4201708592	\N	12
+30846	104	4201708760	\N	19
+30871	104	4201708768	\N	47
+30896	104	4201709816	\N	27
+30921	104	4201712504	\N	12
+30946	104	4201719784	\N	17
+30971	104	4201719792	\N	19
+30996	104	4201720104	\N	12
+31021	104	4201720480	\N	12
+31046	104	4201721760	\N	17
+31071	104	4201725112	\N	63
+31096	104	4201733224	\N	12
+31121	104	4201734952	\N	19
+31146	104	4201736192	\N	12
+31171	104	4201737304	\N	12
+31196	104	4201741392	\N	12
+31221	104	4201741416	\N	12
+31246	104	4201744968	\N	59
+31271	104	4201745112	\N	42
+31296	104	4201749120	\N	59
+31321	104	4201749384	\N	19
+31346	104	4201751144	\N	17
+31371	104	4201753296	\N	12
+31396	104	4201753304	\N	19
+31421	104	4201753712	\N	12
+31446	104	4201754184	\N	12
+31471	104	4201754192	\N	52
+31496	104	4201754576	\N	12
+31521	104	4201754688	\N	25
+31546	104	4201758936	\N	12
+31571	104	4201759384	\N	17
+31596	104	4201761616	\N	19
+31621	104	4201763048	\N	17
+31646	104	4201764536	\N	46
+31671	104	4201764584	\N	12
+31696	104	4201764856	\N	12
+31721	104	4201769248	\N	23
+31746	104	4201770744	\N	12
+31771	104	4201771752	\N	17
+31796	104	4201773016	\N	17
+31821	104	4201776304	\N	12
+31846	104	4201776784	\N	12
+31871	104	4201777704	\N	12
+31896	104	4201777744	\N	12
+31921	104	4201779128	\N	17
+31946	104	4201779296	\N	19
+31971	104	4201780952	\N	25
+31996	104	4201781048	\N	15
+32021	104	4201781144	\N	19
+32046	104	4201783960	\N	17
+32071	104	4201786624	\N	12
+32096	104	4201786920	\N	12
+32121	104	4202903384	\N	12
+32146	104	4202903656	\N	12
+32171	104	4202906544	\N	12
+32196	104	4202910824	\N	19
+32221	104	4202912744	\N	18
+32246	104	4202914712	\N	66
+32271	104	4202919752	\N	42
+32296	104	4202920824	\N	29
+32321	104	4202920864	\N	19
+32346	104	4202920920	\N	17
+32371	104	4202921008	\N	17
+32396	104	4202921104	\N	17
+32421	104	4202921192	\N	19
+32446	104	4202921480	\N	17
+32471	104	4202921576	\N	12
+32496	104	4202921624	\N	17
+32521	104	4202921696	\N	58
+32546	104	4202921928	\N	124
+32571	104	4202922000	\N	17
+32596	104	4202922056	\N	22
+32621	104	4202923032	\N	12
+32646	104	4202923440	\N	12
+32671	104	4202927376	\N	12
+32696	104	4202934448	\N	12
+32721	104	4202935528	\N	12
+32746	104	4202935536	\N	17
+32771	104	4202939344	\N	17
+32796	104	4202939352	\N	17
+32821	104	4202944440	\N	12
+32846	104	4202944456	\N	12
+32871	104	4202944480	\N	17
+32896	104	4202945040	\N	45
+32921	104	4202946792	\N	12
+32946	104	4202950232	\N	12
+32971	104	4202953608	\N	19
+32996	104	4202953784	\N	12
+33021	104	4202953816	\N	17
+33046	104	4202954936	\N	27
+33071	104	4202957480	\N	17
+33096	104	4202958032	\N	16
+33121	104	4202958808	\N	17
+33146	104	4202959136	\N	12
+33171	104	4202960120	\N	45
+33196	104	4202961800	\N	12
+33221	104	4202967080	\N	12
+33246	104	4202968288	\N	7
+33271	104	4202972072	\N	12
+33296	104	4202972088	\N	12
+33321	104	4202972920	\N	12
+33346	104	4202976568	\N	12
+33371	104	4202977344	\N	25
+33396	104	4202979208	\N	12
+33421	104	4202979352	\N	27
+33446	104	4202979480	\N	19
+33471	104	4202979544	\N	71
+33496	104	4202980616	\N	12
+33521	104	4202981160	\N	12
+33546	104	4202982544	\N	19
+33571	104	4202982576	\N	23
+33596	104	4202982664	\N	17
+33621	104	4202982704	\N	47
+33646	104	4202982936	\N	15
+33671	104	4202983080	\N	22
+33696	104	4202983104	\N	12
+33721	104	4202983464	\N	12
+33746	104	4202983664	\N	12
+33771	104	4202983712	\N	12
+33796	104	4202983832	\N	12
+33821	104	4202983968	\N	12
+33846	104	4202984104	\N	57
+33871	104	4202984160	\N	17
+33896	104	4202984192	\N	22
+33921	104	4202985352	\N	19
+33946	104	4204500676	\N	12
+33971	104	4204503336	\N	48
+33996	104	4204506024	\N	17
+34021	104	4204509080	\N	17
+34046	104	4204512442	\N	12
+34071	104	4204513208	\N	72
+34096	104	4204513212	\N	12
+34121	104	4204513232	\N	12
+34146	104	4204514264	\N	17
+34171	104	4204515232	\N	8
+34196	104	4204515432	\N	12
+34221	104	4204515488	\N	19
+34246	104	4204518152	\N	32
+34271	104	4204518160	\N	17
+34296	104	4204521384	\N	12
+34321	104	4204522296	\N	12
+34346	104	4204522584	\N	12
+34371	104	4204526408	\N	17
+34396	104	4204529720	\N	59
+34421	104	4204533144	\N	35
+34446	104	4204541440	\N	19
+34471	104	4204544888	\N	12
+34496	104	4204547344	\N	12
+34521	104	4204547616	\N	15
+34546	104	4204548480	\N	17
+34571	104	4204549136	\N	33
+34596	104	4204549504	\N	12
+34621	104	4204551176	\N	12
+34646	104	4204553104	\N	19
+34671	104	4204554224	\N	19
+34696	104	4204555664	\N	17
+34721	104	4204558176	\N	12
+34746	104	4204562792	\N	17
+34771	104	4204563264	\N	48
+34796	104	4204564800	\N	25
+34821	104	4204564832	\N	17
+34846	104	4204566192	\N	12
+34871	104	4204566928	\N	12
+34896	104	4204569752	\N	77
+34921	104	4204573032	\N	15
+34946	104	4204575648	\N	40
+34971	104	4204576576	\N	17
+34996	104	4204576792	\N	10
+35021	104	4204577288	\N	12
+35046	104	4204578712	\N	12
+35071	104	4204578776	\N	74
+35096	104	4204579000	\N	55
+35121	104	4204579248	\N	19
+35146	104	4204586968	\N	19
+35171	104	4209100156	\N	33
+35196	104	4209102264	\N	17
+35221	104	4209108568	\N	17
+35246	104	4209109696	\N	12
+35271	104	4209112968	\N	56
+35296	104	4209115192	\N	17
+35321	104	4209115848	\N	17
+35346	104	4209119672	\N	23
+35371	104	4209121200	\N	12
+35396	104	4209121600	\N	19
+35421	104	4209127280	\N	30
+35446	104	4209131088	\N	12
+35471	104	4209133088	\N	17
+35496	104	4209133112	\N	13
+35521	104	4209133120	\N	84
+35546	104	4209135808	\N	24
+35571	104	4209138000	\N	12
+35596	104	4209141432	\N	22
+35621	104	4209143312	\N	22
+35646	104	4209144912	\N	12
+35671	104	4209144920	\N	19
+35696	104	4209144976	\N	104
+35721	104	4209145008	\N	19
+35746	104	4209145072	\N	19
+35771	104	4209145080	\N	45
+35796	104	4209145096	\N	19
+35821	104	4209147592	\N	12
+35846	104	4209150640	\N	45
+35871	104	4209152664	\N	12
+35896	104	4209153664	\N	19
+35921	104	4209154656	\N	57
+35946	104	4209155512	\N	12
+35971	104	4209159120	\N	12
+35996	104	4209159392	\N	17
+36021	104	4209161664	\N	55
+36046	104	4209162416	\N	22
+36071	104	4209163808	\N	12
+36096	104	4209165568	\N	12
+36121	104	4209166576	\N	12
+36146	104	4209167528	\N	12
+36171	104	4209168328	\N	12
+36196	104	4209171016	\N	19
+36221	104	4209171856	\N	17
+36246	104	4209173088	\N	14
+36271	104	4209176304	\N	12
+36296	104	4209177152	\N	19
+36321	104	4209177304	\N	12
+36346	104	4209179008	\N	22
+36371	104	4209179040	\N	12
+36396	104	4209179056	\N	19
+36421	104	4209179064	\N	30
+36446	104	4209179136	\N	96
+36471	104	4209179176	\N	28
+36496	104	4209179240	\N	17
+36521	104	4209179256	\N	22
+36546	104	4209179280	\N	12
+36571	104	4209182736	\N	12
+36596	104	4209183696	\N	19
+36621	104	4209183912	\N	20
+36646	104	4209184624	\N	19
+36671	104	4209184888	\N	30
+36696	104	4209186496	\N	19
+36721	104	4210160000	\N	615
+36746	104	3400503370	\N	14
+36771	104	3400505740	\N	14
+36796	104	3400506670	\N	14
+36821	104	3400506700	\N	22
+36846	104	3400508920	\N	31
+36871	104	3400508950	\N	32
+36896	104	3400512670	\N	33
+36921	104	3400512940	\N	28
+36946	104	3400517080	\N	14
+36971	104	3400517440	\N	24
+36996	104	3400518790	\N	20
+37021	104	3400520050	\N	20
+37046	104	3400522110	\N	30
+37071	104	3400523250	\N	14
+37096	104	3400523850	\N	27
+37121	104	3400529010	\N	20
+37146	104	3400542060	\N	8
+37171	104	3400543290	\N	20
+37196	104	3400543740	\N	15
+37221	104	3400545120	\N	26
+37246	104	3400545210	\N	14
+37271	104	3400547880	\N	26
+37296	104	3400548900	\N	22
+37321	104	3400549020	\N	70
+37346	104	3400551510	\N	20
+37371	104	3400553070	\N	20
+37396	104	3400555800	\N	28
+37421	104	3400557480	\N	14
+37446	104	3400557510	\N	26
+37471	104	3400563510	\N	20
+37496	104	3400563660	\N	6
+37521	104	3400566810	\N	20
+37546	104	3400568610	\N	114
+37571	104	3400569990	\N	14
+37596	104	3400572060	\N	20
+37621	104	3400577150	\N	17
+37646	104	3400578200	\N	54
+37671	104	3400581440	\N	57
+37696	104	3400582420	\N	14
+37721	104	3400582960	\N	14
+37746	104	3400702200	\N	62
+37771	104	3400702230	\N	14
+37796	104	3400703250	\N	20
+37821	104	3400704750	\N	22
+37846	104	3400705440	\N	20
+37871	104	3400705470	\N	20
+37896	104	3400708170	\N	5
+37921	104	3400710000	\N	114
+37946	104	3400712280	\N	51
+37971	104	3400712550	\N	6
+37996	104	3400713420	\N	20
+38021	104	3400714260	\N	22
+38046	104	3400726070	\N	14
+38071	104	3400726760	\N	118
+38096	104	3400726820	\N	22
+38121	104	3400728740	\N	22
+38146	104	3400728770	\N	22
+38171	104	3400728800	\N	70
+38196	104	3400732220	\N	14
+38221	104	3400739210	\N	14
+38246	104	3400739420	\N	14
+38271	104	3400740440	\N	26
+38296	104	3400742630	\N	14
+38321	104	3400745510	\N	3
+38346	104	3400748750	\N	14
+38371	104	3400753880	\N	14
+38396	104	3400757660	\N	87
+38421	104	3400758770	\N	35
+38446	104	3400765160	\N	20
+38471	104	3400768340	\N	20
+38496	104	3400771220	\N	20
+38521	104	3400772240	\N	14
+38546	104	3400776220	\N	15
+38571	104	3400777630	\N	39
+38596	104	3400781740	\N	145
+48321	138	4201704976	\N	29
+48346	138	4201705616	\N	226
+48371	138	4201708592	\N	11
+48396	138	4201708760	\N	54
+48421	138	4201708768	\N	283
+48446	138	4201709816	\N	87
+48471	138	4201712504	\N	47
+48496	138	4201719784	\N	42
+48521	138	4201719792	\N	106
+48546	138	4201720104	\N	35
+48571	138	4201720480	\N	19
+48596	138	4201721760	\N	82
+48621	138	4201725112	\N	184
+48646	138	4201733224	\N	65
+48671	138	4201734952	\N	96
+48696	138	4201736192	\N	8
+48721	138	4201737304	\N	9
+48746	138	4201741392	\N	6
+48771	138	4201741416	\N	9
+48796	138	4201744968	\N	143
+48821	138	4201745112	\N	218
+48846	138	4201749120	\N	139
+48871	138	4201749384	\N	135
+48896	138	4201751144	\N	106
+48921	138	4201753296	\N	15
+48946	138	4201753304	\N	67
+48971	138	4201753712	\N	90
+48996	138	4201754184	\N	17
+49021	138	4201754192	\N	108
+49046	138	4201754576	\N	48
+49071	138	4201754688	\N	135
+49096	138	4201758936	\N	29
+49121	138	4201759384	\N	66
+49146	138	4201761616	\N	174
+49171	138	4201763048	\N	39
+49196	138	4201764536	\N	97
+49221	138	4201764584	\N	26
+49246	138	4201764856	\N	7
+49271	138	4201769248	\N	38
+49296	138	4201770744	\N	6
+49321	138	4201771752	\N	84
+49346	138	4201773016	\N	78
+49371	138	4201776304	\N	25
+49396	138	4201776784	\N	26
+49421	138	4201777704	\N	46
+49446	138	4201777744	\N	25
+49471	138	4201779128	\N	160
+49496	138	4201779296	\N	64
+49521	138	4201780952	\N	115
+49546	138	4201781048	\N	124
+49571	138	4201781144	\N	135
+49596	138	4201783960	\N	82
+49621	138	4201786624	\N	31
+49646	138	4201786920	\N	36
+49671	138	4202903384	\N	15
+49696	138	4202903656	\N	2
+49721	138	4202906544	\N	35
+49746	138	4202910824	\N	122
+49771	138	4202912744	\N	56
+49796	138	4202914712	\N	70
+49821	138	4202919752	\N	91
+49846	138	4202920824	\N	92
+49871	138	4202920864	\N	88
+49896	138	4202920920	\N	55
+49921	138	4202921008	\N	24
+49946	138	4202921104	\N	70
+49971	138	4202921192	\N	83
+49996	138	4202921480	\N	96
+50021	138	4202921576	\N	11
+50046	138	4202921624	\N	63
+50071	138	4202921696	\N	64
+50096	138	4202921928	\N	72
+50121	138	4202922000	\N	37
+50146	138	4202922056	\N	68
+50171	138	4202923032	\N	28
+50196	138	4202923440	\N	21
+50221	138	4202927376	\N	40
+50246	138	4202934448	\N	12
+50271	138	4202935528	\N	7
+50296	138	4202935536	\N	86
+50321	138	4202939344	\N	91
+50346	138	4202939352	\N	57
+50371	138	4202944440	\N	32
+50396	138	4202944456	\N	19
+50421	138	4202944480	\N	61
+50446	138	4202945040	\N	17
+50471	138	4202946792	\N	40
+50496	138	4202950232	\N	11
+50521	138	4202953608	\N	59
+50546	138	4202953784	\N	5
+50571	138	4202953816	\N	51
+50596	138	4202954936	\N	53
+50621	138	4202957480	\N	19
+50646	138	4202958032	\N	92
+50671	138	4202958808	\N	33
+50696	138	4202959136	\N	32
+50721	138	4202960120	\N	125
+50746	138	4202961800	\N	23
+50771	138	4202967080	\N	49
+50796	138	4202968288	\N	52
+50821	138	4202972072	\N	12
+50846	138	4202972088	\N	15
+50871	138	4202972920	\N	28
+50896	138	4202976568	\N	50
+50921	138	4202977344	\N	100
+50946	138	4202979208	\N	22
+50971	138	4202979352	\N	66
+50996	138	4202979480	\N	99
+51021	138	4202979544	\N	89
+51046	138	4202980616	\N	34
+51071	138	4202981160	\N	20
+51096	138	4202982544	\N	46
+51121	138	4202982576	\N	48
+51146	138	4202982664	\N	80
+51171	138	4202982704	\N	34
+51196	138	4202982936	\N	14
+51221	138	4202983080	\N	143
+51246	138	4202983104	\N	25
+51271	138	4202983464	\N	12
+51296	138	4202983664	\N	23
+51321	138	4202983712	\N	13
+51346	138	4202983832	\N	31
+51371	138	4202983968	\N	22
+51396	138	4202984104	\N	106
+51421	138	4202984160	\N	169
+51446	138	4202984192	\N	103
+51471	138	4202985352	\N	60
+51496	138	4204500676	\N	40
+51521	138	4204503336	\N	68
+51546	138	4204506024	\N	47
+51571	138	4204509080	\N	71
+51596	138	4204512442	\N	46
+51621	138	4204513208	\N	191
+51646	138	4204513212	\N	41
+51671	138	4204513232	\N	33
+51696	138	4204514264	\N	89
+51721	138	4204515232	\N	68
+51746	138	4204515432	\N	25
+51771	138	4204515488	\N	101
+51796	138	4204518152	\N	61
+51821	138	4204518160	\N	100
+51846	138	4204521384	\N	18
+51871	138	4204522296	\N	16
+51896	138	4204522584	\N	32
+51921	138	4204526408	\N	39
+51946	138	4204529720	\N	71
+51971	138	4204533144	\N	193
+51996	138	4204541440	\N	95
+52021	138	4204544888	\N	45
+52046	138	4204547344	\N	14
+52071	138	4204547616	\N	91
+52096	138	4204548480	\N	26
+52121	138	4204549136	\N	90
+52146	138	4204549504	\N	17
+52171	138	4204551176	\N	36
+52196	138	4204553104	\N	82
+52221	138	4204554224	\N	178
+52246	138	4204555664	\N	87
+52271	138	4204558176	\N	14
+52296	138	4204562792	\N	41
+52321	138	4204563264	\N	84
+52346	138	4204564800	\N	138
+52371	138	4204564832	\N	46
+52396	138	4204566192	\N	9
+52421	138	4204566928	\N	26
+52446	138	4204569752	\N	40
+52471	138	4204573032	\N	119
+52496	138	4204575648	\N	34
+52521	138	4204576576	\N	90
+52546	138	4204576792	\N	11
+52571	138	4204577288	\N	6
+52596	138	4204578712	\N	34
+52621	138	4204578776	\N	88
+52646	138	4204579000	\N	219
+52671	138	4204579248	\N	81
+52696	138	4204586968	\N	82
+52721	138	4209100156	\N	168
+52746	138	4209102264	\N	149
+52771	138	4209108568	\N	47
+52796	138	4209109696	\N	7
+52821	138	4209112968	\N	189
+52846	138	4209115192	\N	66
+52871	138	4209115848	\N	70
+52896	138	4209119672	\N	74
+52921	138	4209121200	\N	67
+52946	138	4209121600	\N	120
+52971	138	4209127280	\N	113
+52996	138	4209131088	\N	7
+53021	138	4209133088	\N	62
+53046	138	4209133112	\N	35
+53071	138	4209133120	\N	77
+53096	138	4209135808	\N	113
+53121	138	4209138000	\N	81
+53146	138	4209141432	\N	82
+53171	138	4209143312	\N	69
+53196	138	4209144912	\N	82
+53221	138	4209144920	\N	83
+53246	138	4209144976	\N	199
+53271	138	4209145008	\N	59
+53296	138	4209145072	\N	63
+53321	138	4209145080	\N	78
+53346	138	4209145096	\N	165
+53371	138	4209147592	\N	43
+53396	138	4209150640	\N	126
+53421	138	4209152664	\N	34
+53446	138	4209153664	\N	72
+53471	138	4209154656	\N	154
+53496	138	4209155512	\N	18
+53521	138	4209159120	\N	32
+53546	138	4209159392	\N	45
+53571	138	4209161664	\N	79
+53596	138	4209162416	\N	126
+53621	138	4209163808	\N	17
+53646	138	4209165568	\N	20
+53671	138	4209166576	\N	23
+53696	138	4209167528	\N	23
+53721	138	4209168328	\N	8
+53746	138	4209171016	\N	40
+53771	138	4209171856	\N	96
+53796	138	4209173088	\N	68
+53821	138	4209176304	\N	9
+53846	138	4209177152	\N	63
+53871	138	4209177304	\N	39
+53896	138	4209179008	\N	149
+53921	138	4209179040	\N	51
+53946	138	4209179056	\N	137
+53971	138	4209179064	\N	40
+53996	138	4209179136	\N	202
+54021	138	4209179176	\N	152
+54046	138	4209179240	\N	135
+54071	138	4209179256	\N	115
+54096	138	4209179280	\N	56
+54121	138	4209182736	\N	8
+54146	138	4209183696	\N	84
+54171	138	4209183912	\N	33
+54196	138	4209184624	\N	186
+54221	138	4209184888	\N	86
+54246	138	4209186496	\N	92
+54271	138	4210160000	\N	1102
+54296	138	3400503370	\N	15
+54321	138	3400505740	\N	9
+54346	138	3400506670	\N	36
+54371	138	3400506700	\N	76
+54396	138	3400508920	\N	99
+54421	138	3400508950	\N	176
+54446	138	3400512670	\N	47
+54471	138	3400512940	\N	93
+54496	138	3400517080	\N	41
+54521	138	3400517440	\N	109
+54546	138	3400518790	\N	60
+54571	138	3400520050	\N	91
+54596	138	3400522110	\N	144
+54621	138	3400523250	\N	6
+54646	138	3400523850	\N	112
+54671	138	3400529010	\N	45
+54696	138	3400542060	\N	58
+54721	138	3400543290	\N	90
+54746	138	3400543740	\N	88
+54771	138	3400545120	\N	133
+54796	138	3400545210	\N	33
+54821	138	3400547880	\N	96
+54846	138	3400548900	\N	35
+54871	138	3400549020	\N	167
+54896	138	3400551510	\N	20
+54921	138	3400553070	\N	74
+54946	138	3400555800	\N	117
+54971	138	3400557480	\N	7
+54996	138	3400557510	\N	179
+55021	138	3400563510	\N	30
+55046	138	3400563660	\N	50
+55071	138	3400566810	\N	70
+55096	138	3400568610	\N	59
+55121	138	3400569990	\N	32
+55146	138	3400572060	\N	105
+55171	138	3400577150	\N	5
+55196	138	3400578200	\N	52
+55221	138	3400581440	\N	120
+55246	138	3400582420	\N	80
+55271	138	3400582960	\N	14
+55296	138	3400702200	\N	70
+55321	138	3400702230	\N	10
+55346	138	3400703250	\N	53
+55371	138	3400704750	\N	74
+55396	138	3400705440	\N	69
+55421	138	3400705470	\N	84
+55446	138	3400708170	\N	22
+55471	138	3400710000	\N	198
+55496	138	3400712280	\N	238
+55521	138	3400712550	\N	21
+55546	138	3400713420	\N	36
+55571	138	3400714260	\N	66
+55596	138	3400726070	\N	18
+55621	138	3400726760	\N	193
+55646	138	3400726820	\N	41
+55671	138	3400728740	\N	186
+55696	138	3400728770	\N	54
+55721	138	3400728800	\N	45
+55746	138	3400732220	\N	10
+55771	138	3400739210	\N	16
+55796	138	3400739420	\N	37
+55821	138	3400740440	\N	99
+55846	138	3400742630	\N	17
+55871	138	3400745510	\N	41
+55896	138	3400748750	\N	26
+55921	138	3400753880	\N	42
+55946	138	3400757660	\N	121
+55971	138	3400758770	\N	114
+66096	89	4201720104	\N	12
+66121	89	4201720480	\N	12
+66146	89	4201721760	\N	17
+66171	89	4201725112	\N	25
+66196	89	4201733224	\N	12
+66221	89	4201734952	\N	19
+66246	89	4201736192	\N	12
+66271	89	4201737304	\N	12
+66296	89	4201741392	\N	12
+66321	89	4201741416	\N	12
+66346	89	4201744968	\N	25
+66371	89	4201745112	\N	22
+66396	89	4201749120	\N	25
+66421	89	4201749384	\N	19
+66446	89	4201751144	\N	17
+66471	89	4201753296	\N	12
+66496	89	4201753304	\N	19
+66521	89	4201753712	\N	12
+66546	89	4201754184	\N	12
+66571	89	4201754192	\N	19
+66596	89	4201754576	\N	12
+66621	89	4201754688	\N	25
+66646	89	4201758936	\N	12
+66671	89	4201759384	\N	17
+66696	89	4201761616	\N	19
+66721	89	4201763048	\N	17
+66746	89	4201764536	\N	19
+66771	89	4201764584	\N	12
+66796	89	4201764856	\N	12
+66821	89	4201769248	\N	12
+66846	89	4201770744	\N	12
+66871	89	4201771752	\N	17
+66896	89	4201773016	\N	17
+66921	89	4201776304	\N	12
+66946	89	4201776784	\N	12
+66971	89	4201777704	\N	12
+66996	89	4201777744	\N	12
+67021	89	4201779128	\N	17
+67046	89	4201779296	\N	19
+67071	89	4201780952	\N	25
+67096	89	4201781048	\N	22
+67121	89	4201781144	\N	19
+67146	89	4201783960	\N	17
+67171	89	4201786624	\N	12
+67196	89	4201786920	\N	12
+67221	89	4202903384	\N	12
+67246	89	4202903656	\N	12
+67271	89	4202906544	\N	12
+67296	89	4202910824	\N	19
+67321	89	4202912744	\N	17
+67346	89	4202914712	\N	19
+67371	89	4202919752	\N	17
+67396	89	4202920824	\N	19
+67421	89	4202920864	\N	19
+67446	89	4202920920	\N	17
+67471	89	4202921008	\N	17
+67496	89	4202921104	\N	17
+67521	89	4202921192	\N	19
+67546	89	4202921480	\N	17
+67571	89	4202921576	\N	12
+67596	89	4202921624	\N	17
+67621	89	4202921696	\N	17
+67646	89	4202921928	\N	19
+67671	89	4202922000	\N	17
+67696	89	4202922056	\N	19
+67721	89	4202923032	\N	12
+67746	89	4202923440	\N	12
+67771	89	4202927376	\N	12
+67796	89	4202934448	\N	12
+67821	89	4202935528	\N	12
+67846	89	4202935536	\N	17
+67871	89	4202939344	\N	17
+67896	89	4202939352	\N	17
+67921	89	4202944440	\N	12
+67946	89	4202944456	\N	12
+67971	89	4202944480	\N	17
+67996	89	4202945040	\N	17
+68021	89	4202946792	\N	12
+68046	89	4202950232	\N	12
+68071	89	4202953608	\N	19
+68096	89	4202953784	\N	12
+68121	89	4202953816	\N	17
+68146	89	4202954936	\N	17
+68171	89	4202957480	\N	17
+68196	89	4202958032	\N	12
+68221	89	4202958808	\N	17
+68246	89	4202959136	\N	12
+68271	89	4202960120	\N	19
+68296	89	4202961800	\N	12
+68321	89	4202967080	\N	12
+68346	89	4202968288	\N	17
+68371	89	4202972072	\N	12
+68396	89	4202972088	\N	12
+68421	89	4202972920	\N	12
+68446	89	4202976568	\N	12
+68471	89	4202977344	\N	25
+68496	89	4202979208	\N	12
+68521	89	4202979352	\N	19
+68546	89	4202979480	\N	19
+68571	89	4202979544	\N	17
+68596	89	4202980616	\N	12
+68621	89	4202981160	\N	12
+68646	89	4202982544	\N	19
+68671	89	4202982576	\N	17
+68696	89	4202982664	\N	17
+68721	89	4202982704	\N	22
+68746	89	4202982936	\N	12
+68771	89	4202983080	\N	22
+68796	89	4202983104	\N	12
+68821	89	4202983464	\N	12
+68846	89	4202983664	\N	12
+68871	89	4202983712	\N	12
+68896	89	4202983832	\N	12
+68921	89	4202983968	\N	12
+68946	89	4202984104	\N	19
+68971	89	4202984160	\N	17
+68996	89	4202984192	\N	22
+69021	89	4202985352	\N	19
+69046	89	4204500676	\N	12
+69071	89	4204503336	\N	19
+69096	89	4204506024	\N	17
+69121	89	4204509080	\N	17
+69146	89	4204512442	\N	12
+69171	89	4204513208	\N	25
+69196	89	4204513212	\N	12
+69221	89	4204513232	\N	12
+69246	89	4204514264	\N	17
+69271	89	4204515232	\N	17
+69296	89	4204515432	\N	12
+69321	89	4204515488	\N	19
+69346	89	4204518152	\N	19
+69371	89	4204518160	\N	17
+69396	89	4204521384	\N	12
+69421	89	4204522296	\N	12
+69446	89	4204522584	\N	12
+69471	89	4204526408	\N	17
+69496	89	4204529720	\N	17
+69521	89	4204533144	\N	28
+69546	89	4204541440	\N	19
+69571	89	4204544888	\N	12
+69596	89	4204547344	\N	12
+69621	89	4204547616	\N	22
+69646	89	4204548480	\N	17
+69671	89	4204549136	\N	19
+69696	89	4204549504	\N	12
+69721	89	4204551176	\N	12
+69746	89	4204553104	\N	19
+69771	89	4204554224	\N	19
+69796	89	4204555664	\N	17
+69821	89	4204558176	\N	12
+69846	89	4204562792	\N	17
+69871	89	4204563264	\N	25
+69896	89	4204564800	\N	25
+69921	89	4204564832	\N	17
+69946	89	4204566192	\N	12
+69971	89	4204566928	\N	12
+69996	89	4204569752	\N	17
+70021	89	4204573032	\N	22
+70046	89	4204575648	\N	17
+70071	89	4204576576	\N	17
+70096	89	4204576792	\N	12
+70121	89	4204577288	\N	12
+70146	89	4204578712	\N	12
+70171	89	4204578776	\N	19
+70196	89	4204579000	\N	28
+70221	89	4204579248	\N	19
+70246	89	4204586968	\N	19
+70271	89	4209100156	\N	28
+70296	89	4209102264	\N	17
+70321	89	4209108568	\N	17
+70346	89	4209109696	\N	12
+70371	89	4209112968	\N	25
+70396	89	4209115192	\N	17
+70421	89	4209115848	\N	17
+70446	89	4209119672	\N	19
+70471	89	4209121200	\N	12
+70496	89	4209121600	\N	19
+70521	89	4209127280	\N	19
+70546	89	4209131088	\N	12
+70571	89	4209133088	\N	17
+70596	89	4209133112	\N	12
+70621	89	4209133120	\N	19
+70646	89	4209135808	\N	22
+70671	89	4209138000	\N	12
+70696	89	4209141432	\N	19
+70721	89	4209143312	\N	22
+70746	89	4209144912	\N	12
+70771	89	4209144920	\N	19
+70796	89	4209144976	\N	28
+70821	89	4209145008	\N	19
+70846	89	4209145072	\N	19
+70871	89	4209145080	\N	22
+70896	89	4209145096	\N	19
+70921	89	4209147592	\N	12
+70946	89	4209150640	\N	22
+70971	89	4209152664	\N	12
+70996	89	4209153664	\N	19
+71021	89	4209154656	\N	25
+71046	89	4209155512	\N	12
+71071	89	4209159120	\N	12
+71096	89	4209159392	\N	17
+71121	89	4209161664	\N	19
+71146	89	4209162416	\N	22
+71171	89	4209163808	\N	12
+71196	89	4209165568	\N	12
+71221	89	4209166576	\N	12
+71246	89	4209167528	\N	12
+71271	89	4209168328	\N	12
+71296	89	4209171016	\N	19
+71321	89	4209171856	\N	17
+71346	89	4209173088	\N	22
+71371	89	4209176304	\N	12
+71396	89	4209177152	\N	19
+71421	89	4209177304	\N	12
+71446	89	4209179008	\N	22
+71471	89	4209179040	\N	12
+71496	89	4209179056	\N	19
+71521	89	4209179064	\N	17
+71546	89	4209179136	\N	25
+71571	89	4209179176	\N	22
+71596	89	4209179240	\N	17
+71621	89	4209179256	\N	22
+71646	89	4209179280	\N	12
+71671	89	4209182736	\N	12
+71696	89	4209183696	\N	19
+71721	89	4209183912	\N	12
+71746	89	4209184624	\N	19
+71771	89	4209184888	\N	22
+71796	89	4209186496	\N	19
+71821	89	4210160000	\N	28
+71846	89	3400503370	\N	14
+71871	89	3400505740	\N	14
+71896	89	3400506670	\N	14
+71921	89	3400506700	\N	22
+71946	89	3400508920	\N	20
+71971	89	3400508950	\N	26
+71996	89	3400512670	\N	20
+72021	89	3400512940	\N	22
+72046	89	3400517080	\N	14
+72071	89	3400517440	\N	22
+72096	89	3400518790	\N	20
+72121	89	3400520050	\N	20
+72146	89	3400522110	\N	30
+72171	89	3400523250	\N	14
+72196	89	3400523850	\N	22
+72221	89	3400529010	\N	20
+72246	89	3400542060	\N	22
+72271	89	3400543290	\N	20
+72296	89	3400543740	\N	26
+72321	89	3400545120	\N	26
+72346	89	3400545210	\N	14
+72371	89	3400547880	\N	26
+72396	89	3400548900	\N	22
+72421	89	3400549020	\N	30
+72446	89	3400551510	\N	20
+72471	89	3400553070	\N	20
+72496	89	3400555800	\N	20
+72521	89	3400557480	\N	14
+72546	89	3400557510	\N	26
+72571	89	3400563510	\N	20
+72596	89	3400563660	\N	14
+72621	89	3400566810	\N	20
+72646	89	3400568610	\N	22
+72671	89	3400569990	\N	14
+72696	89	3400572060	\N	20
+72721	89	3400577150	\N	14
+72746	89	3400578200	\N	20
+72771	89	3400581440	\N	30
+72796	89	3400582420	\N	14
+72821	89	3400582960	\N	14
+72846	89	3400702200	\N	20
+72871	89	3400702230	\N	14
+72896	89	3400703250	\N	20
+72921	89	3400704750	\N	22
+72946	89	3400705440	\N	20
+72971	89	3400705470	\N	20
+72996	89	3400708170	\N	14
+73021	89	3400710000	\N	33
+73046	89	3400712280	\N	33
+73071	89	3400712550	\N	14
+73096	89	3400713420	\N	20
+73121	89	3400714260	\N	22
+73146	89	3400726070	\N	14
+73171	89	3400726760	\N	33
+73196	89	3400726820	\N	22
+73221	89	3400728740	\N	22
+73246	89	3400728770	\N	22
+73271	89	3400728800	\N	20
+73296	89	3400732220	\N	14
+73321	89	3400739210	\N	14
+73346	89	3400739420	\N	14
+73371	89	3400740440	\N	26
+73396	89	3400742630	\N	14
+73421	89	3400745510	\N	14
+73446	89	3400748750	\N	14
+73471	89	3400753880	\N	14
+73496	89	3400757660	\N	30
+73521	89	3400758770	\N	22
+73546	89	3400765160	\N	20
+73571	89	3400768340	\N	20
+73596	89	3400771220	\N	20
+73621	89	3400772240	\N	14
+73646	89	3400776220	\N	30
+73671	89	3400777630	\N	22
+73696	89	3400781740	\N	30
+73721	89	3400782450	\N	14
+73746	89	3401513360	\N	20
+73771	89	3401517710	\N	30
+73796	89	3401519180	\N	22
+73821	89	3401521060	\N	14
+73846	89	3401524840	\N	22
+73871	89	3401526340	\N	26
+73896	89	3401528185	\N	14
+73921	89	3401530180	\N	22
+73946	89	3401541160	\N	20
+73971	89	3401543440	\N	22
+73996	89	3401547250	\N	30
+74021	89	3401549680	\N	14
+74046	89	3401551390	\N	14
+74071	89	3401557150	\N	20
+74096	89	3401559070	\N	20
+74121	89	3401569030	\N	14
+74146	89	3401571850	\N	14
+74171	89	3401577180	\N	30
+74196	89	3401578110	\N	14
+74221	89	3401578800	\N	26
+74246	89	3401580120	\N	14
+74271	89	3401582120	\N	22
+74296	89	3401582180	\N	14
+74321	89	3401582840	\N	22
+74346	89	3402119780	\N	30
+74371	89	3402122185	\N	30
+74396	89	3402129310	\N	33
+74421	89	3402131620	\N	20
+74446	89	3402133150	\N	14
+74471	89	3402133180	\N	22
+74496	89	3402139510	\N	30
+74521	89	3402157600	\N	14
+74546	89	3402160900	\N	30
+74571	89	3402163850	\N	22
+74596	89	3402174000	\N	33
+74621	89	3402180240	\N	30
+1177756	382	34007	54.042824	\N
+1177757	382	34015	35.499718	\N
+1177758	382	34021	14.48828	\N
+1177759	382	34005	71.30386	\N
+1177760	382	42017	54.916023	\N
+1177761	382	42029	64.32983	\N
+1177762	382	42045	55.20099	\N
+1177763	382	42101	25.693275	\N
+1177764	382	42091	62.03709	\N
+1177882	498	34005	71400.76	\N
+1177883	498	34007	8277.19	\N
+1177884	498	34015	39152.76	\N
+1177885	498	34021	21418.7	\N
+1177886	498	42017	76984.98	\N
+1177887	498	42029	152619.7	\N
+1177888	498	42045	4485.72	\N
+1177889	498	42091	35197.34	\N
+1177890	498	42101	182.51	\N
+1199334	382	\N	437.51187	\N
 \.
 
 
 --
--- Data for Name: geo_variable; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.geo_variable (id, variable_id, geo_level) FROM stdin;
-40	383	municipality
-41	384	municipality
-42	385	municipality
-43	386	municipality
-44	387	municipality
-45	388	municipality
-46	389	municipality
-47	390	municipality
-48	391	municipality
-49	392	municipality
-50	393	municipality
-51	394	municipality
-52	395	municipality
-53	396	municipality
-54	411	municipality
-55	412	municipality
-56	413	municipality
-57	414	municipality
-58	415	municipality
-59	416	municipality
-60	417	municipality
-61	418	municipality
-62	419	municipality
-63	420	municipality
-64	421	municipality
-65	422	municipality
-66	423	municipality
-67	424	municipality
-68	425	municipality
-69	426	municipality
-70	427	municipality
-71	428	municipality
-72	381	municipality
-73	382	municipality
-74	397	municipality
-75	398	municipality
-76	399	municipality
-77	402	municipality
-78	403	municipality
-79	404	municipality
-80	405	municipality
-81	406	municipality
-82	407	municipality
-83	408	municipality
-84	409	municipality
-85	400	municipality
-86	401	municipality
-87	410	municipality
-88	74	county
-89	74	municipality
-90	74	region
-91	1	county
-92	1	municipality
-93	1	region
-94	11	county
-95	11	municipality
-96	11	region
-97	12	county
-98	12	municipality
-99	12	region
-100	13	county
-101	13	municipality
-102	13	region
-103	14	county
-104	14	municipality
-105	14	region
-106	15	county
-107	15	municipality
-108	15	region
-109	18	county
-110	18	municipality
-111	18	region
-112	50	county
-113	50	municipality
-114	50	region
-115	3	county
-116	3	municipality
-117	3	region
-118	69	county
-119	69	municipality
-120	69	region
-121	78	county
-122	78	municipality
-123	78	region
-124	93	county
-125	93	municipality
-126	93	region
-127	94	county
-128	94	municipality
-129	94	region
-130	199	county
-131	199	municipality
-132	199	region
-133	79	county
-134	79	municipality
-135	79	region
-136	5	county
-137	5	municipality
-138	5	region
-139	200	county
-140	200	municipality
-141	200	region
-142	228	county
-143	228	municipality
-144	228	region
-145	49	county
-146	49	municipality
-147	49	region
-148	85	county
-149	85	municipality
-150	85	region
-151	86	county
-152	86	municipality
-153	86	region
-154	87	county
-155	87	municipality
-156	87	region
-157	88	county
-158	88	municipality
-159	88	region
-160	89	county
-161	89	municipality
-162	89	region
-163	90	county
-164	90	municipality
-165	90	region
-166	201	county
-167	201	municipality
-168	201	region
-169	23	county
-170	23	municipality
-171	23	region
-172	24	county
-173	24	municipality
-174	24	region
-175	25	county
-176	25	municipality
-177	25	region
-178	104	county
-179	104	municipality
-180	104	region
-181	106	county
-182	106	municipality
-183	106	region
-184	107	county
-185	107	municipality
-186	107	region
-187	108	county
-188	108	municipality
-189	108	region
-190	110	county
-191	110	municipality
-192	110	region
-193	111	county
-194	111	municipality
-195	111	region
-196	112	county
-197	112	municipality
-198	112	region
-199	114	county
-200	114	municipality
-201	114	region
-202	115	county
-203	115	municipality
-204	115	region
-205	116	county
-206	116	municipality
-207	116	region
-208	229	county
-209	229	municipality
-210	229	region
-211	121	county
-212	121	municipality
-213	121	region
-214	122	county
-215	122	municipality
-216	122	region
-217	123	county
-218	123	municipality
-219	123	region
-220	124	county
-221	124	municipality
-222	124	region
-223	202	county
-224	202	municipality
-225	202	region
-226	125	county
-227	125	municipality
-228	125	region
-229	126	county
-230	126	municipality
-231	126	region
-232	127	county
-233	127	municipality
-234	127	region
-235	128	county
-236	128	municipality
-237	128	region
-238	129	county
-239	129	municipality
-240	129	region
-241	130	county
-242	130	municipality
-243	130	region
-244	30	county
-245	30	municipality
-246	30	region
-247	208	county
-248	208	municipality
-249	208	region
-253	31	county
-254	31	municipality
-255	31	region
-256	32	county
-257	32	municipality
-258	32	region
-259	33	county
-260	33	municipality
-261	33	region
-262	34	county
-263	34	municipality
-264	34	region
-265	7	county
-266	7	municipality
-267	7	region
-268	8	county
-269	8	municipality
-270	8	region
-271	9	county
-272	9	municipality
-273	9	region
-274	10	county
-275	10	municipality
-276	10	region
-277	177	county
-278	177	municipality
-279	177	region
-280	180	county
-281	180	municipality
-282	180	region
-283	198	county
-284	198	municipality
-285	198	region
-286	91	county
-287	91	municipality
-288	91	region
-289	222	county
-290	222	municipality
-291	222	region
-292	92	county
-293	92	municipality
-294	92	region
-295	223	county
-296	223	municipality
-297	223	region
-298	224	county
-299	224	municipality
-300	224	region
-301	225	county
-302	225	municipality
-303	225	region
-304	226	county
-305	226	municipality
-306	226	region
-307	131	county
-308	131	municipality
-309	131	region
-310	132	county
-311	132	municipality
-312	132	region
-313	133	county
-314	133	municipality
-315	133	region
-316	73	county
-317	73	municipality
-318	73	region
-319	134	county
-320	134	municipality
-321	134	region
-322	135	county
-323	135	municipality
-324	135	region
-325	136	county
-326	136	municipality
-327	136	region
-328	137	county
-329	137	municipality
-330	137	region
-331	71	county
-332	71	municipality
-333	71	region
-334	72	county
-335	72	municipality
-336	72	region
-337	138	county
-338	138	municipality
-339	138	region
-340	139	county
-341	139	municipality
-342	139	region
-343	140	county
-344	140	municipality
-345	140	region
-346	141	county
-347	141	municipality
-348	141	region
-349	95	county
-350	95	municipality
-351	95	region
-352	96	county
-353	96	municipality
-354	96	region
-355	97	county
-356	97	municipality
-357	97	region
-358	98	county
-359	98	municipality
-360	98	region
-361	99	county
-362	99	municipality
-363	99	region
-364	100	county
-365	100	municipality
-366	100	region
-367	142	county
-368	142	municipality
-369	142	region
-370	149	county
-371	149	municipality
-372	149	region
-373	150	county
-374	150	municipality
-375	150	region
-376	151	county
-377	151	municipality
-378	151	region
-379	152	county
-380	152	municipality
-381	152	region
-382	153	county
-383	153	municipality
-384	153	region
-385	154	county
-386	154	municipality
-387	154	region
-388	155	county
-389	155	municipality
-390	155	region
-391	156	county
-392	156	municipality
-393	156	region
-394	157	county
-395	157	municipality
-396	157	region
-397	158	county
-398	158	municipality
-399	158	region
-400	159	county
-401	159	municipality
-402	159	region
-403	160	county
-404	160	municipality
-405	160	region
-406	161	county
-407	161	municipality
-408	161	region
-409	162	county
-410	162	municipality
-411	162	region
-412	163	county
-413	163	municipality
-414	163	region
-415	164	county
-416	164	municipality
-417	164	region
-418	165	county
-419	165	municipality
-420	165	region
-421	166	county
-422	166	municipality
-423	166	region
-424	169	county
-425	169	municipality
-426	169	region
-427	170	county
-428	170	municipality
-429	170	region
-430	171	county
-431	171	municipality
-432	171	region
-433	172	county
-434	172	municipality
-435	172	region
-436	173	county
-437	173	municipality
-438	173	region
-439	174	county
-440	174	municipality
-441	174	region
-442	175	county
-443	175	municipality
-444	175	region
-445	176	county
-446	176	municipality
-447	176	region
-448	181	county
-449	181	municipality
-450	181	region
-451	182	county
-452	182	municipality
-453	182	region
-454	183	county
-455	183	municipality
-456	183	region
-457	184	county
-458	184	municipality
-459	184	region
-460	186	county
-461	186	municipality
-462	186	region
-463	187	county
-464	187	municipality
-465	187	region
-466	188	county
-467	188	municipality
-468	188	region
-469	190	county
-470	190	municipality
-471	190	region
-472	191	county
-473	191	municipality
-474	191	region
-475	192	county
-476	192	municipality
-477	192	region
-478	193	county
-479	193	municipality
-480	193	region
-481	194	county
-482	194	municipality
-483	194	region
-484	195	county
-485	195	municipality
-486	195	region
-487	203	county
-488	203	municipality
-489	203	region
-490	204	county
-491	204	municipality
-492	204	region
-493	205	county
-494	205	municipality
-495	205	region
-496	206	county
-497	206	municipality
-498	206	region
-499	207	county
-500	207	municipality
-501	207	region
-502	84	county
-503	84	municipality
-504	84	region
-505	117	county
-506	117	municipality
-507	117	region
-508	118	county
-509	118	municipality
-510	118	region
-511	189	county
-512	189	municipality
-513	189	region
-514	80	county
-515	80	municipality
-516	80	region
-517	81	county
-518	81	municipality
-519	81	region
-520	82	county
-521	82	municipality
-522	82	region
-523	83	county
-524	83	municipality
-525	83	region
-526	35	county
-527	35	municipality
-528	35	region
-529	37	county
-530	37	municipality
-531	37	region
-532	38	county
-533	38	municipality
-534	38	region
-535	39	county
-536	39	municipality
-537	39	region
-538	40	county
-539	40	municipality
-540	40	region
-541	41	county
-542	41	municipality
-543	41	region
-544	119	county
-545	119	municipality
-546	119	region
-547	120	county
-548	120	municipality
-549	120	region
-550	59	county
-551	59	municipality
-552	59	region
-553	65	county
-554	65	municipality
-555	65	region
-556	61	county
-557	61	municipality
-558	61	region
-559	60	county
-560	60	municipality
-561	60	region
-562	62	county
-563	62	municipality
-564	62	region
-565	66	county
-566	66	municipality
-567	66	region
-568	63	county
-569	63	municipality
-570	63	region
-571	52	county
-572	52	municipality
-573	52	region
-574	57	county
-575	57	municipality
-576	57	region
-577	148	county
-578	148	municipality
-579	148	region
-580	227	county
-581	227	municipality
-582	227	region
-583	53	county
-584	53	municipality
-585	53	region
-586	54	county
-587	54	municipality
-588	54	region
-589	55	county
-590	55	municipality
-591	55	region
-592	56	county
-593	56	municipality
-594	56	region
-595	67	county
-596	67	municipality
-597	67	region
-598	68	county
-599	68	municipality
-600	68	region
-601	64	county
-602	64	municipality
-603	64	region
-604	58	county
-605	58	municipality
-606	58	region
-607	168	county
-608	168	municipality
-609	168	region
-610	209	county
-611	209	municipality
-612	209	region
-613	210	county
-614	210	municipality
-615	210	region
-616	211	county
-617	211	municipality
-618	211	region
-619	212	county
-620	212	municipality
-621	212	region
-622	213	county
-623	213	municipality
-624	213	region
-625	214	county
-626	214	municipality
-627	214	region
-628	215	county
-629	215	municipality
-630	215	region
-631	216	county
-632	216	municipality
-633	216	region
-634	217	county
-635	217	municipality
-636	217	region
-637	218	county
-638	218	municipality
-639	218	region
-640	219	county
-641	219	municipality
-642	219	region
-643	220	county
-644	220	municipality
-645	220	region
-646	221	county
-647	221	municipality
-648	221	region
-649	42	county
-650	42	municipality
-651	42	region
-652	2	county
-653	2	municipality
-654	2	region
-655	101	county
-656	101	municipality
-657	101	region
-658	102	county
-659	102	municipality
-660	102	region
-661	70	county
-662	70	municipality
-663	70	region
-664	103	county
-665	103	municipality
-666	103	region
-667	16	county
-668	16	municipality
-669	16	region
-670	17	county
-671	17	municipality
-672	17	region
-673	19	county
-674	19	municipality
-675	19	region
-676	20	county
-677	20	municipality
-678	20	region
-679	21	county
-680	21	municipality
-681	21	region
-682	22	county
-683	22	municipality
-684	22	region
-685	109	county
-686	109	municipality
-687	109	region
-688	43	county
-689	43	municipality
-690	43	region
-691	44	county
-692	44	municipality
-693	44	region
-694	45	county
-695	45	municipality
-696	45	region
-697	51	county
-698	51	municipality
-699	51	region
-700	167	county
-701	167	municipality
-702	167	region
-703	179	county
-704	179	municipality
-705	179	region
-706	113	county
-707	113	municipality
-708	113	region
-709	178	county
-710	178	municipality
-711	178	region
-712	26	county
-713	26	municipality
-714	26	region
-715	27	county
-716	27	municipality
-717	27	region
-718	28	county
-719	28	municipality
-720	28	region
-721	29	county
-722	29	municipality
-723	29	region
-724	105	county
-725	105	municipality
-726	105	region
-727	185	county
-728	185	municipality
-729	185	region
-730	46	county
-731	46	municipality
-732	46	region
-733	47	county
-734	47	municipality
-735	47	region
-736	48	county
-737	48	municipality
-738	48	region
-739	36	county
-740	36	municipality
-741	36	region
-742	143	county
-743	143	municipality
-744	143	region
-745	144	county
-746	144	municipality
-747	144	region
-748	145	county
-749	145	municipality
-750	145	region
-751	146	county
-752	146	municipality
-753	146	region
-754	147	county
-755	147	municipality
-756	147	region
-757	4	county
-758	4	municipality
-759	76	county
-760	76	municipality
-761	75	county
-762	75	municipality
-763	77	county
-764	77	municipality
-765	197	county
-766	197	municipality
-767	196	county
-768	196	municipality
-769	381	county
-770	382	county
-771	383	county
-772	384	county
-773	385	county
-774	386	county
-775	387	county
-776	388	county
-777	389	county
-778	390	county
-779	391	county
-780	392	county
-781	393	county
-782	394	county
-783	395	county
-784	396	county
-785	397	county
-786	398	county
-787	399	county
-788	400	county
-789	401	county
-790	402	county
-791	403	county
-792	404	county
-793	405	county
-794	406	county
-795	407	county
-796	408	county
-797	409	county
-798	410	county
-799	411	county
-800	412	county
-801	413	county
-802	414	county
-803	415	county
-804	416	county
-805	417	county
-806	418	county
-807	419	county
-808	420	county
-809	421	county
-810	422	county
-811	423	county
-812	424	county
-813	425	county
-814	426	county
-815	427	county
-816	428	county
-833	435	region
-834	435	county
-835	435	municipality
-876	466	county
-877	467	county
-878	468	county
-879	469	county
-880	470	county
-881	471	county
-882	472	county
-883	473	county
-884	474	county
-885	475	county
-886	476	county
-887	477	county
-888	478	county
-889	479	county
-890	480	county
-891	481	county
-892	482	county
-893	483	county
-894	484	county
-895	485	county
-896	486	county
-900	490	county
-904	494	county
-908	478	municipality
-912	482	municipality
-897	487	county
-901	491	county
-905	475	municipality
-909	479	municipality
-913	483	municipality
-898	488	county
-902	492	county
-906	476	municipality
-910	480	municipality
-914	484	municipality
-899	489	county
-903	493	county
-907	477	municipality
-911	481	municipality
-\.
-
-
---
--- Data for Name: geography; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: geography; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.geography (geoid, name, county_id, state, buffer_bbox) FROM stdin;
@@ -106236,7 +105631,7 @@ COPY public.geography (geoid, name, county_id, state, buffer_bbox) FROM stdin;
 
 
 --
--- Data for Name: link; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: link; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.link (id, link, type) FROM stdin;
@@ -106244,7 +105639,7 @@ COPY public.link (id, link, type) FROM stdin;
 
 
 --
--- Data for Name: municipality; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: municipality; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.municipality (geoid, buffer_bbox, mun_name, county, state) FROM stdin;
@@ -106603,7 +105998,7 @@ COPY public.municipality (geoid, buffer_bbox, mun_name, county, state) FROM stdi
 
 
 --
--- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.source (id, agency, year_from, year_to, citation, dataset) FROM stdin;
@@ -106615,7 +106010,7 @@ COPY public.source (id, agency, year_from, year_to, citation, dataset) FROM stdi
 
 
 --
--- Data for Name: sql; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: sql; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.sql (id, name, data_source, geo_level, body) FROM stdin;
@@ -106635,9 +106030,9 @@ COPY public.sql (id, name, data_source, geo_level, body) FROM stdin;
 18	Passenger Rail	gis	municipality	SELECT\n  m.geoid,\n  COALESCE((\n    SELECT COUNT(*)\n    FROM transportation.passengerrailstations prs\n    WHERE ST_Intersects(m.shape, prs.shape)\n  ), 0) AS passenger_rail_stations,\n  COALESCE((\n    SELECT (SUM(ST_Length(ST_Intersection(m.shape, pr.shape))) / 1609.34)\n    FROM transportation.passengerrail pr\n    WHERE ST_Intersects(m.shape, pr.shape)\n  ), 0) AS passenger_rail_mi\nFROM\n  boundaries.municipalboundaries m\nwhere m.dvrpc_reg = 'Yes';
 19	Open Space	gis	municipality	SELECT\n  m.geoid,\n  COALESCE((\n    SELECT (SUM(ST_Area(ST_Intersection(m.shape, os.shape))) / 1609.34)\n    FROM planning.dvrpc_protectedopenspace os\n    WHERE ST_Intersects(m.shape, os.shape)\n  ), 0) AS protected_open_space_sq_mi\nFROM\n  boundaries.municipalboundaries m\nwhere m.dvrpc_reg = 'Yes';
 24	Electric Vehicles	ckan	municipality	SELECT geoid, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv FROM "31691dde-5bd5-4570-ab9f-79c498f72497" WHERE YEAR = (SELECT MAX(YEAR) FROM "31691dde-5bd5-4570-ab9f-79c498f72497") AND geoid IS NOT NULL
-20	Bridge Conditions	ckan	county	SELECT\n    county_id as geoid,\n    SUM(CASE WHEN nhs_type = 'All' AND condition = 'Good' THEN count_bridges ELSE 0 END) AS bridge_all_good,\n    SUM(CASE WHEN nhs_type = 'All' AND condition = 'Fair' THEN count_bridges ELSE 0 END) AS bridge_all_fair,\n    SUM(CASE WHEN nhs_type = 'All' AND condition = 'Poor' THEN count_bridges ELSE 0 END) AS bridge_all_poor,\n    SUM(CASE WHEN nhs_type = 'NHS' AND condition = 'Good' THEN count_bridges ELSE 0 END) AS bridge_nhs_good,\n    SUM(CASE WHEN nhs_type = 'NHS' AND condition = 'Fair' THEN count_bridges ELSE 0 END) AS bridge_nhs_fair,\n    SUM(CASE WHEN nhs_type = 'NHS' AND condition = 'Poor' THEN count_bridges ELSE 0 END) AS bridge_nhs_poor,\n    SUM(CASE WHEN nhs_type = 'Non-NHS' AND condition = 'Good' THEN count_bridges ELSE 0 END) AS bridge_nonnhs_good,\n    SUM(CASE WHEN nhs_type = 'Non-NHS' AND condition = 'Fair' THEN count_bridges ELSE 0 END) AS bridge_nonnhs_fair,\n    SUM(CASE WHEN nhs_type = 'Non-NHS' AND condition = 'Poor' THEN count_bridges ELSE 0 END) AS bridge_nonnhs_poor\nFROM\n    "6b065499-c75d-48bd-a3c1-6c7bcf030efa" as t\nWHERE\n    year = (SELECT MAX(year) FROM "6b065499-c75d-48bd-a3c1-6c7bcf030efa")\nGROUP BY\n    county_id
 21	Electric Vehicles	ckan	county	SELECT geoid, bev, phev, total_ev, other_fuel, total_ldv, pct_ev_ldv, change_ev, pct_change_ev, change_ldv, pct_change_ldv FROM "97af7cbb-11b9-4f98-9d71-b2a6e5bfb994" WHERE YEAR = (SELECT MAX(YEAR) FROM "97af7cbb-11b9-4f98-9d71-b2a6e5bfb994")
 22	Housing Affordability	ckan	county	SELECT county_id as geoid, percent_cost_burdened from "4a3105ac-cc2f-4ba2-8b25-68ae4c1e311c" WHERE year = (SELECT MAX(year) FROM "4a3105ac-cc2f-4ba2-8b25-68ae4c1e311c")
+20	Bridge Conditions	ckan	county	SELECT\n    county_id as geoid,\n    SUM(CASE WHEN nhs_type = 'All' AND condition = 'Good' THEN count_bridges ELSE 0 END) AS bridge_all_good4,\n    SUM(CASE WHEN nhs_type = 'All' AND condition = 'Fair' THEN count_bridges ELSE 0 END) AS bridge_all_fair,\n    SUM(CASE WHEN nhs_type = 'All' AND condition = 'Poor' THEN count_bridges ELSE 0 END) AS bridge_all_poor,\n    SUM(CASE WHEN nhs_type = 'NHS' AND condition = 'Good' THEN count_bridges ELSE 0 END) AS bridge_nhs_good,\n    SUM(CASE WHEN nhs_type = 'NHS' AND condition = 'Fair' THEN count_bridges ELSE 0 END) AS bridge_nhs_fair,\n    SUM(CASE WHEN nhs_type = 'NHS' AND condition = 'Poor' THEN count_bridges ELSE 0 END) AS bridge_nhs_poor,\n    SUM(CASE WHEN nhs_type = 'Non-NHS' AND condition = 'Good' THEN count_bridges ELSE 0 END) AS bridge_nonnhs_good,\n    SUM(CASE WHEN nhs_type = 'Non-NHS' AND condition = 'Fair' THEN count_bridges ELSE 0 END) AS bridge_nonnhs_fair,\n    SUM(CASE WHEN nhs_type = 'Non-NHS' AND condition = 'Poor' THEN count_bridges ELSE 0 END) AS bridge_nonnhs_poor\nFROM\n    "6b065499-c75d-48bd-a3c1-6c7bcf030efa" as t\nWHERE\n    year = (SELECT MAX(year) FROM "6b065499-c75d-48bd-a3c1-6c7bcf030efa")\nGROUP BY\n    county_id
 7	TIP	gis	county	SELECT\n  c.fips as geoid,  \nCOALESCE((\n    SELECT COUNT(*)\n    FROM transportation.patip_fy2025_2028_line tip\n    WHERE ST_Intersects(c.shape, tip.shape)\n  ), 0) AS fy25_pa_lines,\n  COALESCE((\n    SELECT COUNT(*)\n    FROM transportation.njtip_fy2026_2029_line tip\n    WHERE ST_Intersects(c.shape, tip.shape)\n  ), 0) AS fy26_nj_lines,\n  COALESCE((\n    SELECT COUNT(*)\n    FROM transportation.patip_fy2025_2028_point tip\n    WHERE ST_Intersects(c.shape, tip.shape)\n  ), 0) AS fy25_pa_points,\n  COALESCE((\n    SELECT COUNT(*)\n    FROM transportation.njtip_fy2026_2029_point tip\n    WHERE ST_Intersects(c.shape, tip.shape)\n  ), 0) AS fy26_nj_points\nFROM\n  boundaries.countyboundaries c\nwhere c.dvrpc_reg = 'Yes';
 23	Pavement Conditions	ckan	county	SELECT\n    county_id as geoid,\n    SUM(CASE WHEN metric = 'PM2' AND pavement_condition = 'Good' THEN miles ELSE 0 END) AS road_pm2_good,\n    SUM(CASE WHEN metric = 'PM2' AND pavement_condition = 'Fair' THEN miles ELSE 0 END) AS road_pm2_fair,\n    SUM(CASE WHEN metric = 'PM2' AND pavement_condition = 'Poor' THEN miles ELSE 0 END) AS road_pm2_poor,\n    SUM(CASE WHEN metric = 'IRI' AND pavement_condition = 'Good' THEN miles ELSE 0 END) AS road_iri_good,\n    SUM(CASE WHEN metric = 'IRI' AND pavement_condition = 'Fair' THEN miles ELSE 0 END) AS road_iri_fair,\n    SUM(CASE WHEN metric = 'IRI' AND pavement_condition = 'Poor' THEN miles ELSE 0 END) AS road_iri_poor,\n    SUM(CASE WHEN metric = 'DOT Pavement Index' AND pavement_condition = 'Good' THEN miles ELSE 0 END) AS road_dot_index_good,\n    SUM(CASE WHEN metric = 'DOT Pavement Index' AND pavement_condition = 'Fair' THEN miles ELSE 0 END) AS road_dot_index_fair,\n    SUM(CASE WHEN metric = 'DOT Pavement Index' AND pavement_condition = 'Poor' THEN miles ELSE 0 END) AS road_dot_index_poor\nFROM\n    "4e632db0-9830-4f7b-9ff3-072353ea9e6a"\nWHERE\n    year = (SELECT MAX(year) FROM "4e632db0-9830-4f7b-9ff3-072353ea9e6a") AND road_type = 'Total'\nGROUP BY\n    county_id
 3	Trails	gis	county	SELECT\n  c.fips as geoid,\n  COALESCE((\n    SELECT (SUM(ST_Length(ST_Intersection(c.shape, t.shape))) / 1609.34)\n    FROM transportation.all_trails t\n    WHERE ST_Intersects(c.shape, t.shape)\n  ), 0) AS existing_trail_mi2,\n  COALESCE((\n    SELECT (SUM(ST_Length(ST_Intersection(c.shape, ct.shape))) / 1609.34)\n    FROM transportation.circuittrails ct\n    WHERE ST_Intersects(c.shape, ct.shape) and ct.circuit != 'Existing'\n  ), 0) AS planned_trail_mi\nFROM\n  boundaries.countyboundaries c\nwhere c.dvrpc_reg = 'Yes';
@@ -106646,7 +106041,7 @@ COPY public.sql (id, name, data_source, geo_level, body) FROM stdin;
 
 
 --
--- Data for Name: subcategory; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: subcategory; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.subcategory (id, name, category_id, label, sort_weight) FROM stdin;
@@ -106671,7 +106066,7 @@ COPY public.subcategory (id, name, category_id, label, sort_weight) FROM stdin;
 
 
 --
--- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.topic (id, name, subcategory_id, label, sort_weight) FROM stdin;
@@ -106713,7 +106108,7 @@ COPY public.topic (id, name, subcategory_id, label, sort_weight) FROM stdin;
 
 
 --
--- Data for Name: variable; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: variable; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.variable (id, name, data_source, acs_variable, data_year, description, concept, last_updated, aggregateable) FROM stdin;
@@ -106737,7 +106132,6 @@ COPY public.variable (id, name, data_source, acs_variable, data_year, descriptio
 58	age_5_to_9_pop	acs	S0101_C01_003E	2024	Estimate!!Total!!Total population!!AGE!!5 to 9 years	Age and Sex	2026-06-11	t
 213	comm_ferry	acs	B08006_013E	2024	Estimate!!Total:!!Public transportation (excluding taxicab):!!Ferryboat	Sex of Workers by Means of Transportation to Work	2026-06-11	t
 197	mean_family_inc	acs	S1901_C02_013E	2024	Estimate!!Families!!Mean income (dollars)	Income in the Past 12 Months (in 2024 Inflation-Adjusted Dollars)	2026-06-11	f
-466	bridge_all_good	ckan	\N	\N	\N	Bridge Conditions	\N	t
 470	bridge_nhs_fair	ckan	\N	\N	\N	Bridge Conditions	\N	t
 474	bridge_nonnhs_poor	ckan	\N	\N	\N	Bridge Conditions	\N	t
 383	total_acres	gis	\N	\N	\N	Land Use	2026-06-10	t
@@ -107023,11 +106417,13 @@ COPY public.variable (id, name, data_source, acs_variable, data_year, descriptio
 193	hh_inc_200k	acs	B19001_017E	2024	Estimate!!Total:!!$200,000 or more	Household Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)	2026-06-11	t
 204	avg_hh_size	acs	B25010_001E	2024	Estimate!!Average household size --!!Total:	Average Household Size of Occupied Housing Units by Tenure	2026-06-11	t
 44	vietnamese_lim	acs	C16001_026E	2024	Estimate!!Total:!!Vietnamese:!!Speak English less than "very well"	Language Spoken at Home for the Population 5 Years and Over	2026-06-11	t
+497	bridge_all_good4	ckan	\N	\N	\N	Bridge Conditions	\N	f
+498	agriculture_acres2	gis	\N	\N	\N	Land Use	\N	f
 \.
 
 
 --
--- Data for Name: viz; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: viz; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.viz (geo_level, file, create_date, topic_id, id, last_edited_by) FROM stdin;
@@ -107158,7 +106554,7 @@ municipality	[]	2026-05-21 10:26:16.044533	\N	185	\N
 
 
 --
--- Data for Name: viz_history; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: viz_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.viz_history (geo_level, file, create_date, id, parent_id, topic_id, last_edited_by) FROM stdin;
@@ -107168,7 +106564,7 @@ county	[1]	2025-12-10 15:20:24.220183	57	37	24	Colin Kirby
 
 
 --
--- Data for Name: viz_source; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: viz_source; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.viz_source (viz_id, source_id) FROM stdin;
@@ -107176,91 +106572,84 @@ COPY public.viz_source (viz_id, source_id) FROM stdin;
 
 
 --
--- Name: category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.category_id_seq', 8, true);
 
 
 --
--- Name: content_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: content_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.content_history_id_seq', 28, true);
 
 
 --
--- Name: content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.content_id_seq', 185, true);
 
 
 --
--- Name: data_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: data_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.data_id_seq', 757156, true);
-
-
---
--- Name: geo_variable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.geo_variable_id_seq', 914, true);
+SELECT pg_catalog.setval('public.data_id_seq', 1217603, true);
 
 
 --
--- Name: links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.links_id_seq', 1, false);
 
 
 --
--- Name: source_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: source_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.source_id_seq', 11, true);
 
 
 --
--- Name: sql_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: sql_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.sql_id_seq', 24, true);
 
 
 --
--- Name: subcategory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: subcategory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.subcategory_id_seq', 27, true);
 
 
 --
--- Name: topic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: topic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.topic_id_seq', 59, true);
 
 
 --
--- Name: variables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: variables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.variables_id_seq', 494, true);
+SELECT pg_catalog.setval('public.variables_id_seq', 498, true);
 
 
 --
--- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: visualizations_history_id_column_name_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.visualizations_history_id_column_name_seq', 57, true);
 
 
 --
--- Name: category category_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: category category_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.category
@@ -107268,7 +106657,7 @@ ALTER TABLE ONLY public.category
 
 
 --
--- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.category
@@ -107276,7 +106665,7 @@ ALTER TABLE ONLY public.category
 
 
 --
--- Name: content_history content_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_history content_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_history
@@ -107284,7 +106673,7 @@ ALTER TABLE ONLY public.content_history
 
 
 --
--- Name: content content_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content content_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content
@@ -107292,7 +106681,7 @@ ALTER TABLE ONLY public.content
 
 
 --
--- Name: content_source content_source_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_source content_source_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_source
@@ -107300,7 +106689,7 @@ ALTER TABLE ONLY public.content_source
 
 
 --
--- Name: county county_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: county county_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.county
@@ -107308,7 +106697,7 @@ ALTER TABLE ONLY public.county
 
 
 --
--- Name: data data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: data data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data
@@ -107316,15 +106705,7 @@ ALTER TABLE ONLY public.data
 
 
 --
--- Name: geo_variable geo_variable_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.geo_variable
-    ADD CONSTRAINT geo_variable_pkey PRIMARY KEY (id);
-
-
---
--- Name: geography geography_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: geography geography_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.geography
@@ -107332,7 +106713,7 @@ ALTER TABLE ONLY public.geography
 
 
 --
--- Name: link links_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: link links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.link
@@ -107340,7 +106721,7 @@ ALTER TABLE ONLY public.link
 
 
 --
--- Name: municipality municipality_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: municipality municipality_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.municipality
@@ -107348,7 +106729,7 @@ ALTER TABLE ONLY public.municipality
 
 
 --
--- Name: source source_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: source source_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.source
@@ -107356,7 +106737,7 @@ ALTER TABLE ONLY public.source
 
 
 --
--- Name: sql sql_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: sql sql_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sql
@@ -107364,7 +106745,7 @@ ALTER TABLE ONLY public.sql
 
 
 --
--- Name: subcategory subcategory_name_category_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: subcategory subcategory_name_category_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subcategory
@@ -107372,7 +106753,7 @@ ALTER TABLE ONLY public.subcategory
 
 
 --
--- Name: subcategory subcategory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: subcategory subcategory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subcategory
@@ -107380,7 +106761,7 @@ ALTER TABLE ONLY public.subcategory
 
 
 --
--- Name: topic topic_name_subcategory_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: topic topic_name_subcategory_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.topic
@@ -107388,7 +106769,7 @@ ALTER TABLE ONLY public.topic
 
 
 --
--- Name: topic topic_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: topic topic_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.topic
@@ -107396,7 +106777,7 @@ ALTER TABLE ONLY public.topic
 
 
 --
--- Name: variable unique_acs_variable; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: variable unique_acs_variable; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.variable
@@ -107404,7 +106785,7 @@ ALTER TABLE ONLY public.variable
 
 
 --
--- Name: variable unique_name; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: variable unique_name; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.variable
@@ -107412,7 +106793,7 @@ ALTER TABLE ONLY public.variable
 
 
 --
--- Name: data unique_variable_id_geoid_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: data unique_variable_id_geoid_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data
@@ -107420,7 +106801,7 @@ ALTER TABLE ONLY public.data
 
 
 --
--- Name: variable variables_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: variable variables_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.variable
@@ -107428,7 +106809,7 @@ ALTER TABLE ONLY public.variable
 
 
 --
--- Name: viz_history visualizations_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: viz_history visualizations_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.viz_history
@@ -107436,7 +106817,14 @@ ALTER TABLE ONLY public.viz_history
 
 
 --
--- Name: content content_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: idx_variable_null_geoid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_variable_null_geoid ON public.data USING btree (variable_id) WHERE (geoid IS NULL);
+
+
+--
+-- Name: content content_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content
@@ -107444,7 +106832,7 @@ ALTER TABLE ONLY public.content
 
 
 --
--- Name: content_product content_product_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_product content_product_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_product
@@ -107452,7 +106840,7 @@ ALTER TABLE ONLY public.content_product
 
 
 --
--- Name: content_source content_source_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_source content_source_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_source
@@ -107460,7 +106848,7 @@ ALTER TABLE ONLY public.content_source
 
 
 --
--- Name: content_source content_source_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_source content_source_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_source
@@ -107468,15 +106856,15 @@ ALTER TABLE ONLY public.content_source
 
 
 --
--- Name: data data_variable_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: data data_variable_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data
-    ADD CONSTRAINT data_variable_id_fkey FOREIGN KEY (variable_id) REFERENCES public.variable(id);
+    ADD CONSTRAINT data_variable_id_fkey FOREIGN KEY (variable_id) REFERENCES public.variable(id) ON DELETE CASCADE;
 
 
 --
--- Name: content_link fk_content; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_link fk_content; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_link
@@ -107484,7 +106872,7 @@ ALTER TABLE ONLY public.content_link
 
 
 --
--- Name: content fk_content_topic; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content fk_content_topic; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content
@@ -107492,7 +106880,7 @@ ALTER TABLE ONLY public.content
 
 
 --
--- Name: data fk_geography; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: data fk_geography; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data
@@ -107500,7 +106888,7 @@ ALTER TABLE ONLY public.data
 
 
 --
--- Name: content_link fk_link; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: content_link fk_link; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.content_link
@@ -107508,7 +106896,7 @@ ALTER TABLE ONLY public.content_link
 
 
 --
--- Name: viz_source fk_source; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: viz_source fk_source; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.viz_source
@@ -107516,7 +106904,7 @@ ALTER TABLE ONLY public.viz_source
 
 
 --
--- Name: viz_source fk_viz; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: viz_source fk_viz; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.viz_source
@@ -107524,7 +106912,7 @@ ALTER TABLE ONLY public.viz_source
 
 
 --
--- Name: viz_history fk_viz_history_topic; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: viz_history fk_viz_history_topic; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.viz_history
@@ -107532,7 +106920,7 @@ ALTER TABLE ONLY public.viz_history
 
 
 --
--- Name: viz fk_viz_topic; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: viz fk_viz_topic; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.viz
@@ -107540,15 +106928,7 @@ ALTER TABLE ONLY public.viz
 
 
 --
--- Name: geo_variable geo_variable_variable_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.geo_variable
-    ADD CONSTRAINT geo_variable_variable_id_fkey FOREIGN KEY (variable_id) REFERENCES public.variable(id) ON DELETE CASCADE;
-
-
---
--- Name: geography geography_county_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: geography geography_county_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.geography
@@ -107556,7 +106936,7 @@ ALTER TABLE ONLY public.geography
 
 
 --
--- Name: subcategory subcategory_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: subcategory subcategory_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subcategory
@@ -107564,7 +106944,7 @@ ALTER TABLE ONLY public.subcategory
 
 
 --
--- Name: topic topic_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: topic topic_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.topic
@@ -107572,7 +106952,7 @@ ALTER TABLE ONLY public.topic
 
 
 --
--- Name: viz viz_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: viz viz_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.viz
@@ -107580,7 +106960,7 @@ ALTER TABLE ONLY public.viz
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE USAGE ON SCHEMA public FROM PUBLIC;
@@ -107591,5 +106971,5 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Xnpst7VkgMSrKOJtMsXIGNFfewWaK3F2coPzTE4gKI4a0q22a62WYX2Cy8tftdx
+\unrestrict jbIE2vdFBH60KBeClDlcJOJL3Q4igj8wRVVT1HpnrhjvKj2bx35L5GM6NNlKgbr
 

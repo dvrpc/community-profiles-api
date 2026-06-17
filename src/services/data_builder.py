@@ -4,10 +4,9 @@ import psycopg
 
 from data_builder import acs, gis, ckan, regional, engine
 
-import repository.geo_variable_repository as geo_variable_repo
 import repository.variable_repository as variable_repo
 import repository.sql_repository as sql_repo
-import repository.profile_repository as profile_repo
+import services.profile as profile_service
 import repository.data_repository as data_repo
 from schemas.variable import VariableRequest
 import logging
@@ -23,7 +22,10 @@ log = logging.getLogger(__name__)
 
 async def upsert_data(data: List[Data], geo_level, data_source):
     log.info(f"{data_source} | {geo_level}: Upserting {len(data)} rows...")
-    await data_repo.bulk_upsert(data)
+    if geo_level == "regional":
+        await data_repo.bulk_regional_upsert(data)
+    else:
+        await data_repo.bulk_upsert(data)
 
 
 async def _get_variable_map(key: str, data_source: str) -> dict[str, str]:
@@ -36,11 +38,11 @@ async def build_new_sql_variable_data(variables, data_source: str):
     variable_id_map = {}
 
     for v in variables:
-        if v not in variable_id_map.keys():
-            variable_name = v['variable_name']
+        name = v['variable_name']
+        if name not in variable_id_map.keys():
             variableRequest = VariableRequest(
-                data_source,
-                name=variable_name,
+                data_source=data_source,
+                name=name,
                 acs_variable=None,
                 data_year=None,  # TODO?
                 description=None,
@@ -49,14 +51,24 @@ async def build_new_sql_variable_data(variables, data_source: str):
             )
             res = await variable_repo.create(variableRequest)
             variable_id = res[0]
-            variable_id_map[variable_name] = variable_id
+            variable_id_map[name] = variable_id
 
         data.append({
             "geoid":           v['geoid'],
-            "variable_id":     variable_id_map[v['variable_name']],
+            "variable_id":     variable_id_map[name],
             "value":           v['value'],
             "margin_of_error": None
         })
+    return data
+
+
+async def remove_stale_sql_vars(variable_map, updated):
+    all_updated_vars = {v['variable_id']
+                        for v in updated}
+
+    for value in variable_map.values():
+        if value not in all_updated_vars:
+            await variable_repo.delete(value)
 
 
 async def build_all() -> None:
@@ -67,7 +79,7 @@ async def build_all() -> None:
 
 async def build_acs(variable_map: dict[str, str] | None = None) -> None:
     if variable_map is None:
-        raw_variable_map = await _get_variable_map('variable_id', 'acs')
+        raw_variable_map = await _get_variable_map('acs_variable', 'acs')
         variable_map = acs.build_variable_map(raw_variable_map)
 
     county_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "county")
@@ -97,6 +109,8 @@ async def build_gis() -> None:
         bulk_new_data = await build_new_sql_variable_data(muni_gis_new, 'gis')
         await upsert_data(bulk_new_data, "municipality", "gis")
 
+    remove_stale_sql_vars(variable_map, muni_gis_updated + county_gis_updated)
+
 
 async def build_ckan() -> None:
     variable_map = await _get_variable_map('name', 'ckan')
@@ -104,9 +118,7 @@ async def build_ckan() -> None:
 
     county_ckan_updated, county_ckan_new = await asyncio.to_thread(ckan.fetch_ckan_data, county_ckan_sql, variable_map)
     await upsert_data(county_ckan_updated, "county", "ckan")
-
     if (len(county_ckan_new) > 0):
-        bulk_new_data = await build_new_sql_variable_data(county_ckan_new, 'ckan')
         await upsert_data(bulk_new_data, 'county', 'ckan')
         variable_map = await _get_variable_map('name', 'ckan')
 
@@ -119,9 +131,9 @@ async def build_ckan() -> None:
         bulk_new_data = await build_new_sql_variable_data(muni_ckan_new, 'ckan')
         await upsert_data(bulk_new_data, "municipality", "ckan")
 
+    await remove_stale_sql_vars(variable_map, county_ckan_updated + muni_ckan_updated)
+
 
 async def build_regional() -> None:
-    county_data = await regional.get_profile_data("SELECT * FROM county", "all county data")
-    region_df = await regional.aggregate_data(county_data)
-    # new_columns_schema = await get_new_columns_schema('region', region_df)
-    # await _save_data(region_df, "region", new_columns_schema)
+    regional_data = await data_repo.get_aggregateable_regional_data()
+    await upsert_data(regional_data, "regional", "all")

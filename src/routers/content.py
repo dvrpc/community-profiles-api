@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body, HTTPException, status, Depends
-import repository.profile_repository as profile_repo
+import services.profile as profile_service
 import repository.content_repository as content_repo
 import repository.content_history_repository as content_history_repo
 import services.content as content_service
@@ -13,24 +13,21 @@ router = APIRouter(
 
 @router.get("/municipality/{geoid}")
 async def get_populated_municipality_content(geoid: str):
-    profile = await profile_repo.find_municipality(geoid)
+    profile = await profile_service.build_municipality_profile(geoid)
     content = await content_service.build_content('municipality', profile)
     return content
 
 
 @router.get("/county/{geoid}")
 async def get_populated_county_content(geoid: str):
-    county_profile = await profile_repo.find_county(geoid)
-    region_profile = await profile_repo.find_region()
-
-    # profile = {**county_profile, **{f"region.{k}": v for k,v in region_profile.items()}}
+    county_profile = await profile_service.build_county_profile(geoid)
     content = await content_service.build_content('county', county_profile)
     return content
 
 
 @router.get("/region")
 async def get_populated_region_content():
-    profile = await profile_repo.find_region()
+    profile = await profile_service.build_region_profile()
     content = await content_service.build_content('region', profile)
     return content
 
@@ -44,18 +41,16 @@ async def get_content(id: int):
 @router.post('/preview/{geo_level}')
 async def get_content_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     if (geo_level == 'region'):
-        profile = await profile_repo.find_region()
+        profile = await profile_service.build_region_profile()
     else:
         if not geoid:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="No geoid provided")
 
         if (geo_level == 'county'):
-            profile = await profile_repo.find_county(geoid)
-            region_profile = await profile_repo.find_region()
-            profile['region'] = region_profile
+            profile = await profile_service.build_county_profile(geoid)
         else:
-            profile = await profile_repo.find_municipality(geoid)
+            profile = await profile_service.build_municipality_profile(geoid)
 
     template = await content_service.build_single_content(body, profile)
     return template

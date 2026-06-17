@@ -103,6 +103,12 @@ def transform_acs_data(raw_data,  variable_map: dict[str, str], geo_type: str):
             e_idx = indices.get("E")
             m_idx = indices.get("M")
 
+            margin_of_error = row[m_idx] if m_idx is not None else None
+
+            if margin_of_error:
+                if float(margin_of_error) < 0:
+                    margin_of_error = None
+
             results.append({
                 "geoid":            geoid,
                 "variable_id":     variable_map[base + 'E'],

@@ -19,16 +19,41 @@ async def find_by_variable_id(variable_id: int):
 
 
 async def find_by_geoid(geoid: str):
-    query = "SELECT * FROM data WHERE geoid = %s;"
+    query = """
+        select v.name, d.value, d.margin_of_error 
+        from data d 
+        left join variable v on d.variable_id = v.id 
+        where d.geoid = %s
+        """
     return await fetch_many(query, (geoid,))
 
 
 async def find_region():
-    query = "SELECT * FROM data WHERE geoid IS NULL;"
+    query = """
+        select v.name, d.value, d.margin_of_error 
+        from data d 
+        left join variable v on d.variable_id = v.id 
+        where geoid is null
+    """
+    return await fetch_many(query)
 
 
 async def find_all():
     query = "SELECT * FROM data;"
+    return await fetch_many(query)
+
+
+async def get_aggregateable_regional_data():
+    query = """
+        select 
+            d.variable_id, 
+            SUM(value) AS value,
+            SQRT(SUM(POWER(margin_of_error, 2))) AS margin_of_error 
+        from data d
+        left join variable v on d.variable_id = v.id
+        where length(d.geoid) = 5 and v.aggregateable = true
+        group by d.variable_id
+    """
     return await fetch_many(query)
 
 
@@ -73,5 +98,23 @@ async def bulk_upsert(data: List[Data]):
         RETURNING id, (xmax != 0) AS was_updated
     """
     rows = [(d['variable_id'], d['geoid'], d['value'], d['margin_of_error'])
+            for d in data]
+    return await execute_bulk_upsert(query, rows)
+
+
+async def bulk_regional_upsert(data: List[Data]):
+    query = """
+        INSERT INTO data (variable_id, geoid, value, margin_of_error)
+        VALUES (%s, NULL, %s, %s)
+        ON CONFLICT (variable_id) WHERE geoid IS NULL
+        DO UPDATE SET
+            value           = EXCLUDED.value,
+            margin_of_error = EXCLUDED.margin_of_error
+        WHERE
+            data.value           IS DISTINCT FROM EXCLUDED.value OR
+            data.margin_of_error IS DISTINCT FROM EXCLUDED.margin_of_error
+        RETURNING id, (xmax != 0) AS was_updated;
+    """
+    rows = [(d['variable_id'], d['value'], d['margin_of_error'])
             for d in data]
     return await execute_bulk_upsert(query, rows)
