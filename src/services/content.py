@@ -48,6 +48,12 @@ def get_template_variables(html_conversion):
 def populate_template(html_conversion, profile):
     template = env.from_string(html_conversion)
     rendered_html = template.render(profile)
+
+    # try:
+    #     rendered_html = template.render(profile)
+    # except Exception as e:
+    #     log.error("Failed to populate template:",  e)
+
     return rendered_html
 
 
