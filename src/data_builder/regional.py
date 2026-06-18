@@ -3,7 +3,6 @@ import math
 import numpy as np
 import pandas as pd
 from repository.variable_repository import find_non_aggregateable_variables
-from repository.geo_variable_repository import find_variables_by_geo_level
 from db.database import db
 import asyncio
 
@@ -16,7 +15,6 @@ excluded_variables = {
     "co_name",
     "buffer_bbox"
 }
-
 
 
 hh_median_income_range_data = [
@@ -136,7 +134,6 @@ async def aggregate_data(county_data: pd.DataFrame):
             else:
                 if variable in regional_vars:
                     aggregate_data[variable] = county_data[variable].sum()
-
 
     df = pd.DataFrame([aggregate_data])
     # df.update(regional_ev_data)

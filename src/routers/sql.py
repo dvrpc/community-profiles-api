@@ -24,7 +24,7 @@ async def get_sql_by_id(id: int):
     return await sql_repo.find_sql(id)
 
 @router.post("/test")
-async def test_sql(detailed: bool, sql: SQLRequest):
+async def test_sql(detailed: bool, sql: SQLRequest, admin=Depends(require_admin)):
     return await sql_service.test_sql(sql, detailed)
 
 @router.post("")
