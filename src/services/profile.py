@@ -45,16 +45,20 @@ async def build_county_profile(geoid: str):
     county_data = await data_repository.find_by_geoid(geoid)
     region_data = await data_repository.find_region()
     county_geo = await geo_repository.find_by_geoid(geoid)
-
+    region_geo = await geo_repository.find_by_geoid("1")
     profile = build_profile(county_data)
     region_profile = build_profile(region_data)
 
     profile['geography'] = county_geo
+    region_profile['geography'] = region_geo
     profile['region'] = region_profile
     return profile
 
 
 async def build_region_profile():
     region_data = await data_repository.find_region()
+    region_geo = await geo_repository.find_by_geoid('1')
+
     profile = build_profile(region_data)
+    profile['geography'] = region_geo
     return profile

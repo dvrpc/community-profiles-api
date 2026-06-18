@@ -38,7 +38,7 @@ async def create_variable(variable: VariableRequest, admin=Depends(require_admin
     res = await variable_repo.create(variable)
     if variable.data_source == "acs":
         asyncio.create_task(
-            run_build("acs", {variable.acs_variable: variable.name})
+            run_build("acs", {variable.acs_variable: res[0]})
         )
     return res
 

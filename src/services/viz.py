@@ -16,7 +16,7 @@ def populate_viz(viz, profile):
     try:
         for index, val in enumerate(values):
             variables.append(values[index][target_field])
-            values[index][target_field] = profile[val[target_field]]
+            values[index][target_field] = profile[val[target_field]]['value']
     except Exception as e:
         log.error(f"Exception occured populating viz: {e}")
 
