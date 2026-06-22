@@ -23,6 +23,6 @@ def revalidate_frontend(geo_level: str):
         r = requests.post(FRONTEND_REVALIDATE_URL,
                           headers=headers, json=payload, timeout=10)
         r.raise_for_status()
-        log.info("Revalidated:", r.json())
+        log.info("Revalidated: %s", r.json())
     except Exception as e:
-        log.info("Revalidation failed:", e)
+        log.info("Revalidation failed: %s", e)
