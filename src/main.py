@@ -30,13 +30,23 @@ log = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    redis = aioredis.from_url("redis://localhost")
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-    # connect to database
+    global redis_client
+    redis_client = aioredis.from_url(
+        "redis://localhost",
+        max_connections=10,  
+        socket_connect_timeout=5,
+        socket_timeout=5,
+        health_check_interval=30,
+    )
+    FastAPICache.init(RedisBackend(redis_client), prefix="fastapi-cache")
+
     await db.connect()
     yield
-    # close DB connection on shutdown
+
     await db.close()
+    if redis_client is not None:
+        await redis_client.close()
+        log.info("Redis connection closed.")
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(profile.router)
@@ -66,3 +76,16 @@ async def get_cache():
 @app.get("/")
 def root():
     return {"message": "Hello World"}
+
+@app.get("/health")
+async def health():
+    db_ok = db.healthy and db.pool is not None
+    redis_ok = False
+    if redis_client is not None:
+        try:
+            await redis_client.ping()
+            redis_ok = True
+        except Exception:
+            redis_ok = False
+    status = "ok" if (db_ok and redis_ok) else "degraded"
+    return {"status": status, "db": db_ok, "redis": redis_ok}

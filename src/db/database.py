@@ -19,7 +19,17 @@ class Database:
             f"port={os.getenv('DB_PORT')}"
         )
         try:
-            self.pool = AsyncConnectionPool(conninfo=conninfo, open=False)
+            self.pool = AsyncConnectionPool(
+                conninfo=conninfo,
+                open=False,
+                min_size=1,
+                max_size=5,
+                max_idle=300,
+                max_lifetime=1800,
+                reconnect_timeout=30,
+                num_workers=2,
+                kwargs={"options": "-c statement_timeout=15000"},
+            )
             await self.pool.open()
             log.info("Database connection pool created.")
         except Exception as e:
