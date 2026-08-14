@@ -3,7 +3,7 @@ from datetime import datetime
 import asyncio
 from fastapi import HTTPException
 
-from services import data_builder, variable as variable_service
+from services import acs, data_builder, variable as variable_service
 from services.revalidate import revalidate_all
 
 
@@ -18,7 +18,11 @@ class BuildState:
 state = BuildState()
 
 
-async def run_build(category: str, variables: dict[str, str] | None = None):
+async def run_build(
+    category: str,
+    variables: dict[str, str] | None = None,
+    acs_year: int | None = None,
+):
     if state.is_building:
         raise HTTPException(
             status_code=409, detail="Build already in progress")
@@ -28,14 +32,17 @@ async def run_build(category: str, variables: dict[str, str] | None = None):
     state.started_at = datetime.now()
 
     try:
+        if category in {"acs", "all"} and acs_year is None:
+            acs_year = await asyncio.to_thread(acs.get_latest_acs_year)
+
         if category == "acs":
-            await data_builder.build_acs(variables or None)
+            await data_builder.build_acs(variables or None, acs_year)
         elif category == "gis":
             await data_builder.build_gis()
         elif category == "ckan":
             await data_builder.build_ckan()
         elif category == "all":
-            await data_builder.build_all()
+            await data_builder.build_all(acs_year)
 
         await data_builder.build_regional()
         # await data_builder.recalibrate_variables()

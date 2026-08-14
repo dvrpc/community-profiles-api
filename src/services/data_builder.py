@@ -71,20 +71,25 @@ async def remove_stale_sql_vars(variable_map, updated):
             await variable_repo.delete(value)
 
 
-async def build_all() -> None:
-    await build_acs()
+async def build_all(acs_year: int | None) -> None:
+    await build_acs(acs_year=acs_year)
     await build_gis()
     await build_ckan()
 
 
-async def build_acs(variable_map: dict[str, str] | None = None) -> None:
+async def build_acs(
+    variable_map: dict[str, str] | None = None, acs_year: int | None = None
+) -> None:
+    if acs_year is None:
+        raise ValueError("acs_year is required for an ACS build")
+
     if variable_map is None:
         raw_variable_map = await _get_variable_map('acs_variable', 'acs')
         variable_map = acs.build_variable_map(raw_variable_map)
 
-    county_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "county")
+    county_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "county", acs_year)
     await upsert_data(county_acs, "county", "acs")
-    muni_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "municipality")
+    muni_acs = await asyncio.to_thread(acs.fetch_acs_data, variable_map, "municipality", acs_year)
     await upsert_data(muni_acs, "municipality", "acs")
 
 

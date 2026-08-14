@@ -40,11 +40,14 @@ content_category_map = {
 }
 
 excluded_variables = {'geoid', 'state', 'county', 'mun_name'}
+
+
 def get_template_variables(html_conversion):
     parsed = env.parse(html_conversion)
     variables = meta.find_undeclared_variables(parsed)
     return variables - excluded_variables
-    
+
+
 def populate_template(html_conversion, profile):
     template = env.from_string(html_conversion)
     rendered_html = template.render(profile)
@@ -76,7 +79,6 @@ async def build_content(geo_level, profile):
 
     for content in all_content:
         html_conversion = mistune.html(content['file'])
-        
         populated_content = populate_template(html_conversion, profile)
         variables = get_template_variables(html_conversion)
 
@@ -131,6 +133,9 @@ async def build_single_content(template: str, profile):
     return populated_content
 
 
+keys_to_remove = ['catalog_link', 'census_link', 'other_link']
+
+
 async def update_content(id: int, body: ContentRequest):
     current_content = await content_repo.find_one_basic(id)
 
@@ -143,6 +148,7 @@ async def update_content(id: int, body: ContentRequest):
             await content_history_repo.delete(history[-1]['id'])
 
         current_content['parent_id'] = current_content.pop('id')
+        [current_content.pop(k, None) for k in keys_to_remove]
 
         await content_history_repo.create(current_content)
         revalidate_frontend(current_content['geo_level'])

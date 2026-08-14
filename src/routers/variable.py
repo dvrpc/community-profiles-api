@@ -38,7 +38,7 @@ async def create_variable(variable: VariableRequest, admin=Depends(require_admin
     res = await variable_repo.create(variable)
     if variable.data_source == "acs":
         asyncio.create_task(
-            run_build("acs", {variable.acs_variable: res[0]})
+            run_build("acs", {variable.acs_variable: res[0]}, variable.data_year)
         )
     return res
 
@@ -48,7 +48,7 @@ async def update_variable(id: int, variable: VariableRequest, admin=Depends(requ
     res = await variable_repo.update(id, variable)
     if variable.data_source == "acs":
         asyncio.create_task(
-            run_build("acs", {variable.acs_variable: variable.name})
+            run_build("acs", {variable.acs_variable: variable.name}, variable.data_year)
         )
     return res
 
