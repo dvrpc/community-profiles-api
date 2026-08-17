@@ -8,7 +8,6 @@ class VariableRequest(BaseModel):
     name: Optional[str] = Field(..., description="")
     data_source: Optional[str] = Field(..., description="")
     acs_variable: Optional[str] = Field(..., description="")
-    data_year: Optional[int] = Field(..., description="")
     description: Optional[str] = Field(..., description="")
     concept: Optional[str] = Field(..., description="")
     aggregateable: Optional[bool] = Field(..., description="")

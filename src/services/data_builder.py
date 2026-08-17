@@ -44,7 +44,6 @@ async def build_new_sql_variable_data(variables, data_source: str):
                 data_source=data_source,
                 name=name,
                 acs_variable=None,
-                data_year=None,  # TODO?
                 description=None,
                 concept=v['sql_name'],
                 aggregateable=False
