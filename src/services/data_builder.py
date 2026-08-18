@@ -21,6 +21,9 @@ log = logging.getLogger(__name__)
 
 
 async def upsert_data(data: List[Data], geo_level, data_source):
+    if len(data) == 0:
+        log.info(f"{data_source} | {geo_level}: No data to upsert")
+        return
     log.info(f"{data_source} | {geo_level}: Upserting {len(data)} rows...")
     if geo_level == "regional":
         await data_repo.bulk_regional_upsert(data)
