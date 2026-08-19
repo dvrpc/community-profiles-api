@@ -40,14 +40,13 @@ async def get_stale_variables():
 
 async def create(variable: VariableRequest):
     query = """
-        INSERT INTO variable (name, data_source, acs_variable, data_year, description, concept, aggregateable)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        RETURNING id, name, data_source, acs_variable, data_year, description, concept, aggregateable;
+        INSERT INTO variable (name, data_source, acs_variable, description, concept, aggregateable)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING id, name, data_source, acs_variable, description, concept, aggregateable;
     """
     return await execute_update(query, (variable.name,
                                         variable.data_source,
                                         variable.acs_variable,
-                                        variable.data_year,
                                         variable.description,
                                         variable.concept,
                                         variable.aggregateable
@@ -57,14 +56,13 @@ async def create(variable: VariableRequest):
 async def update(id, variable: VariableRequest):
     query = """
         UPDATE variable
-        SET name = %s, data_source = %s, acs_variable = %s, data_year = %s, description = %s, concept = %s, aggregateable = %s
+        SET name = %s, data_source = %s, acs_variable = %s, description = %s, concept = %s, aggregateable = %s
         WHERE id = %s
-        RETURNING id, name, data_source, acs_variable, data_year, description, concept, aggregateable;
+        RETURNING id, name, data_source, acs_variable, description, concept, aggregateable;
     """
     return await execute_update(query, (variable.name,
                                         variable.data_source,
                                         variable.acs_variable,
-                                        variable.data_year,
                                         variable.description,
                                         variable.concept,
                                         variable.aggregateable,
