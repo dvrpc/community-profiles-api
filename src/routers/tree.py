@@ -26,14 +26,14 @@ async def update_topic(id: int, topic: dict, admin=Depends(require_admin)):
 
 
 @router.post('/subcategory')
-async def create_subcategory(category_id: int, name: str, admin=Depends(require_admin)):
-    res = await tree_service.create_subcategory(category_id, name)
+async def create_subcategory(category_id: int, geo_level: str, label: str, url_id: str, admin=Depends(require_admin)):
+    res = await tree_service.create_subcategory(category_id, geo_level, label, url_id)
     return res
 
 
 @router.post('/topic')
-async def create_topic(subcategory_id, name, admin=Depends(require_admin)):
-    res = await tree_service.create_topic(subcategory_id, name)
+async def create_topic(subcategory_id: int, label: str, url_id: str, admin=Depends(require_admin)):
+    res = await tree_service.create_topic(subcategory_id, label, url_id)
     return res
 
 
@@ -47,3 +47,8 @@ async def delete_topic(id: int, admin=Depends(require_admin)):
 async def delete_subcategory(id: int, admin=Depends(require_admin)):
     res = await subcategory_repo.delete(id)
     return res
+
+@router.get('/{geo_level}')
+async def get_template_tree(geo_level: str):
+    tree = await tree_service.build_template_tree(geo_level)
+    return tree

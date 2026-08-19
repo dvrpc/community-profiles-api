@@ -1,16 +1,13 @@
 import mistune
-import copy
 import logging
 
 
 import repository.content_repository as content_repo
-import repository.content_history_repository as content_history_repo
 from services.content_source import sync_content_source
-from services.viz_source import sync_viz_source
 from services.content_product import sync_content_product
 from schemas.content import ContentRequest
 
-from services.revalidate import revalidate_frontend, revalidate_all
+from services.revalidate import revalidate_all
 from jinja.template import env
 from jinja2 import meta
 
@@ -61,7 +58,7 @@ def populate_template(html_conversion, profile):
 
 
 async def build_content(geo_level, profile):
-    category_content = await content_repo.find_category_content(geo_level)
+    category_content = await content_repo.find_category_content()
     all_content = await content_repo.find_by_geo(geo_level)
 
     content_map = {}
@@ -87,6 +84,13 @@ async def build_content(geo_level, profile):
         subcategory = content['subcategory']
         subcategory_label = content['subcategory_label']
 
+        content_map.setdefault(category, {
+            "category_id": content["category_id"],
+            "content_id": None,
+            "content": "",
+            "subcategories": []
+        })
+
         subcat_entry = next(
             (sc for sc in content_map[category]["subcategories"]
              if sc["id"] == subcategory_id), None
@@ -105,12 +109,6 @@ async def build_content(geo_level, profile):
         citations = content['citations']
         products = content['products']
 
-        if citations[0] is None:
-            citations = []
-
-        if products[0] is None:
-            products = []
-
         subcat_entry['topics'].append({
             'id': content['id'],
             'name': content['topic'],
@@ -118,9 +116,6 @@ async def build_content(geo_level, profile):
             'content': populated_content,
             'citations': citations,
             'related_products': products,
-            'catalog_link': content['catalog_link'] if content['catalog_link'] is not None else "",
-            'census_link': content['census_link'] if content['census_link'] is not None else "",
-            'other_link': content['other_link'] if content['other_link'] is not None else "",
             'variables': variables
         })
 
@@ -133,110 +128,12 @@ async def build_single_content(template: str, profile):
     return populated_content
 
 
-keys_to_remove = ['catalog_link', 'census_link', 'other_link']
-
-
 async def update_content(id: int, body: ContentRequest):
     current_content = await content_repo.find_one_basic(id)
 
-    if (current_content):
-        await content_repo.update(id, body.text, body.user)
-
-        history = await content_history_repo.find_by_parent_id(id)
-
-        if (len(history) > 20):
-            await content_history_repo.delete(history[-1]['id'])
-
-        current_content['parent_id'] = current_content.pop('id')
-        [current_content.pop(k, None) for k in keys_to_remove]
-
-        await content_history_repo.create(current_content)
-        revalidate_frontend(current_content['geo_level'])
-        return {"message": "Content updated succesfully"}
-    else:
-        # create
-        pass
-
-
-async def build_template_tree(geo_level):
-    category_response = await content_repo.find_category_tree(geo_level)
-
-    tree = {}
-
-    for row in category_response:
-        category = row["name"]
-
-        tree[category] = {
-            "id": row["category_id"],
-            "label": row["label"],
-            "content_id": row["content_id"],
-            "subcategories": []
-        }
-
-    response = await content_repo.find_tree(geo_level)
-
-    for row in response:
-        category = row["category"]
-        category_id = row["category_id"]
-        subcat_id = row["subcategory_id"]
-        subcat_name = row["subcategory"]
-        subcat_label = row["subcategory_label"]
-        sort_weight = row["subcategory_sort_weight"]
-
-        subcat_entry = next(
-            (sc for sc in tree[category]["subcategories"]
-             if sc["id"] == subcat_id), None
-        )
-
-        if not subcat_entry:
-            subcat_entry = {
-                "name": subcat_name,
-                "id": subcat_id,
-                "label": subcat_label,
-                "category_id": category_id,
-                "sort_weight": sort_weight,
-                "topics": []
-            }
-            tree[category]["subcategories"].append(subcat_entry)
-
-        subcat_entry["topics"].append({
-            "name": row["topic"],
-            "id": row["topic_id"],
-            "label": row["topic_label"],
-            "is_visible": row['is_visible'],
-            "content_id": row["id"]
-        })
-
-    return tree
-
-
-async def update_content_properties(id, properties):
-    if 'content_sources' in properties:
-        await sync_content_source(id, properties['content_sources'])
-        del properties['content_sources']
-    if 'viz_sources' in properties:
-        await sync_viz_source(id, properties['viz_sources'])
-        del properties['viz_sources']
-    if 'related_products' in properties:
-        await sync_content_product(id, properties['related_products'])
-        del properties['related_products']
-
-    request_values = ""
-
-    if not properties:
+    if current_content:
+        await content_repo.update(id, body.text)
+        # The database trigger records history using content_id and archived_at.
         revalidate_all()
-        return id
-    for key, value in properties.items():
-        if (isinstance(value, str)):
-            pair = f"{key} = '{value}'"
-        else:
-            pair = f"{key} = {value}"
-
-        if not request_values:
-            request_values += pair
-        else:
-            request_values = request_values + ", " + pair
-
-    updated_content = await content_repo.update_content_properties(id, request_values)
-    revalidate_frontend(updated_content[1])
-    return updated_content[0]
+        return {"message": "Content updated succesfully"}
+    return None

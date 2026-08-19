@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field, model_validator
-from typing import Optional
+from pydantic import BaseModel, Field
 
 
 class VizRequest(BaseModel):
-    user: str = Field(..., min_length=1,
-                      description="Name of user updating viz")
-    text: str = Field(..., min_length=1,
-                      description="Updated viz text")
+    file: str = Field(..., min_length=1, description="Visualization JSON")
+
+
+class Viz(VizRequest):
+    id: int = Field(..., description="Primary key of the visualization")

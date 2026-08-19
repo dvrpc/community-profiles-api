@@ -1,63 +1,36 @@
-from fastapi_cache.decorator import cache
 import logging
-import json
-from datetime import datetime
-from repository.utils import fetch_one, fetch_many, execute_update
+
+from repository.utils import execute_update, fetch_one
 
 log = logging.getLogger(__name__)
 
 
 async def find_one(id: int):
-    log.info(f"Fetching viz {id}...")
     query = """
-        SELECT 
-            v.id,
-            v.geo_level,
-            v.file,
-            v.create_date,
-            v.topic_id,
-            v.last_edited_by,
-            COALESCE(
-                array_agg(vs.source_id ORDER BY vs.source_id) 
-                FILTER (WHERE vs.source_id IS NOT NULL), 
-                '{}'
-            ) AS source_ids
+        SELECT
+            v.*, tv.topic_id, tv.sort_weight,
+            COALESCE(array_agg(DISTINCT ts.source_id) FILTER (WHERE ts.source_id IS NOT NULL), '{}') AS source_ids,
+            COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations
         FROM viz v
-        LEFT JOIN viz_source vs ON vs.viz_id = v.id
+        LEFT JOIN topic_viz tv ON tv.viz_id = v.id
+        LEFT JOIN topic_source ts ON ts.topic_id = tv.topic_id
+        LEFT JOIN source src ON src.id = ts.source_id
         WHERE v.id = %s
-        GROUP BY v.id, v.geo_level, v.file, v.create_date ,v.topic_id, v.last_edited_by;
+        GROUP BY v.id, tv.topic_id, tv.sort_weight;
     """
     return await fetch_one(query, (id,))
 
 
 async def find_one_basic(id: int):
-    log.info(f"Fetching viz {id}...")
-    query = """
-        SELECT * FROM viz where id = %s
-    """
-    return await fetch_one(query, (id,))
+    return await fetch_one("SELECT * FROM viz WHERE id = %s;", (id,))
 
 
-async def update(id, text, user):
-    now = datetime.now()
-    log.info(
-        f"Updating viz: {id}")
-    query = """
-        UPDATE viz
-        SET file = %s, create_date = %s, last_edited_by = %s
-        WHERE id = %s
-        RETURNING id;
-    """
-    return await execute_update(query, (text, now, user, id))
+async def update(id: int, file: str):
+    return await execute_update(
+        "UPDATE viz SET file = %s, updated_at = now() WHERE id = %s RETURNING id;",
+        (file, id))
 
 
-async def create(topic_id, geo_level, file, content_id):
-    now = datetime.now()
-    log.info(
-        f"Creating viz for topic_id: {topic_id}")
-    query = """
-        INSERT into viz (geo_level, create_date, topic_id, file, id)
-        VALUES (%s, %s, %s, %s, %s)
-        RETURNING id
-    """
-    return await execute_update(query, (geo_level, now, topic_id, file, content_id))
+async def create(file: str):
+    """Create a standalone visualization; its topic link is separate."""
+    return await execute_update("INSERT INTO viz (file) VALUES (%s) RETURNING id;", (file,))

@@ -17,8 +17,9 @@ router = APIRouter(
 async def get_populated_county_viz(id: int, geoid: str):
     profile = await profile_service.build_county_profile(geoid)
     viz = await viz_repo.find_one(id)
+    citations = viz['citations']
     viz = json.loads(viz['file'])
-    populated_viz = await viz_service.build_viz(viz, profile)
+    populated_viz = await viz_service.build_viz(viz, profile, citations)
     return populated_viz
 
 
@@ -26,8 +27,9 @@ async def get_populated_county_viz(id: int, geoid: str):
 async def get_populated_municipality_viz(id: int, geoid: str):
     profile = await profile_service.build_municipality_profile(geoid)
     viz = await viz_repo.find_one(id)
+    citations = viz['citations']
     viz = json.loads(viz['file'])
-    populated_viz = await viz_service.build_viz(viz, profile)
+    populated_viz = await viz_service.build_viz(viz, profile, citations)
     return populated_viz
 
 
@@ -35,8 +37,9 @@ async def get_populated_municipality_viz(id: int, geoid: str):
 async def get_populated_region_viz(id: int):
     profile = await profile_service.build_region_profile()
     viz = await viz_repo.find_one(id)
+    citations = viz['citations']
     viz = json.loads(viz['file'])
-    populated_viz = await viz_service.build_viz(viz, profile)
+    populated_viz = await viz_service.build_viz(viz, profile, citations)
     return populated_viz
 
 
@@ -61,7 +64,7 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
             profile = await profile_service.build_municipality_profile(geoid)
 
     parsed_body = json.loads(body)
-    template = await viz_service.build_viz(parsed_body, profile)
+    template = await viz_service.build_viz(parsed_body, profile, citations=[])
 
     return template
 
@@ -69,6 +72,11 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 @router.put('/{id}')
 async def update_viz(id: int, body: VizRequest, admin=Depends(require_admin)):
     res = await viz_service.update_viz(id, body)
+    return res
+
+@router.post('')
+async def create_viz(body: VizRequest, admin=Depends(require_admin)):
+    res = await viz_repo.create(body.file)
     return res
 
 

@@ -3,6 +3,7 @@ import services.profile as profile_service
 import repository.content_repository as content_repo
 import repository.content_history_repository as content_history_repo
 import services.content as content_service
+import services.tree as tree_service
 from services.auth import require_admin
 from schemas.content import ContentRequest
 
@@ -36,6 +37,8 @@ async def get_populated_region_content():
 async def get_content(id: int):
     content = await content_repo.find_one(id)
     return content
+
+
 
 
 @router.post('/preview/{geo_level}')
@@ -81,5 +84,5 @@ async def get_content_history(id: int):
 
 @router.get('/tree/{geo_level}')
 async def get_template_tree(geo_level: str):
-    tree = await content_service.build_template_tree(geo_level)
+    tree = await tree_service.build_template_tree(geo_level)
     return tree
