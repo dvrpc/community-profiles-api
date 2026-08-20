@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from typing import List
 
 import asyncio
-from schemas.variable import Variable, VariableRequest
+from schemas.variable import Variable, VariableCreate, VariableUpdate
 from services.auth import require_admin
 from services.revalidate import revalidate_all
 import repository.variable_repository as variable_repo
@@ -34,7 +34,7 @@ async def get_variables_by_data_source(data_source: str):
 
 
 @router.post("")
-async def create_variable(variable: VariableRequest, admin=Depends(require_admin)):
+async def create_variable(variable: VariableCreate, admin=Depends(require_admin)):
     res = await variable_repo.create(variable)
     if variable.data_source == "acs":
         asyncio.create_task(
@@ -44,7 +44,7 @@ async def create_variable(variable: VariableRequest, admin=Depends(require_admin
 
 
 @router.put("/{id}")
-async def update_variable(id: int, variable: VariableRequest, admin=Depends(require_admin)):
+async def update_variable(id: int, variable: VariableUpdate, admin=Depends(require_admin)):
     res = await variable_repo.update(id, variable)
     if variable.data_source == "acs":
         asyncio.create_task(

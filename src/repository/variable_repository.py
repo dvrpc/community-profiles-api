@@ -1,5 +1,5 @@
 from repository.utils import fetch_many, fetch_one, execute_update
-from schemas.variable import VariableRequest
+from schemas.variable import VariableCreate, VariableUpdate
 import logging
 
 log = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ async def get_stale_variables():
     return await fetch_many(query)
 
 
-async def create(variable: VariableRequest):
+async def create(variable: VariableCreate):
     query = """
         INSERT INTO variable (name, data_source, acs_variable, description, concept, aggregateable)
         VALUES (%s, %s, %s, %s, %s, %s)
@@ -53,7 +53,7 @@ async def create(variable: VariableRequest):
                                         ))
 
 
-async def update(id, variable: VariableRequest):
+async def update(id, variable: VariableUpdate):
     query = """
         UPDATE variable
         SET name = %s, data_source = %s, acs_variable = %s, description = %s, concept = %s, aggregateable = %s

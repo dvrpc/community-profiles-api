@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 
 
-class SourceRequest(BaseModel):
+class SourceBase(BaseModel):
     agency: str = Field(..., min_length=1, description="Name of the source")
     dataset: str = Field(..., min_length=1, description="Name of the source")
     year_from: Optional[int] = Field(
@@ -18,5 +18,19 @@ class SourceRequest(BaseModel):
     #     return values
 
 
-class Source(SourceRequest):
+class SourceCreate(SourceBase):
+    pass
+
+
+class SourceUpdate(BaseModel):
+    agency: Optional[str] = Field(None, min_length=1, description="Name of the source")
+    dataset: Optional[str] = Field(None, min_length=1, description="Name of the source")
+    year_from: Optional[int] = Field(None, gt=1900, description="Starting year (optional, >1900)")
+    year_to: Optional[int] = Field(None, gt=1900, description="Ending year (>1900)")
+    citation: Optional[str] = Field(None, min_length=1, description="Full written citation")
+
+
+class Source(SourceBase):
     id: int = Field(..., description="Primary key of the source")
+
+

@@ -1,7 +1,7 @@
 import logging
 # from repository.viz_repository import find_by_filters, update
 # from repository.viz_history_repository import create, delete, find_by_filters
-from schemas.viz import VizRequest
+from schemas.viz import VizUpdate
 import repository.viz_repository as viz_repo
 
 log = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ async def build_viz(viz, profile, citations):
     return populated_viz
 
 
-async def update_viz(id: int, body: VizRequest):
+async def update_viz(id: int, body: VizUpdate):
     current_viz = await viz_repo.find_one_basic(id)
     if (current_viz):
         await viz_repo.update(id, body.file)

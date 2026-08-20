@@ -8,7 +8,7 @@ import repository.variable_repository as variable_repo
 import repository.sql_repository as sql_repo
 import services.profile as profile_service
 import repository.data_repository as data_repo
-from schemas.variable import VariableRequest
+from schemas.variable import VariableCreate
 import logging
 from db.database import db
 import asyncio
@@ -43,7 +43,7 @@ async def build_new_sql_variable_data(variables, data_source: str):
     for v in variables:
         name = v['variable_name']
         if name not in variable_id_map.keys():
-            variableRequest = VariableRequest(
+            variableRequest = VariableCreate(
                 data_source=data_source,
                 name=name,
                 acs_variable=None,

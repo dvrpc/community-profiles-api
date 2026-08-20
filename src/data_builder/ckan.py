@@ -6,7 +6,7 @@ import functools as ft
 
 from dotenv import load_dotenv
 
-from schemas.sql import SQLRequest
+from schemas.sql import SQLBase
 
 log = logging.getLogger(__name__)
 load_dotenv()
@@ -27,7 +27,7 @@ def _fetch_datastore(sql):
         raise
 
 
-def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
+def _fetch_sql(sql_request: SQLBase, variable_map: dict[str, str]):
     new_data = []
     updated_data = []
 
@@ -64,7 +64,7 @@ def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
     return new_data, updated_data
 
 
-def fetch_ckan_data(sql_queries: list[SQLRequest], variable_map: dict[str, str]):
+def fetch_ckan_data(sql_queries: list[SQLBase], variable_map: dict[str, str]):
     data = []
     new_data = []
     for query in sql_queries:

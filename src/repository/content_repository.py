@@ -66,10 +66,27 @@ async def find_topic_id(id: int):
     row = await fetch_one("SELECT topic_id FROM topic_content WHERE content_id = %s;", (id,))
     return row["topic_id"] if row else None
 
+async def find_by_category_id(category_id: int):
+    query = """
+        SELECT c.id, c.file
+        FROM category_content cc
+        JOIN content c ON c.id = cc.content_id
+        WHERE cc.category_id = %s;
+    """
+    return await fetch_one(query, (category_id,))
 
-async def update(id: int, text: str):
-    query = "UPDATE content SET file = %s, updated_at = now() WHERE id = %s RETURNING id;"
-    return await execute_update(query, (text, id))
+async def find_by_topic_id(topic_id: int):
+    query = """
+        SELECT c.id, c.file
+        FROM topic_content tc
+        JOIN content c ON c.id = tc.content_id
+        WHERE tc.topic_id = %s;
+    """
+    return await fetch_one(query, (topic_id,))
+
+async def update(id: int, text: str, last_edited_by: str = None):
+    query = "UPDATE content SET file = %s, updated_at = now(), last_edited_by = %s WHERE id = %s RETURNING id;"
+    return await execute_update(query, (text, last_edited_by, id))
 
 
 async def create(file: str):

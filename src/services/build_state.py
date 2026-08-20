@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from services import acs, data_builder, variable as variable_service
 from services.revalidate import revalidate_all
 import repository.app_metadata_repository as app_settings_repo
-from schemas.app_metadata import AppMetadataRequest
+from schemas.app_metadata import AppMetadataCreate, AppMetadataUpdate
 import logging
 
 log = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ async def _resolve_acs_year() -> int:
     if setting is None:
         await app_settings_repo.create(
             "acs_year",
-            AppMetadataRequest(
+            AppMetadataCreate(
                 value=latest_year,
                 description="Latest ACS 5-year estimate year",
             ),
@@ -53,7 +53,7 @@ async def _resolve_acs_year() -> int:
     if latest_year > stored_year:
         await app_settings_repo.update(
             "acs_year",
-            AppMetadataRequest(
+            AppMetadataUpdate(
                 value=latest_year,
                 description="Latest ACS 5-year estimate year",
             ),
@@ -68,12 +68,12 @@ async def _write_build_timestamp(key: str):
     setting = await app_settings_repo.find_by_key(key)
     if setting:
         await app_settings_repo.update(
-            key, AppMetadataRequest(
+            key, AppMetadataUpdate(
                 value=now, description=f"Last successful {key.replace('_last_updated', '').replace('_', ' ')} build timestamp")
         )
     else:
         await app_settings_repo.create(
-            key, AppMetadataRequest(
+            key, AppMetadataCreate(
                 value=now, description=f"Last successful {key.replace('_last_updated', '').replace('_', ' ')} build timestamp")
         )
 

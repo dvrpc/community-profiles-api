@@ -3,9 +3,9 @@ import logging
 
 
 import repository.content_repository as content_repo
-from services.content_source import sync_content_source
-from services.content_product import sync_content_product
-from schemas.content import ContentRequest
+from services.topic_source import sync_topic_source
+from services.topic_product import sync_content_product
+from schemas.content import ContentUpdate
 
 from services.revalidate import revalidate_all
 from jinja.template import env
@@ -128,12 +128,4 @@ async def build_single_content(template: str, profile):
     return populated_content
 
 
-async def update_content(id: int, body: ContentRequest):
-    current_content = await content_repo.find_one_basic(id)
 
-    if current_content:
-        await content_repo.update(id, body.text)
-        # The database trigger records history using content_id and archived_at.
-        revalidate_all()
-        return {"message": "Content updated succesfully"}
-    return None
