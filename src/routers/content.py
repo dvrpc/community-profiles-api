@@ -3,7 +3,6 @@ import services.profile as profile_service
 import repository.content_repository as content_repo
 import repository.content_history_repository as content_history_repo
 import services.content as content_service
-import services.tree as tree_service
 from services.auth import require_admin
 from schemas.content import ContentUpdate
 from services.revalidate import revalidate_all
@@ -39,6 +38,7 @@ async def get_category_content(id: int):
     content = await content_repo.find_by_category_id(id)
     return content
 
+
 @router.get('/topic/{id}')
 async def get_topic_content(id: int):
     content = await content_repo.find_by_topic_id(id)
@@ -49,6 +49,7 @@ async def get_topic_content(id: int):
 async def get_content(id: int):
     content = await content_repo.find_one(id)
     return content
+
 
 @router.post('/preview/{geo_level}')
 async def get_content_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
@@ -75,14 +76,8 @@ async def update_content(id: int, body: ContentUpdate = Body(..., media_type="ap
     if not res:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
-    
+
     revalidate_all()
-    return res
-
-
-@router.put('/{id}/properties')
-async def update_content_properties(id: int, body: dict = Body(..., media_type="application/json"), admin=Depends(require_admin)):
-    res = await content_service.update_content_properties(id, body)
     return res
 
 
@@ -95,4 +90,3 @@ async def get_content_history(id: int):
     all_content += history
 
     return all_content
-

@@ -3,8 +3,10 @@ import logging
 
 
 import repository.content_repository as content_repo
+import repository.topic_repository as topic_repo
 from services.topic_source import sync_topic_source
 from services.topic_product import sync_content_product
+
 from schemas.content import ContentUpdate
 
 from services.revalidate import revalidate_all
@@ -59,7 +61,7 @@ def populate_template(html_conversion, profile):
 
 async def build_content(geo_level, profile):
     category_content = await content_repo.find_category_content()
-    all_content = await content_repo.find_by_geo(geo_level)
+    all_content = await topic_repo.find_by_geo(geo_level)
 
     content_map = {}
 
@@ -126,6 +128,3 @@ async def build_single_content(template: str, profile):
     html_conversion = mistune.html(template)
     populated_content = populate_template(html_conversion, profile)
     return populated_content
-
-
-

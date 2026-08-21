@@ -19,6 +19,31 @@ async def find_tree(geo_level):
     return await fetch_many(query, (geo_level,))
 
 
+async def find_by_geo(geo_level):
+    """Return topic content for a geography level through the new join tables."""
+    query = """
+        SELECT
+            c.id, c.file,
+            cat.id AS category_id, cat.url_id AS category, cat.label AS category_label,
+            s.id AS subcategory_id, s.url_id AS subcategory, s.label AS subcategory_label,
+            t.id AS topic_id, t.url_id AS topic, t.label AS topic_label,
+            COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations,
+            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products
+        FROM topic t
+        JOIN subcategory s ON s.id = t.subcategory_id
+        JOIN category cat ON cat.id = s.category_id
+        JOIN topic_content tc ON tc.topic_id = t.id
+        JOIN content c ON c.id = tc.content_id
+        LEFT JOIN topic_source ts ON ts.topic_id = t.id
+        LEFT JOIN source src ON src.id = ts.source_id
+        LEFT JOIN topic_product tp ON tp.topic_id = t.id
+        WHERE s.geo_level = %s
+        GROUP BY c.id, cat.id, s.id, t.id
+        ORDER BY cat.sort_weight DESC, s.sort_weight DESC, t.sort_weight DESC;
+    """
+    return await fetch_many(query, (geo_level,))
+
+
 async def create(subcategory_id: int, url_id: str, label: str):
     query = """
         INSERT INTO topic (url_id, subcategory_id, label) VALUES (%s, %s, %s)

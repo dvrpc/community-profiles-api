@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import profile, content, viz, source, tree, variable, data_builder, sql, acs, app_metadata
+from routers import profile, content, viz, source, category, subcategory, topic, variable, data_builder, sql, acs, app_metadata
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,7 +33,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     global redis_client
     redis_client = aioredis.from_url(
         "redis://localhost",
-        max_connections=10,  
+        max_connections=10,
         socket_connect_timeout=5,
         socket_timeout=5,
         health_check_interval=30,
@@ -53,7 +53,9 @@ app.include_router(profile.router)
 app.include_router(content.router)
 app.include_router(viz.router)
 app.include_router(source.router)
-app.include_router(tree.router)
+app.include_router(category.router)
+app.include_router(subcategory.router)
+app.include_router(topic.router)
 app.include_router(variable.router)
 app.include_router(data_builder.router)
 app.include_router(sql.router)
@@ -77,6 +79,7 @@ async def get_cache():
 @app.get("/")
 def root():
     return {"message": "Hello World"}
+
 
 @app.get("/health")
 async def health():

@@ -42,29 +42,13 @@ async def find_category_content():
 
 
 async def find_one(id: int):
-    query = """
-        SELECT
-            c.*, tc.topic_id, t.label AS topic_label, t.url_id AS topic_url_id, t.sort_weight,
-            COALESCE(array_agg(DISTINCT ts.source_id) FILTER (WHERE ts.source_id IS NOT NULL), '{}') AS source_ids,
-            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS product_ids
-        FROM content c
-        LEFT JOIN topic_content tc ON tc.content_id = c.id
-        LEFT JOIN topic t ON t.id = tc.topic_id
-        LEFT JOIN topic_source ts ON ts.topic_id = t.id
-        LEFT JOIN topic_product tp ON tp.topic_id = t.id
-        WHERE c.id = %s
-        GROUP BY c.id, tc.topic_id, t.id;
-    """
-    return await fetch_one(query, (id,))
-
-
-async def find_one_basic(id: int):
     return await fetch_one("SELECT * FROM content WHERE id = %s;", (id,))
 
 
 async def find_topic_id(id: int):
     row = await fetch_one("SELECT topic_id FROM topic_content WHERE content_id = %s;", (id,))
     return row["topic_id"] if row else None
+
 
 async def find_by_category_id(category_id: int):
     query = """
@@ -75,6 +59,7 @@ async def find_by_category_id(category_id: int):
     """
     return await fetch_one(query, (category_id,))
 
+
 async def find_by_topic_id(topic_id: int):
     query = """
         SELECT c.id, c.file
@@ -83,6 +68,7 @@ async def find_by_topic_id(topic_id: int):
         WHERE tc.topic_id = %s;
     """
     return await fetch_one(query, (topic_id,))
+
 
 async def update(id: int, text: str, last_edited_by: str = None):
     query = "UPDATE content SET file = %s, updated_at = now(), last_edited_by = %s WHERE id = %s RETURNING id;"

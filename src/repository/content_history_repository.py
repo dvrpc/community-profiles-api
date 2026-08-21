@@ -22,7 +22,7 @@ async def find_by_parent_id(content_id):
     log.info(
         f"Fetching content history for content_id {content_id}...")
     query = """
-        SELECT *
+        SELECT id, content_id, file, last_edited_by, archived_at as updated_at
         FROM content_history
         WHERE content_id = %s
         ORDER BY archived_at DESC
