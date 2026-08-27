@@ -16,7 +16,7 @@ class LinkBase(BaseModel):
 
 
 class LinkCreate(LinkBase):
-    pass
+    topic_id: int = Field(..., description="Topic that owns the link")
 
 
 class LinkUpdate(BaseModel):
@@ -26,3 +26,4 @@ class LinkUpdate(BaseModel):
 
 class Link(LinkBase):
     id: int
+    topic_id: int

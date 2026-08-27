@@ -8,7 +8,12 @@ from services.auth import require_admin
 router = APIRouter()
 
 
-@router.patch("/topic/{id}")
+@router.get("/topic/{id}")
+async def get_topic(id):
+    return await topic_repo.find_topic_properties(id)
+
+
+@router.put("/topic/{id}")
 async def update_topic(
     id: int,
     topic: TopicPropertiesUpdate,

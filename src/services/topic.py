@@ -7,7 +7,7 @@ import repository.topic_content_repository as topic_content_repo
 import services.revalidate as revalidation_service
 from services.topic_product import sync_content_product
 from services.topic_source import sync_topic_source
-from services.topic_link import sync_topic_link
+from services.link import apply_link_mutations
 
 
 log = logging.getLogger(__name__)
@@ -37,20 +37,20 @@ async def update_topic_properties(
 ):
     topic_data = topic.model_dump(
         exclude_unset=True,
-        exclude={"link_ids", "content_sources", "related_products"},
+        exclude={"links", "source_ids", "product_ids"},
     )
 
     if topic_data:
         await topic_repo.update(topic_id, topic_data)
 
-    if topic.content_sources is not None:
-        await sync_topic_source(topic_id, topic.content_sources)
+    if topic.source_ids is not None:
+        await sync_topic_source(topic_id, topic.source_ids)
 
-    if topic.related_products is not None:
-        await sync_content_product(topic_id, topic.related_products)
+    if topic.product_ids is not None:
+        await sync_content_product(topic_id, topic.product_ids)
 
-    if topic.link_ids is not None:
-        await sync_topic_link(topic_id, topic.link_ids)
+    if topic.links is not None:
+        await apply_link_mutations(topic_id, topic.links)
 
     revalidation_service.revalidate_all()
     return await topic_repo.find_one(topic_id)

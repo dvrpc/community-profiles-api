@@ -15,7 +15,7 @@ async def get_links():
     return await link_repo.find_all()
 
 
-@router.post("", response_model=Link, status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_link(link: LinkCreate, admin=Depends(require_admin)):
     return await link_repo.create(link)
 

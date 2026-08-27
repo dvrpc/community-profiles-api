@@ -1,6 +1,8 @@
+from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+from schemas.link import LinkType
 
 
 class TopicBase(BaseModel):
@@ -28,19 +30,36 @@ class TopicUpdate(BaseModel):
         None, description="Whether the topic is hidden from the UI")
 
 
+class LinkMutation(str, Enum):
+    none = "none"
+    update = "update"
+    create = "create"
+    delete = "delete"
+
+
+class TopicLinkUpdate(BaseModel):
+    id: Optional[int] = Field(None, description="Existing link ID")
+    link: str = Field(..., min_length=1, description="URL for the link")
+    type: LinkType
+    mutation: LinkMutation
+
+    @model_validator(mode="after")
+    def validate_id_for_mutation(self):
+        if self.mutation in (LinkMutation.update, LinkMutation.delete,
+                             LinkMutation.none) and self.id is None:
+            raise ValueError(f"id is required for {self.mutation.value} mutation")
+        if self.mutation == LinkMutation.create and self.id is not None:
+            raise ValueError("id must be omitted for create mutation")
+        return self
+
+
 class TopicPropertiesUpdate(TopicUpdate):
-    link_ids: Optional[list[int]] = Field(
-        None, description="List of link IDs")
-    content_sources: Optional[list[int]] = Field(
+    links: Optional[list[TopicLinkUpdate]] = Field(
+        None, description="Links and requested mutations for this topic")
+    source_ids: Optional[list[int]] = Field(
         None, description="List of content source IDs")
-    related_products: Optional[list[str]] = Field(
+    product_ids: Optional[list[str]] = Field(
         None, description="List of related product IDs")
-    catalog_link: Optional[str] = Field(
-        None, description="Link to the catalog")
-    census_link: Optional[str] = Field(
-        None, description="Link to the census data")
-    other_link: Optional[str] = Field(
-        None, description="Link to other relevant resources")
 
 
 class Topic(TopicBase):

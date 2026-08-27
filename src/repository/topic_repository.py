@@ -28,7 +28,7 @@ async def find_by_geo(geo_level):
             s.id AS subcategory_id, s.url_id AS subcategory, s.label AS subcategory_label,
             t.id AS topic_id, t.url_id AS topic, t.label AS topic_label,
             COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations,
-            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products
+            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products,
         FROM topic t
         JOIN subcategory s ON s.id = t.subcategory_id
         JOIN category cat ON cat.id = s.category_id
@@ -43,6 +43,21 @@ async def find_by_geo(geo_level):
     """
     return await fetch_many(query, (geo_level,))
 
+async def find_topic_properties(topic_id):
+    query = """
+select t.id, t.label, t.url_id, t.sort_weight, t.is_visible,
+        COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS product_ids,
+        COALESCE(array_agg(DISTINCT ts.source_id) FILTER (WHERE ts.source_id IS NOT NULL), '{}') AS source_ids,
+        COALESCE(jsonb_agg(DISTINCT to_jsonb(l.*)) FILTER (WHERE l.id IS NOT NULL), '[]') AS links
+        from topic t
+        LEFT JOIN topic_source ts ON ts.topic_id = t.id
+        left join topic_product tp ON tp.topic_id = t.id
+        left join link l on l.topic_id = t.id
+        where t.id = %s
+        group by t.id;
+    """
+    return await fetch_one(query, (topic_id,))
+    
 
 async def create(subcategory_id: int, url_id: str, label: str):
     query = """
