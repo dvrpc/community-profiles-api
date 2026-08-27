@@ -1,4 +1,4 @@
-from repository.utils import execute_update, fetch_many
+from repository.utils import execute_update, fetch_many, fetch_one
 
 
 async def find_tree(geo_level):
@@ -52,9 +52,27 @@ async def create(subcategory_id: int, url_id: str, label: str):
     return await execute_update(query, (url_id, subcategory_id, label))
 
 
-async def update(id: int, values: str):
-    query = f"UPDATE topic SET {values} WHERE id = %s RETURNING id;"
-    return await execute_update(query, (id,))
+async def update(id: int, values: dict):
+    allowed_fields = {"url_id", "label", "sort_weight", "is_visible"}
+    update_values = {
+        field: value for field, value in values.items()
+        if field in allowed_fields
+    }
+    if not update_values:
+        return await find_one(id)
+
+    assignments = ", ".join(f"{field} = %s" for field in update_values)
+    query = f"""
+        UPDATE topic
+        SET {assignments}
+        WHERE id = %s
+        RETURNING id;
+    """
+    return await execute_update(query, tuple(update_values.values()) + (id,))
+
+
+async def find_one(id: int):
+    return await fetch_one("SELECT * FROM topic WHERE id = %s;", (id,))
 
 
 async def delete(id: int):

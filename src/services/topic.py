@@ -1,10 +1,13 @@
 import logging
 
-from schemas.topic import TopicCreate, TopicUpdate
+from schemas.topic import TopicCreate, TopicPropertiesUpdate, TopicUpdate
 import repository.topic_repository as topic_repo
 import repository.content_repository as content_repo
 import repository.topic_content_repository as topic_content_repo
 import services.revalidate as revalidation_service
+from services.topic_product import sync_content_product
+from services.topic_source import sync_topic_source
+from services.topic_link import sync_topic_link
 
 
 log = logging.getLogger(__name__)
@@ -27,20 +30,27 @@ async def create_topic(topic: TopicCreate):
     return res
 
 
-async def update_topic(id: int, topic: TopicUpdate):
-    topic_data = topic.model_dump(exclude_unset=True)
-    values = []
 
-    if 'url_id' in topic_data:
-        label = create_label(topic_data['url_id'])
-        values.append(f"url_id = '{topic_data['url_id']}'")
-        values.append(f"label = '{label}'")
-    if 'label' in topic_data:
-        values.append(f"label = '{topic_data['label']}'")
-    if 'sort_weight' in topic_data:
-        values.append(f"sort_weight = {topic_data['sort_weight']}")
+async def update_topic_properties(
+    topic_id: int,
+    topic: TopicPropertiesUpdate,
+):
+    topic_data = topic.model_dump(
+        exclude_unset=True,
+        exclude={"link_ids", "content_sources", "related_products"},
+    )
 
-    value_str = ','.join(values)
-    res = await topic_repo.update(id, value_str)
+    if topic_data:
+        await topic_repo.update(topic_id, topic_data)
+
+    if topic.content_sources is not None:
+        await sync_topic_source(topic_id, topic.content_sources)
+
+    if topic.related_products is not None:
+        await sync_content_product(topic_id, topic.related_products)
+
+    if topic.link_ids is not None:
+        await sync_topic_link(topic_id, topic.link_ids)
+
     revalidation_service.revalidate_all()
-    return res
+    return await topic_repo.find_one(topic_id)

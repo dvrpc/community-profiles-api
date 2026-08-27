@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from schemas.topic import TopicCreate, TopicUpdate
+from schemas.topic import TopicCreate, TopicPropertiesUpdate
 import repository.topic_repository as topic_repo
 import services.topic as topic_service
 from services.auth import require_admin
@@ -8,10 +8,13 @@ from services.auth import require_admin
 router = APIRouter()
 
 
-@router.put('/topic/{id}')
-async def update_topic(id: int, topic: TopicUpdate, admin=Depends(require_admin)):
-    res = await topic_service.update_topic(id, topic)
-    return res
+@router.patch("/topic/{id}")
+async def update_topic(
+    id: int,
+    topic: TopicPropertiesUpdate,
+    admin=Depends(require_admin),
+):
+    return await topic_service.update_topic_properties(id, topic)
 
 
 @router.post('/topic')

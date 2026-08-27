@@ -29,6 +29,8 @@ class TopicUpdate(BaseModel):
 
 
 class TopicPropertiesUpdate(TopicUpdate):
+    link_ids: Optional[list[int]] = Field(
+        None, description="List of link IDs")
     content_sources: Optional[list[int]] = Field(
         None, description="List of content source IDs")
     related_products: Optional[list[str]] = Field(
