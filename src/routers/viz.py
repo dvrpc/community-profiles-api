@@ -49,6 +49,12 @@ async def get_viz(id: int):
     return template
 
 
+@router.get('/{topic_id}')
+async def get_by_topic_id(topic_id: int):
+    viz = await viz_repo.find_by_topic_id(topic_id)
+    return viz
+
+
 @router.post('/preview/{geo_level}')
 async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..., media_type="text/plain"), admin=Depends(require_admin)):
     if (geo_level == 'region'):
@@ -73,6 +79,7 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 async def update_viz(id: int, body: VizUpdate, admin=Depends(require_admin)):
     res = await viz_service.update_viz(id, body)
     return res
+
 
 @router.post('')
 async def create_viz(body: VizCreate, admin=Depends(require_admin)):

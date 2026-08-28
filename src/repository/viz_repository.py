@@ -21,6 +21,22 @@ async def find_one(id: int):
     return await fetch_one(query, (id,))
 
 
+async def find_by_topic_id(topic_id: int):
+    query = """
+        select 
+            v.*,
+            COALESCE(array_agg(DISTINCT ts.source_id) FILTER (WHERE ts.source_id IS NOT NULL), '{}') AS source_ids
+        from viz v
+        left join topic_viz tv on tv.viz_id = v.id
+        LEFT JOIN topic_source ts ON ts.topic_id = tv.topic_id
+        LEFT JOIN source src ON src.id = ts.source_id
+        where tv.topic_id = 1
+        group by v.id
+        order by tv.sort_weight
+
+    """
+
+
 async def find_one_basic(id: int):
     return await fetch_one("SELECT * FROM viz WHERE id = %s;", (id,))
 
