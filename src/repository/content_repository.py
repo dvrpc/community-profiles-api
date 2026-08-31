@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 
 async def find_by_geo(geo_level):
-    """Return topic content for a geography level through the new join tables."""
+    """Return topic content for a geography level using content.topic_id."""
     query = """
         SELECT
             c.id, c.file,
@@ -18,8 +18,7 @@ async def find_by_geo(geo_level):
         FROM topic t
         JOIN subcategory s ON s.id = t.subcategory_id
         JOIN category cat ON cat.id = s.category_id
-        JOIN topic_content tc ON tc.topic_id = t.id
-        JOIN content c ON c.id = tc.content_id
+        JOIN content c ON c.topic_id = t.id
         LEFT JOIN topic_source ts ON ts.topic_id = t.id
         LEFT JOIN source src ON src.id = ts.source_id
         LEFT JOIN topic_product tp ON tp.topic_id = t.id
@@ -34,8 +33,7 @@ async def find_category_content():
     query = """
         SELECT c.id, cat.url_id AS category, cat.id AS category_id, c.file, cat.sort_weight
         FROM category cat
-        JOIN category_content cc ON cc.category_id = cat.id
-        JOIN content c ON c.id = cc.content_id
+        JOIN content c ON c.category_id = cat.id
         ORDER BY cat.sort_weight DESC;
     """
     return await fetch_many(query)
@@ -46,16 +44,15 @@ async def find_one(id: int):
 
 
 async def find_topic_id(id: int):
-    row = await fetch_one("SELECT topic_id FROM topic_content WHERE content_id = %s;", (id,))
+    row = await fetch_one("SELECT topic_id FROM content WHERE id = %s;", (id,))
     return row["topic_id"] if row else None
 
 
 async def find_by_category_id(category_id: int):
     query = """
         SELECT c.id, c.file
-        FROM category_content cc
-        JOIN content c ON c.id = cc.content_id
-        WHERE cc.category_id = %s;
+        FROM content c
+        WHERE c.category_id = %s;
     """
     return await fetch_one(query, (category_id,))
 
@@ -63,9 +60,8 @@ async def find_by_category_id(category_id: int):
 async def find_by_topic_id(topic_id: int):
     query = """
         SELECT c.id, c.file
-        FROM topic_content tc
-        JOIN content c ON c.id = tc.content_id
-        WHERE tc.topic_id = %s;
+        FROM content c
+        WHERE c.topic_id = %s;
     """
     return await fetch_one(query, (topic_id,))
 
@@ -75,5 +71,10 @@ async def update(id: int, text: str, last_edited_by: str = None):
     return await execute_update(query, (text, last_edited_by, id))
 
 
-async def create(file: str):
-    return await execute_update("INSERT INTO content (file) VALUES (%s) RETURNING id;", (file,))
+async def create(file: str, topic_id: int | None = None, category_id: int | None = None):
+    query = """
+        INSERT INTO content (file, topic_id, category_id)
+        VALUES (%s, %s, %s)
+        RETURNING id;
+    """
+    return await execute_update(query, (file, topic_id, category_id))

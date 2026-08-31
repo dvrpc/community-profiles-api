@@ -29,24 +29,9 @@ async def build_viz(viz, profile, citations):
     """
     Populates visualizations with db variables. There can be more than one viz in a viz object
     """
-    populated_viz = []
-    if (len(viz) > 0):
-        for v in viz:
-            if (v['type'] and v['type'] == 'chart'):
-                v['citations'] = citations
-                populated_viz.append(populate_viz(v, profile))
-            else:
-                populated_viz.append(v)
 
-    return populated_viz
-
-
-async def update_viz(id: int, body: VizUpdate):
-    current_viz = await viz_repo.find_one_basic(id)
-    if (current_viz):
-        await viz_repo.update(id, body.file)
-        # The database trigger writes viz_history using viz_id and archived_at.
-        return {"message": "viz updated succesfully"}
+    if (viz['type'] == 'chart'):
+        viz['citations'] = citations
+        return populate_viz(viz, profile)
     else:
-        # create
-        pass
+        return viz

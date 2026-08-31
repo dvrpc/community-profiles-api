@@ -5,14 +5,14 @@ async def find_tree(geo_level):
     query = """
         SELECT
             t.id AS topic_id, t.url_id AS topic, t.url_id AS topic_url_id, t.label AS topic_label,
-            t.sort_weight, tc.content_id,
+            t.sort_weight, c.id AS content_id,
             s.id AS subcategory_id, s.url_id AS subcategory, s.url_id AS subcategory_url_id,
             s.label AS subcategory_label, s.sort_weight AS subcategory_sort_weight,
             cat.url_id AS category, cat.url_id AS category_url_id, cat.label AS category_label, cat.id AS category_id
         FROM topic t
         JOIN subcategory s ON s.id = t.subcategory_id
         JOIN category cat ON cat.id = s.category_id
-        LEFT JOIN topic_content tc ON tc.topic_id = t.id
+        LEFT JOIN content c ON c.topic_id = t.id
         WHERE s.geo_level = %s
         ORDER BY cat.sort_weight DESC, s.sort_weight DESC, t.sort_weight DESC;
     """
@@ -20,7 +20,7 @@ async def find_tree(geo_level):
 
 
 async def find_by_geo(geo_level):
-    """Return topic content for a geography level through the new join tables."""
+    """Return topic content for a geography level using content.topic_id."""
     query = """
         SELECT
             c.id, c.file,
@@ -28,12 +28,11 @@ async def find_by_geo(geo_level):
             s.id AS subcategory_id, s.url_id AS subcategory, s.label AS subcategory_label,
             t.id AS topic_id, t.url_id AS topic, t.label AS topic_label,
             COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations,
-            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products,
+            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products
         FROM topic t
         JOIN subcategory s ON s.id = t.subcategory_id
         JOIN category cat ON cat.id = s.category_id
-        JOIN topic_content tc ON tc.topic_id = t.id
-        JOIN content c ON c.id = tc.content_id
+        JOIN content c ON c.topic_id = t.id
         LEFT JOIN topic_source ts ON ts.topic_id = t.id
         LEFT JOIN source src ON src.id = ts.source_id
         LEFT JOIN topic_product tp ON tp.topic_id = t.id
@@ -42,6 +41,7 @@ async def find_by_geo(geo_level):
         ORDER BY cat.sort_weight DESC, s.sort_weight DESC, t.sort_weight DESC;
     """
     return await fetch_many(query, (geo_level,))
+
 
 async def find_topic_properties(topic_id):
     query = """
@@ -57,7 +57,7 @@ select t.id, t.label, t.url_id, t.sort_weight, t.is_visible,
         group by t.id;
     """
     return await fetch_one(query, (topic_id,))
-    
+
 
 async def create(subcategory_id: int, url_id: str, label: str):
     query = """

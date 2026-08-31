@@ -3,7 +3,6 @@ import logging
 from schemas.topic import TopicCreate, TopicPropertiesUpdate, TopicUpdate
 import repository.topic_repository as topic_repo
 import repository.content_repository as content_repo
-import repository.topic_content_repository as topic_content_repo
 import services.revalidate as revalidation_service
 from services.topic_product import sync_content_product
 from services.topic_source import sync_topic_source
@@ -22,13 +21,11 @@ async def create_topic(topic: TopicCreate):
     topic_id = res[0]
     log.info(f"Created topic: {topic_id}")
 
-    content_res = await content_repo.create("")
-    await topic_content_repo.create(topic_id, content_res[0])
+    content_res = await content_repo.create("", topic_id=topic_id)
     log.info(f"Created empty content {content_res[0]} for topic: {topic_id}")
 
     revalidation_service.revalidate_all()
     return res
-
 
 
 async def update_topic_properties(

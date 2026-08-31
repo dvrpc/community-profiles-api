@@ -43,10 +43,10 @@ async def get_populated_region_viz(id: int):
     return populated_viz
 
 
-@router.get('/{id}')
-async def get_viz(id: int):
-    template = await viz_repo.find_one(id)
-    return template
+# @router.get('/{id}')
+# async def get_viz(id: int):
+#     template = await viz_repo.find_one(id)
+#     return template
 
 
 @router.get('/{topic_id}')
@@ -76,14 +76,14 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 
 
 @router.put('/{id}')
-async def update_viz(id: int, body: VizUpdate, admin=Depends(require_admin)):
-    res = await viz_service.update_viz(id, body)
+async def update_viz(id: int, viz: VizUpdate, admin=Depends(require_admin)):
+    res = await viz_repo.update(id, viz)
     return res
 
 
 @router.post('')
-async def create_viz(body: VizCreate, admin=Depends(require_admin)):
-    res = await viz_repo.create(body.file)
+async def create_viz(viz: VizCreate, admin=Depends(require_admin)):
+    res = await viz_repo.create(viz)
     return res
 
 
