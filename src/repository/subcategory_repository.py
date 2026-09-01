@@ -5,6 +5,14 @@ async def get(id: int):
     return await fetch_one("SELECT * FROM subcategory WHERE id = %s;", (id,))
 
 
+async def find_one(subcategory_id: int):
+    query = """
+        SELECT * from subcategory
+        WHERE id = %s
+    """
+    return await fetch_one(query, (subcategory_id,))
+
+
 async def update(id: int, values: str):
     return await execute_update(f"UPDATE subcategory SET {values} WHERE id = %s RETURNING id;", (id,))
 

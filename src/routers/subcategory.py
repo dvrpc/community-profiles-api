@@ -8,6 +8,11 @@ from services.auth import require_admin
 router = APIRouter()
 
 
+@router.get('/subcategory/{id}')
+async def get_subcategory(id: int):
+    return await subcategory_repo.find_one(id)
+
+
 @router.put('/subcategory/{id}')
 async def update_subcategory(
     id: int,

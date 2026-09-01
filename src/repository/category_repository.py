@@ -9,6 +9,7 @@ async def find_all():
     query = "SELECT * FROM category;"
     return await fetch_many(query)
 
+
 async def tree(geo_level: str):
     log.info("Fetching category tree")
     query = """
@@ -26,7 +27,7 @@ async def tree(geo_level: str):
                         'sort_weight', s.sort_weight,
                         'topics', s.topics
                     )
-                    ORDER BY s.sort_weight
+                    ORDER BY s.sort_weight desc
                 ) FILTER (WHERE s.id IS NOT NULL),
                 '[]'
             ) AS subcategories
@@ -47,7 +48,7 @@ async def tree(geo_level: str):
                                 'sort_weight', t.sort_weight,
                                 'is_visible', t.is_visible
                             )
-                            ORDER BY t.sort_weight
+                            ORDER BY t.sort_weight desc
                         )
                         FROM topic t
                         WHERE t.subcategory_id = sub.id
@@ -59,6 +60,6 @@ async def tree(geo_level: str):
             AND sub.geo_level = %s
         ) s ON true
         GROUP BY c.id, c.label, c.url_id, c.sort_weight
-        ORDER BY c.sort_weight;
+        ORDER BY c.sort_weight desc;
         """
     return await fetch_many(query, (geo_level,))
