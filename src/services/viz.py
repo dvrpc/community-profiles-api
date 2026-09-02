@@ -1,3 +1,4 @@
+import json
 import logging
 # from repository.viz_repository import find_by_filters, update
 # from repository.viz_history_repository import create, delete, find_by_filters
@@ -24,6 +25,16 @@ def populate_viz(viz, profile):
     viz['citations'] = viz.get('citations', [])
     return viz
 
+async  def populate_visualizations(visualizations, profile):
+    populated_visualizations = []
+    for viz in visualizations:
+        citations = viz['citations']
+        viz['file'] = json.loads(viz['file'])
+        populated_viz = await build_viz(viz['file'], profile, citations)
+        viz['file'] = populated_viz
+        populated_visualizations.append(viz)
+
+    return populated_visualizations
 
 async def build_viz(viz, profile, citations):
     """

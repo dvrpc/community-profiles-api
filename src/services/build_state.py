@@ -99,8 +99,8 @@ async def run_build(
             await data_builder.build_acs(variables or None, acs_year)
         elif category == "gis":
             await data_builder.build_gis()
-        elif category == "ckan":
-            await data_builder.build_ckan()
+        # elif category == "ckan":
+        #     await data_builder.build_ckan()
         elif category == "all":
             await data_builder.build_all(acs_year)
 
@@ -113,8 +113,8 @@ async def run_build(
             await _write_build_timestamp("acs_last_updated")
         if category in {"gis", "all"}:
             await _write_build_timestamp("gis_last_updated")
-        if category in {"ckan", "all"}:
-            await _write_build_timestamp("ckan_last_updated")
+        # if category in {"ckan", "all"}:
+        #     await _write_build_timestamp("ckan_last_updated")
     except Exception:
         raise
     finally:

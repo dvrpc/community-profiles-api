@@ -9,22 +9,76 @@ async def find_by_geo(geo_level):
     """Return topic content for a geography level using content.topic_id."""
     query = """
         SELECT
-            c.id, c.file,
-            cat.id AS category_id, cat.url_id AS category, cat.label AS category_label,
-            s.id AS subcategory_id, s.url_id AS subcategory, s.label AS subcategory_label,
-            t.id AS topic_id, t.url_id AS topic, t.label AS topic_label,
-            COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations,
-            COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products
-        FROM topic t
-        JOIN subcategory s ON s.id = t.subcategory_id
-        JOIN category cat ON cat.id = s.category_id
-        JOIN content c ON c.topic_id = t.id
-        LEFT JOIN topic_source ts ON ts.topic_id = t.id
-        LEFT JOIN source src ON src.id = ts.source_id
-        LEFT JOIN topic_product tp ON tp.topic_id = t.id
-        WHERE s.geo_level = %s
-        GROUP BY c.id, cat.id, s.id, t.id
-        ORDER BY cat.sort_weight DESC, s.sort_weight DESC, t.sort_weight DESC;
+            c.id,
+            c.label,
+            c.url_id,
+            ct.file as content,
+            c.sort_weight,
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'id', s.id,
+                        'label', s.label,
+                        'url_id', s.url_id,
+                        'sort_weight', s.sort_weight,
+                        'topics', s.topics
+                    )
+                    ORDER BY s.sort_weight DESC
+                ) FILTER (WHERE s.id IS NOT NULL),
+                '[]'
+            ) AS subcategories
+        FROM category c
+        LEFT JOIN content ct ON ct.category_id = c.id
+        LEFT JOIN LATERAL (
+            SELECT
+                sub.id,
+                sub.label,
+                sub.url_id,
+                sub.sort_weight,
+                COALESCE(
+                    (
+                        SELECT json_agg(
+                            json_build_object(
+                                'id', t.id,
+                                'label', t.label,
+                                'url_id', t.url_id,
+                                'content', c2.file,
+                                'citations', src_agg.citations,
+                                'products', tp_agg.products,
+                                'links', l_agg.links,
+                                'sort_weight', t.sort_weight,
+                                'is_visible', t.is_visible
+                            )
+                            ORDER BY t.sort_weight DESC
+                        )
+                        FROM topic t
+                        LEFT JOIN content c2 ON c2.topic_id = t.id
+                        LEFT JOIN LATERAL (
+                            SELECT COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations
+                            FROM topic_source ts
+                            JOIN source src ON src.id = ts.source_id
+                            WHERE ts.topic_id = t.id
+                        ) src_agg ON true
+                        LEFT JOIN LATERAL (
+                            SELECT COALESCE(array_agg(DISTINCT tp.product_id) FILTER (WHERE tp.product_id IS NOT NULL), '{}') AS products
+                            FROM topic_product tp
+                            WHERE tp.topic_id = t.id
+                        ) tp_agg ON true
+                        LEFT JOIN LATERAL (
+                            SELECT COALESCE(jsonb_agg(DISTINCT to_jsonb(l.*)) FILTER (WHERE l.id IS NOT NULL), '[]') AS links
+                            FROM link l
+                            WHERE l.topic_id = t.id
+                        ) l_agg ON true
+                        WHERE t.subcategory_id = sub.id
+                    ),
+                    '[]'
+                ) AS topics
+            FROM subcategory sub
+            WHERE sub.category_id = c.id
+            AND sub.geo_level = %s
+        ) s ON true
+        GROUP BY c.id, c.label, c.url_id, c.sort_weight, ct.id
+        ORDER BY c.sort_weight DESC;
     """
     return await fetch_many(query, (geo_level,))
 

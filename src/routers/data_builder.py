@@ -24,10 +24,10 @@ async def build_gis(admin=Depends(require_admin)):
     return {"category": "gis"}
 
 
-@router.post("/ckan")
-async def build_ckan(admin=Depends(require_admin)):
-    asyncio.create_task(run_build("ckan"))
-    return {"category": "ckan"}
+# @router.post("/ckan")
+# async def build_ckan(admin=Depends(require_admin)):
+#     asyncio.create_task(run_build("ckan"))
+#     return {"category": "ckan"}
 
 
 @router.post("/all")

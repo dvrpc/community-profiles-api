@@ -26,9 +26,14 @@ async def upsert_data(data: List[Data], geo_level, data_source):
         return
     log.info(f"{data_source} | {geo_level}: Upserting {len(data)} rows...")
     if geo_level == "regional":
-        await data_repo.bulk_regional_upsert(data)
+        result = await data_repo.bulk_regional_upsert(data)
     else:
-        await data_repo.bulk_upsert(data)
+        result = await data_repo.bulk_upsert(data)
+    if result:
+        variable_ids = list(set(result["variable_ids"]))
+        updated_variables = variable_repo.set_variable_update_time_by_ids(variable_ids)
+        log.info(f"{len(updated_variables)} variables updated by upsert")
+
 
 
 async def _get_variable_map(key: str, data_source: str) -> dict[str, str]:
@@ -76,7 +81,7 @@ async def remove_stale_sql_vars(variable_map, updated):
 async def build_all(acs_year: int | None) -> None:
     await build_acs(acs_year=acs_year)
     await build_gis()
-    await build_ckan()
+    # await build_ckan()
 
 
 async def build_acs(

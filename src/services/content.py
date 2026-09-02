@@ -60,68 +60,22 @@ def populate_template(html_conversion, profile):
 
 
 async def build_content(geo_level, profile):
-    category_content = await content_repo.find_category_content()
-    all_content = await topic_repo.find_by_geo(geo_level)
-
-    content_map = {}
-
-    for content in category_content:
-        html_conversion = mistune.html(content['file'])
+    content_tree = await content_repo.find_by_geo(geo_level)
+    print(content_tree)
+    for content in content_tree:
+        html_conversion = mistune.html(content['content'])
         populated_content = populate_template(html_conversion, profile)
+        content['content'] = populated_content
 
-        content_map[content['category']] = {
-            "content_id": content["id"],
-            "category_id": content["category_id"],
-            "content": populated_content,
-            "subcategories": []
-        }
+        for subcategory in content['subcategories']:
+            for topic in subcategory['topics']:
+                html_conversion = mistune.html(topic['content'])
+                populated_content = populate_template(html_conversion, profile)
+                topic['content'] = populated_content
+                topic['variables'] = get_template_variables(html_conversion)
 
-    for content in all_content:
-        html_conversion = mistune.html(content['file'])
-        populated_content = populate_template(html_conversion, profile)
-        variables = get_template_variables(html_conversion)
 
-        category = content['category']
-        subcategory_id = content['subcategory_id']
-        subcategory = content['subcategory']
-        subcategory_label = content['subcategory_label']
-
-        content_map.setdefault(category, {
-            "category_id": content["category_id"],
-            "content_id": None,
-            "content": "",
-            "subcategories": []
-        })
-
-        subcat_entry = next(
-            (sc for sc in content_map[category]["subcategories"]
-             if sc["id"] == subcategory_id), None
-        )
-
-        if not subcat_entry:
-            subcat_entry = {
-                'id': subcategory_id,
-                'name': subcategory,
-                'label': subcategory_label,
-                'topics': []
-            }
-            content_map[category]["subcategories"].append(subcat_entry)
-
-        topic_label = content['topic_label']
-        citations = content['citations']
-        products = content['products']
-
-        subcat_entry['topics'].append({
-            'id': content['id'],
-            'name': content['topic'],
-            'label': topic_label,
-            'content': populated_content,
-            'citations': citations,
-            'related_products': products,
-            'variables': variables
-        })
-
-    return content_map
+    return content_tree
 
 
 async def build_single_content(template: str, profile):

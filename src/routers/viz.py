@@ -13,34 +13,28 @@ router = APIRouter(
 )
 
 
-@router.get("/{id}/county/{geoid}")
-async def get_populated_county_viz(id: int, geoid: str):
+@router.get("/{topic_id}/county/{geoid}")
+async def get_populated_county_viz(topic_id: int, geoid: str):
     profile = await profile_service.build_county_profile(geoid)
-    viz = await viz_repo.find_one(id)
-    citations = viz['citations']
-    viz = json.loads(viz['file'])
-    populated_viz = await viz_service.build_viz(viz, profile, citations)
-    return populated_viz
+    visualizations = await viz_repo.find_by_topic_id(topic_id)
+    return await viz_service.populate_visualizations(visualizations, profile)
 
 
-@router.get("/{id}/municipality/{geoid}")
-async def get_populated_municipality_viz(id: int, geoid: str):
+
+@router.get("/{topic_id}/municipality/{geoid}")
+async def get_populated_municipality_viz(topic_id: int, geoid: str):
     profile = await profile_service.build_municipality_profile(geoid)
-    viz = await viz_repo.find_one(id)
-    citations = viz['citations']
-    viz = json.loads(viz['file'])
-    populated_viz = await viz_service.build_viz(viz, profile, citations)
-    return populated_viz
+    visualizations = await viz_repo.find_by_topic_id(topic_id)
+
+    return await viz_service.populate_visualizations(visualizations, profile)
 
 
-@router.get("/{id}/region")
-async def get_populated_region_viz(id: int):
+@router.get("/{topic_id}/region")
+async def get_populated_region_viz(topic_id: int):
     profile = await profile_service.build_region_profile()
-    viz = await viz_repo.find_one(id)
-    citations = viz['citations']
-    viz = json.loads(viz['file'])
-    populated_viz = await viz_service.build_viz(viz, profile, citations)
-    return populated_viz
+    visualizations = await viz_repo.find_by_topic_id(topic_id)
+    return await viz_service.populate_visualizations(visualizations, profile)
+
 
 
 # @router.get('/{id}')

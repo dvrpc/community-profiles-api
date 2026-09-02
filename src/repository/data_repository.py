@@ -95,7 +95,7 @@ async def bulk_upsert(data: List[Data]):
         WHERE
             data.value           IS DISTINCT FROM EXCLUDED.value OR
             data.margin_of_error IS DISTINCT FROM EXCLUDED.margin_of_error
-        RETURNING id, (xmax != 0) AS was_updated
+        RETURNING id, variable_id, (xmax != 0) AS was_updated
     """
     rows = [(d['variable_id'], d['geoid'], d['value'], d['margin_of_error'])
             for d in data]
@@ -113,7 +113,7 @@ async def bulk_regional_upsert(data: List[Data]):
         WHERE
             data.value           IS DISTINCT FROM EXCLUDED.value OR
             data.margin_of_error IS DISTINCT FROM EXCLUDED.margin_of_error
-        RETURNING id, (xmax != 0) AS was_updated;
+        RETURNING id, variable_id, (xmax != 0) AS was_updated;
     """
     rows = [(d['variable_id'], d['value'], d['margin_of_error'])
             for d in data]

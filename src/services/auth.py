@@ -25,6 +25,7 @@ async def require_admin(credentials=Depends(security)):
         email = idinfo.get("email")
         domain = idinfo.get("hd")
 
+
         if not email:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

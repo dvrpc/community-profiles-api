@@ -81,6 +81,18 @@ async def set_variable_update_time(names: list[str]):
     return await execute_update(query, (names,))
 
 
+async def set_variable_update_time_by_ids(variable_ids: list[int]):
+    if not variable_ids:
+        return 0
+    query = """
+        UPDATE variable
+        SET last_updated = NOW()
+        WHERE id = ANY(%s)
+        RETURNING id;
+    """
+    return await execute_update(query, (variable_ids,))
+
+
 async def delete(id):
     query = """
         DELETE FROM variable
