@@ -61,7 +61,6 @@ def populate_template(html_conversion, profile):
 
 async def build_content(geo_level, profile):
     content_tree = await content_repo.find_by_geo(geo_level)
-    print(content_tree)
     for content in content_tree:
         html_conversion = mistune.html(content['content'])
         populated_content = populate_template(html_conversion, profile)

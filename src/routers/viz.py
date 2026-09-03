@@ -37,12 +37,6 @@ async def get_populated_region_viz(topic_id: int):
 
 
 
-# @router.get('/{id}')
-# async def get_viz(id: int):
-#     template = await viz_repo.find_one(id)
-#     return template
-
-
 @router.get('/{topic_id}')
 async def get_by_topic_id(topic_id: int):
     viz = await viz_repo.find_by_topic_id(topic_id)
@@ -64,7 +58,7 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
             profile = await profile_service.build_municipality_profile(geoid)
 
     parsed_body = json.loads(body)
-    template = await viz_service.build_viz(parsed_body, profile, citations=[])
+    template, _ = await viz_service.build_viz(parsed_body, profile)
 
     return template
 

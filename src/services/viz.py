@@ -21,28 +21,25 @@ def populate_viz(viz, profile):
         log.error(f"Exception occured populating viz: {e}")
 
     viz['schema']['data']['values'] = values
-    viz['variables'] = variables
-    viz['citations'] = viz.get('citations', [])
-    return viz
+    return viz, variables
 
-async  def populate_visualizations(visualizations, profile):
+async def populate_visualizations(visualizations, profile):
     populated_visualizations = []
     for viz in visualizations:
-        citations = viz['citations']
         viz['file'] = json.loads(viz['file'])
-        populated_viz = await build_viz(viz['file'], profile, citations)
+        populated_viz, variables = await build_viz(viz['file'], profile)
         viz['file'] = populated_viz
+        viz['variables'] = variables
         populated_visualizations.append(viz)
 
     return populated_visualizations
 
-async def build_viz(viz, profile, citations):
+async def build_viz(viz, profile):
     """
     Populates visualizations with db variables. There can be more than one viz in a viz object
     """
 
     if (viz['type'] == 'chart'):
-        viz['citations'] = citations
         return populate_viz(viz, profile)
     else:
-        return viz
+        return viz, []

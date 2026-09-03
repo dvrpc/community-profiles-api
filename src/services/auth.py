@@ -19,7 +19,8 @@ async def require_admin(credentials=Depends(security)):
         idinfo = id_token.verify_oauth2_token(
             credentials.credentials,
             requests.Request(),
-            GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=60,
         )
 
         email = idinfo.get("email")
@@ -46,8 +47,11 @@ async def require_admin(credentials=Depends(security)):
 
         return True
 
-    except Exception:
+    except HTTPException:
+        raise
+    except Exception as exc:
+        print(f"Google token verification failed: {exc}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials"
+            detail="Invalid authentication credentials",
         )

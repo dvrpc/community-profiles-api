@@ -22,6 +22,7 @@ async def tree(geo_level: str):
                 json_agg(
                     json_build_object(
                         'id', s.id,
+                        'category_id', s.category_id,
                         'label', s.label,
                         'url_id', s.url_id,
                         'sort_weight', s.sort_weight,
@@ -35,6 +36,7 @@ async def tree(geo_level: str):
         LEFT JOIN LATERAL (
             SELECT
                 sub.id,
+                sub.category_id,
                 sub.label,
                 sub.url_id,
                 sub.sort_weight,

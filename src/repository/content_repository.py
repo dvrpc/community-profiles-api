@@ -18,6 +18,7 @@ async def find_by_geo(geo_level):
                 json_agg(
                     json_build_object(
                         'id', s.id,
+                        'category_id', s.category_id,
                         'label', s.label,
                         'url_id', s.url_id,
                         'sort_weight', s.sort_weight,
@@ -32,6 +33,7 @@ async def find_by_geo(geo_level):
         LEFT JOIN LATERAL (
             SELECT
                 sub.id,
+                sub.category_id,
                 sub.label,
                 sub.url_id,
                 sub.sort_weight,
