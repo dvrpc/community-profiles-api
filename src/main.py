@@ -7,7 +7,6 @@ from fastapi import FastAPI
 
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-from fastapi_cache.decorator import cache
 
 from redis import asyncio as aioredis
 import logging
@@ -70,11 +69,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@cache()
-async def get_cache():
-    return 1
 
 
 @app.get("/")

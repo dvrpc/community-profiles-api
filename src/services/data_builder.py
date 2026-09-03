@@ -1,18 +1,14 @@
 from typing import List
 
-import psycopg
 
-from data_builder import acs, gis, ckan, regional, engine
+from data_builder import acs, gis, ckan
 
 import repository.variable_repository as variable_repo
 import repository.sql_repository as sql_repo
-import services.profile as profile_service
 import repository.data_repository as data_repo
 from schemas.variable import VariableCreate
 import logging
-from db.database import db
 import asyncio
-import logging
 
 from schemas.data import Data
 
@@ -31,7 +27,7 @@ async def upsert_data(data: List[Data], geo_level, data_source):
         result = await data_repo.bulk_upsert(data)
     if result:
         variable_ids = list(set(result["variable_ids"]))
-        updated_variables = variable_repo.set_variable_update_time_by_ids(variable_ids)
+        updated_variables = await variable_repo.set_variable_update_time_by_ids(variable_ids)
         log.info(f"{len(updated_variables)} variables updated by upsert")
 
 
