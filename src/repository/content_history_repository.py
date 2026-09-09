@@ -1,8 +1,5 @@
-from fastapi_cache.decorator import cache
 import logging
-import json
-from datetime import datetime
-from repository.utils import fetch_one, fetch_many, execute_update
+from repository.utils import fetch_many, execute_update
 
 log = logging.getLogger(__name__)
 
@@ -18,16 +15,16 @@ async def create(dict):
     return await execute_update(query, values)
 
 
-async def find_by_parent_id(parent_id):
+async def find_by_parent_id(content_id):
     log.info(
-        f"Fetching content history for parent_id {parent_id}...")
+        f"Fetching content history for content_id {content_id}...")
     query = """
-        SELECT *
+        SELECT id, content_id, file, last_edited_by, archived_at as updated_at
         FROM content_history
-        WHERE parent_id = %s
-        ORDER BY create_date DESC
+        WHERE content_id = %s
+        ORDER BY archived_at DESC
     """
-    return await fetch_many(query, (parent_id,))
+    return await fetch_many(query, (content_id,))
 
 
 async def delete(id):

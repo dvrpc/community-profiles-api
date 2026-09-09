@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from repository.variable_repository import find_non_aggregateable_variables
 from db.database import db
-import asyncio
 
 log = logging.getLogger(__name__)
 

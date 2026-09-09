@@ -35,9 +35,9 @@ async def get_metadata():
 
 async def build_municipality_profile(geoid: str):
     municipality_data = await data_repository.find_by_geoid(geoid)
-    county_data = await data_repository.find_by_geoid(geoid[5])
+    county_data = await data_repository.find_by_geoid(geoid[:5])
     muni_geo = await geo_repository.find_by_geoid(geoid)
-    county_geo = await geo_repository.find_by_geoid(geoid[5])
+    county_geo = await geo_repository.find_by_geoid(geoid[:5])
     metadata = await get_metadata()
 
     profile = build_profile(municipality_data)

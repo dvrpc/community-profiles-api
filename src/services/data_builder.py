@@ -1,18 +1,14 @@
 from typing import List
 
-import psycopg
 
-from data_builder import acs, gis, ckan, regional, engine
+from data_builder import acs, gis, ckan
 
 import repository.variable_repository as variable_repo
 import repository.sql_repository as sql_repo
-import services.profile as profile_service
 import repository.data_repository as data_repo
-from schemas.variable import VariableRequest
+from schemas.variable import VariableCreate
 import logging
-from db.database import db
 import asyncio
-import logging
 
 from schemas.data import Data
 
@@ -26,9 +22,14 @@ async def upsert_data(data: List[Data], geo_level, data_source):
         return
     log.info(f"{data_source} | {geo_level}: Upserting {len(data)} rows...")
     if geo_level == "regional":
-        await data_repo.bulk_regional_upsert(data)
+        result = await data_repo.bulk_regional_upsert(data)
     else:
-        await data_repo.bulk_upsert(data)
+        result = await data_repo.bulk_upsert(data)
+    if result:
+        variable_ids = list(set(result["variable_ids"]))
+        updated_variables = await variable_repo.set_variable_update_time_by_ids(variable_ids)
+        log.info(f"{len(updated_variables)} variables updated by upsert")
+
 
 
 async def _get_variable_map(key: str, data_source: str) -> dict[str, str]:
@@ -43,7 +44,7 @@ async def build_new_sql_variable_data(variables, data_source: str):
     for v in variables:
         name = v['variable_name']
         if name not in variable_id_map.keys():
-            variableRequest = VariableRequest(
+            variableRequest = VariableCreate(
                 data_source=data_source,
                 name=name,
                 acs_variable=None,
@@ -76,7 +77,7 @@ async def remove_stale_sql_vars(variable_map, updated):
 async def build_all(acs_year: int | None) -> None:
     await build_acs(acs_year=acs_year)
     await build_gis()
-    await build_ckan()
+    # await build_ckan()
 
 
 async def build_acs(

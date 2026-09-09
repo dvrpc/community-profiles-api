@@ -1,5 +1,5 @@
 from repository.utils import fetch_many, execute_update
-from schemas.source import SourceRequest
+from schemas.source import SourceCreate, SourceUpdate
 import logging
 
 log = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ async def find_all_sources():
     return await fetch_many(query)
 
 
-async def create(source: SourceRequest):
+async def create(source: SourceCreate):
     query = """
         INSERT INTO source (agency, dataset, year_from, year_to, citation)
         VALUES (%s, %s, %s, %s, %s)
@@ -20,7 +20,7 @@ async def create(source: SourceRequest):
     return await execute_update(query, (source.agency, source.dataset, source.year_from, source.year_to, source.citation))
 
 
-async def update(id, source: SourceRequest):
+async def update(id, source: SourceUpdate):
     query = """
         UPDATE source
         SET agency = %s, dataset = %s, year_from = %s, year_to = %s, citation = %s

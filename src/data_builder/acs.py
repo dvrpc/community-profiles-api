@@ -4,14 +4,12 @@ from dotenv import load_dotenv
 
 from schemas.data import Data
 from .consts import (
-    CHUNK_SIZE, PA_FIPS, PA_FIPS_FORMATTED,
-    NJ_FIPS, NJ_FIPS_FORMATTED,
-    STATE_FIPS,
+    CHUNK_SIZE, PA_FIPS_FORMATTED,
+    NJ_FIPS_FORMATTED,
 )
 import requests
 import os
 import logging
-import pandas as pd
 
 log = logging.getLogger(__name__)
 load_dotenv()

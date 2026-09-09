@@ -1,12 +1,10 @@
 import requests
 import logging
-import pandas as pd
 import os
-import functools as ft
 
 from dotenv import load_dotenv
 
-from schemas.sql import SQLRequest
+from schemas.sql import SQLBase
 
 log = logging.getLogger(__name__)
 load_dotenv()
@@ -14,20 +12,20 @@ load_dotenv()
 dirname = os.path.dirname(__file__)
 
 
-def _fetch_datastore(sql):
-    url = "https://catalog.dvrpc.org/api/3/action/datastore_search_sql?sql=" + sql
-    try:
-        r = requests.get(url)
-        r.raise_for_status()
-        data = r.json()['result']['records']
-        return pd.DataFrame(data)
+# def _fetch_datastore(sql):
+#     url = "https://catalog.dvrpc.org/api/3/action/datastore_search_sql?sql=" + sql
+#     try:
+#         r = requests.get(url)
+#         r.raise_for_status()
+#         data = r.json()['result']['records']
+#         return pd.DataFrame(data)
 
-    except requests.exceptions.HTTPError as e:
-        log.error(f"Failed to fetch ckan datastore: {e}")
-        raise
+#     except requests.exceptions.HTTPError as e:
+#         log.error(f"Failed to fetch ckan datastore: {e}")
+#         raise
 
 
-def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
+def _fetch_sql(sql_request: SQLBase, variable_map: dict[str, str]):
     new_data = []
     updated_data = []
 
@@ -64,7 +62,7 @@ def _fetch_sql(sql_request: SQLRequest, variable_map: dict[str, str]):
     return new_data, updated_data
 
 
-def fetch_ckan_data(sql_queries: list[SQLRequest], variable_map: dict[str, str]):
+def fetch_ckan_data(sql_queries: list[SQLBase], variable_map: dict[str, str]):
     data = []
     new_data = []
     for query in sql_queries:
