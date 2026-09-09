@@ -1,6 +1,7 @@
 import repository.viz_source_repository as viz_source_repo
 
 async def sync_viz_source(viz_id, source_ids):
+    """Backward-compatible helper for the schema's topic-level sources."""
     current_source_ids = await viz_source_repo.find(viz_id)
     
     current_source_set = set([row['source_id'] for row in current_source_ids])

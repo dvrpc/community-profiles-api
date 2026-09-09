@@ -1,5 +1,5 @@
 from repository.utils import fetch_many, fetch_one, execute_update
-from schemas.app_metadata import AppMetadataRequest
+from schemas.app_metadata import AppMetadataCreate, AppMetadataUpdate
 from psycopg.types.json import Jsonb
 import logging
 
@@ -17,7 +17,7 @@ async def find_by_key(key: str):
     return await fetch_one(query, (key,))
 
 
-async def create(key: str, setting: AppMetadataRequest):
+async def create(key: str, setting: AppMetadataCreate):
     query = """
         INSERT INTO app_metadata (key, value, description)
         VALUES (%s, %s, %s)
@@ -28,7 +28,7 @@ async def create(key: str, setting: AppMetadataRequest):
     )
 
 
-async def update(key: str, setting: AppMetadataRequest):
+async def update(key: str, setting: AppMetadataUpdate):
     query = """
         UPDATE app_metadata
         SET value = %s, description = %s

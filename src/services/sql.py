@@ -3,7 +3,7 @@
 from fastapi import HTTPException
 
 from data_builder.engine import get_gis_engine
-from schemas.sql import SQLRequest
+from schemas.sql import SQLCreate
 from sqlalchemy import text, exc
 import logging
 import requests
@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 
-async def test_sql(sql_req : SQLRequest, detailed: bool):
+async def test_sql(sql_req: SQLCreate, detailed: bool):
     if sql_req.data_source == 'ckan':
         return await test_ckan_sql(sql_req.body)
     else:

@@ -1,63 +1,75 @@
-from fastapi_cache.decorator import cache
 import logging
-import json
-from datetime import datetime
-from repository.utils import fetch_one, fetch_many, execute_update
+
+from repository.utils import execute_update, fetch_many, fetch_one
+from schemas.viz import VizCreate, VizUpdate
 
 log = logging.getLogger(__name__)
 
 
 async def find_one(id: int):
-    log.info(f"Fetching viz {id}...")
     query = """
-        SELECT 
-            v.id,
-            v.geo_level,
-            v.file,
-            v.create_date,
-            v.topic_id,
-            v.last_edited_by,
-            COALESCE(
-                array_agg(vs.source_id ORDER BY vs.source_id) 
-                FILTER (WHERE vs.source_id IS NOT NULL), 
-                '{}'
-            ) AS source_ids
+        SELECT
+            v.*,
+            COALESCE(array_agg(DISTINCT vs.source_id) FILTER (WHERE vs.source_id IS NOT NULL), '{}') AS source_ids,
+            COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations
         FROM viz v
         LEFT JOIN viz_source vs ON vs.viz_id = v.id
+        LEFT JOIN source src ON src.id = vs.source_id
         WHERE v.id = %s
-        GROUP BY v.id, v.geo_level, v.file, v.create_date ,v.topic_id, v.last_edited_by;
+        GROUP BY v.id
     """
     return await fetch_one(query, (id,))
+
+
+async def find_by_topic_id(topic_id: int):
+    query = """
+        SELECT
+            v.*,
+            COALESCE(array_agg(DISTINCT vs.source_id) FILTER (WHERE vs.source_id IS NOT NULL), '{}') AS source_ids
+        FROM viz v
+        LEFT JOIN viz_source vs ON vs.viz_id = v.id
+        LEFT JOIN source src ON src.id = vs.source_id
+        WHERE v.topic_id = %s
+        GROUP BY v.id
+        ORDER BY v.sort_weight
+    """
+    return await fetch_many(query, (topic_id,))
 
 
 async def find_one_basic(id: int):
-    log.info(f"Fetching viz {id}...")
-    query = """
-        SELECT * FROM viz where id = %s
-    """
-    return await fetch_one(query, (id,))
+    return await fetch_one("SELECT * FROM viz WHERE id = %s;", (id,))
 
 
-async def update(id, text, user):
-    now = datetime.now()
-    log.info(
-        f"Updating viz: {id}")
-    query = """
+async def update(id: int, viz: VizUpdate):
+    allowed_fields = {"file", "sort_weight", "last_edited_by"}
+    update_values = {field: getattr(
+        viz, field) for field in allowed_fields if getattr(viz, field, None) is not None}
+
+    if not update_values:
+        return await find_one(id)
+
+    assignments = ", ".join(f"{field} = %s" for field in update_values)
+    query = f"""
         UPDATE viz
-        SET file = %s, create_date = %s, last_edited_by = %s
+        SET {assignments}, updated_at = now()
         WHERE id = %s
         RETURNING id;
     """
-    return await execute_update(query, (text, now, user, id))
+    params = tuple(update_values.values()) + (id,)
+    return await execute_update(query, params)
 
 
-async def create(topic_id, geo_level, file, content_id):
-    now = datetime.now()
-    log.info(
-        f"Creating viz for topic_id: {topic_id}")
+async def create(viz: VizCreate):
     query = """
-        INSERT into viz (geo_level, create_date, topic_id, file, id)
-        VALUES (%s, %s, %s, %s, %s)
-        RETURNING id
+        INSERT INTO viz (file, topic_id, sort_weight, last_edited_by)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id;
     """
-    return await execute_update(query, (geo_level, now, topic_id, file, content_id))
+    return await execute_update(
+        query,
+        (viz.file, viz.topic_id, viz.sort_weight, viz.last_edited_by),
+    )
+
+async def delete(id: int):
+    query = "DELETE FROM viz WHERE id = %s RETURNING id;"
+    return await execute_update(query, (id,))
