@@ -9,6 +9,8 @@ class VizBase(BaseModel):
     sort_weight: int = Field(None, description="Sort weight")
     last_edited_by: str = Field(
         None, description="User who last edited the viz")
+    source_ids: Optional[list[int]] = Field(
+        None, description="List of source IDs associated with the viz")
 
 
 class VizCreate(VizBase):
@@ -21,6 +23,8 @@ class VizUpdate(BaseModel):
     sort_weight: Optional[int] = Field(None, description="Sort weight")
     last_edited_by: Optional[str] = Field(
         None, description="User who last edited the viz")
+    source_ids: Optional[list[int]] = Field(
+        None, description="List of source IDs associated with the viz")
 
 
 class Viz(VizBase):

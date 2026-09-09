@@ -4,25 +4,25 @@ import logging
 log = logging.getLogger(__name__)
 
 
-async def create(topic_id, source_id):
+async def create(viz_id, source_id):
     query = """
-        INSERT INTO topic_source (topic_id, source_id)
+        INSERT INTO viz_source (viz_id, source_id)
         VALUES (%s, %s)
-        RETURNING topic_id, source_id;
+        RETURNING viz_id, source_id;
     """
-    return await execute_update(query, (topic_id, source_id))
+    return await execute_update(query, (viz_id, source_id))
 
 
-async def delete(topic_id, source_ids):
+async def delete(viz_id, source_ids):
     query = """
-        DELETE FROM topic_source
-        WHERE topic_id = %s AND source_id = ANY(%s)
-        RETURNING topic_id, source_id;
+        DELETE FROM viz_source
+        WHERE viz_id = %s AND source_id = ANY(%s)
+        RETURNING viz_id, source_id;
     """
-    return await execute_update(query, (topic_id, source_ids))
+    return await execute_update(query, (viz_id, source_ids))
 
-async def find(topic_id):
+async def find(viz_id):
     query = """
-        SELECT source_id FROM topic_source WHERE topic_id = %s
+        SELECT source_id FROM viz_source WHERE viz_id = %s
     """
-    return await fetch_many(query, (topic_id,))
+    return await fetch_many(query, (viz_id,))

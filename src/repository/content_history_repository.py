@@ -1,8 +1,5 @@
-from fastapi_cache.decorator import cache
 import logging
-import json
-from datetime import datetime
-from repository.utils import fetch_one, fetch_many, execute_update
+from repository.utils import fetch_many, execute_update
 
 log = logging.getLogger(__name__)
 

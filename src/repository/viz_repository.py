@@ -10,11 +10,11 @@ async def find_one(id: int):
     query = """
         SELECT
             v.*,
-            COALESCE(array_agg(DISTINCT ts.source_id) FILTER (WHERE ts.source_id IS NOT NULL), '{}') AS source_ids,
+            COALESCE(array_agg(DISTINCT vs.source_id) FILTER (WHERE vs.source_id IS NOT NULL), '{}') AS source_ids,
             COALESCE(array_agg(DISTINCT src.citation) FILTER (WHERE src.citation IS NOT NULL), '{}') AS citations
         FROM viz v
-        LEFT JOIN topic_source ts ON ts.topic_id = v.topic_id
-        LEFT JOIN source src ON src.id = ts.source_id
+        LEFT JOIN viz_source vs ON vs.viz_id = v.id
+        LEFT JOIN source src ON src.id = vs.source_id
         WHERE v.id = %s
         GROUP BY v.id
     """
@@ -25,10 +25,10 @@ async def find_by_topic_id(topic_id: int):
     query = """
         SELECT
             v.*,
-            COALESCE(array_agg(DISTINCT ts.source_id) FILTER (WHERE ts.source_id IS NOT NULL), '{}') AS source_ids
+            COALESCE(array_agg(DISTINCT vs.source_id) FILTER (WHERE vs.source_id IS NOT NULL), '{}') AS source_ids
         FROM viz v
-        LEFT JOIN topic_source ts ON ts.topic_id = v.topic_id
-        LEFT JOIN source src ON src.id = ts.source_id
+        LEFT JOIN viz_source vs ON vs.viz_id = v.id
+        LEFT JOIN source src ON src.id = vs.source_id
         WHERE v.topic_id = %s
         GROUP BY v.id
         ORDER BY v.sort_weight
@@ -69,3 +69,7 @@ async def create(viz: VizCreate):
         query,
         (viz.file, viz.topic_id, viz.sort_weight, viz.last_edited_by),
     )
+
+async def delete(id: int):
+    query = "DELETE FROM viz WHERE id = %s RETURNING id;"
+    return await execute_update(query, (id,))

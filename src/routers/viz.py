@@ -3,6 +3,7 @@ import services.profile as profile_service
 import repository.viz_repository as viz_repo
 import repository.viz_history_repository as viz_history_repo
 import services.viz as viz_service
+from services.viz_source import sync_viz_source
 from services.auth import require_admin
 from schemas.viz import VizCreate, VizUpdate
 import json
@@ -66,12 +67,16 @@ async def get_viz_preview(geo_level: str, geoid: str = None, body: str = Body(..
 @router.put('/{id}')
 async def update_viz(id: int, viz: VizUpdate, admin=Depends(require_admin)):
     res = await viz_repo.update(id, viz)
+    if viz.source_ids is not None:
+        await sync_viz_source(id, viz.source_ids)
     return res
 
 
 @router.post('')
 async def create_viz(viz: VizCreate, admin=Depends(require_admin)):
     res = await viz_repo.create(viz)
+    if viz.source_ids is not None:
+        await sync_viz_source(id, viz.source_ids)
     return res
 
 
@@ -84,3 +89,8 @@ async def get_viz_history(id: int):
     all_viz += history
 
     return all_viz
+
+@router.delete('/{id}')
+async def delete_viz(id: int, admin=Depends(require_admin)):
+    res = await viz_repo.delete(id)
+    return res

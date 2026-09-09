@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, Depends
 from typing import List
 
 import asyncio
@@ -6,8 +6,6 @@ from schemas.variable import Variable, VariableCreate, VariableUpdate
 from services.auth import require_admin
 from services.revalidate import revalidate_all
 import repository.variable_repository as variable_repo
-import services.profile as profile_service
-import services.variable as variable_service
 from services.build_state import run_build
 
 

@@ -2,8 +2,6 @@ import json
 import logging
 # from repository.viz_repository import find_by_filters, update
 # from repository.viz_history_repository import create, delete, find_by_filters
-from schemas.viz import VizUpdate
-import repository.viz_repository as viz_repo
 
 log = logging.getLogger(__name__)
 

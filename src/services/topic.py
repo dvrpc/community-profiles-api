@@ -1,6 +1,6 @@
 import logging
 
-from schemas.topic import TopicCreate, TopicPropertiesUpdate, TopicUpdate
+from schemas.topic import TopicCreate, TopicPropertiesUpdate
 import repository.topic_repository as topic_repo
 import repository.content_repository as content_repo
 import services.revalidate as revalidation_service

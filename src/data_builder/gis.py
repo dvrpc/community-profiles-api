@@ -3,8 +3,6 @@ from schemas.sql import SQLBase
 from .engine import get_gis_engine
 import logging
 import os
-import pandas as pd
-import functools as ft
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy import text
 

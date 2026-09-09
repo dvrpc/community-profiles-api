@@ -3,13 +3,8 @@ import logging
 
 
 import repository.content_repository as content_repo
-import repository.topic_repository as topic_repo
-from services.topic_source import sync_topic_source
-from services.topic_product import sync_content_product
 
-from schemas.content import ContentUpdate
 
-from services.revalidate import revalidate_all
 from jinja.template import env
 from jinja2 import meta
 
